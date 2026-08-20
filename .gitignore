@@ -1,0 +1,8 @@
+node_modules/
+client/dist/
+server/data/game.db
+server/data/game.db-shm
+server/data/game.db-wal
+.DS_Store
+*.log
+HANDOFF.md
