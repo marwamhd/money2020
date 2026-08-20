@@ -1,0 +1,68 @@
+[
+  {
+    "id": "R1-1",
+    "round": "R1",
+    "prompt": "Is Apple public or private?",
+    "optionA": "Public",
+    "optionB": "Private",
+    "correctOption": "A",
+    "difficulty": "Easy",
+    "points": 100,
+    "hostNote": "Listed on Nasdaq since 1980."
+  },
+  {
+    "id": "R1-20",
+    "round": "R1",
+    "prompt": "Is Trader Joe's public or private?",
+    "optionA": "Public",
+    "optionB": "Private",
+    "correctOption": "B",
+    "difficulty": "Medium",
+    "points": 150,
+    "hostNote": "Owned by a German family trust, not listed anywhere."
+  },
+  {
+    "id": "R2-1",
+    "round": "R2",
+    "prompt": "Which has the higher valuation: Apple or Saudi Aramco?",
+    "optionA": "Apple",
+    "optionB": "Saudi Aramco",
+    "correctOption": "A",
+    "difficulty": "Easy",
+    "points": 100,
+    "hostNote": "Apple's market cap has run well ahead of Aramco's since 2020."
+  },
+  {
+    "id": "R2-2",
+    "round": "R2",
+    "prompt": "Which has the higher valuation: Nvidia or Saudi Aramco?",
+    "optionA": "Nvidia",
+    "optionB": "Saudi Aramco",
+    "correctOption": "A",
+    "difficulty": "Medium",
+    "points": 150,
+    "hostNote": "Nvidia has traded as one of the two largest companies in the world by market cap."
+  },
+  {
+    "id": "R3-1",
+    "round": "R3",
+    "prompt": "True or false: private markets have historically required a minimum investment of $1 million or more.",
+    "optionA": "True",
+    "optionB": "False",
+    "correctOption": "A",
+    "difficulty": "Easy",
+    "points": 100,
+    "hostNote": "This is exactly the barrier that platforms built for mass affluent investors are chipping away at."
+  },
+  {
+    "id": "R3-5",
+    "round": "R3",
+    "prompt": "This or that: which is generally larger, the global private equity market or the global public equity market?",
+    "optionA": "Global private equity market",
+    "optionB": "Global public equity market",
+    "correctOption": "B",
+    "difficulty": "Medium",
+    "points": 150,
+    "hostNote": "Private markets are large and growing fast, but public markets remain far bigger in total size."
+  }
+]
