@@ -76,6 +76,7 @@ export class GameEngine {
   }
 
   removePlayer(id) {
+    if (this.state === GAME_STATES.FINISHED) return; // finished result is immutable until admin reset
     if (!this.players.some((p) => p.id === id)) return;
     this.players = this.players.filter((p) => p.id !== id);
     if (this.state === GAME_STATES.COUNTDOWN) {
