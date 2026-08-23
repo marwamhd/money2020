@@ -43,6 +43,7 @@ export class GameEngine {
   reset() {
     this._cancelCountdown();
     this._cancelQuestionTimer();
+    this._cancelBreak();
     this.state = GAME_STATES.LOBBY;
     this.players = []; // { id, name, slot, ready, score, connected }
     this.countdownEndsAt = null;
@@ -51,6 +52,7 @@ export class GameEngine {
     this.roundQueue = [];
     this.currentQuestion = null; // full question, incl. correctOption (never sent to clients directly)
     this.sectionEndsAt = null;
+    this.breakEndsAt = null;
     this.answerOrder = []; // [{ playerId, choice }] in receipt order, for the current question
   }
 
@@ -64,6 +66,7 @@ export class GameEngine {
       countdownEndsAt: this.countdownEndsAt,
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
+      breakEndsAt: this.breakEndsAt,
       currentQuestion: publicQuestion(this.currentQuestion),
       answerCounts: counts,
     };
@@ -109,7 +112,11 @@ export class GameEngine {
       return;
     }
 
-    if (this.state === GAME_STATES.COUNTDOWN) {
+    // Only the very first (pre-round-1) countdown reverts to lobby on disconnect —
+    // nothing is at stake yet. A countdown between rounds 2/3 has real scores riding
+    // on it already, so it must be treated like a mid-match disconnect instead
+    // (below): flag offline, keep slot/score, let them reconnect.
+    if (this.state === GAME_STATES.COUNTDOWN && this.roundIndex === -1) {
       this._cancelCountdown();
       this.state = GAME_STATES.LOBBY;
       this.players = this.players.filter((p) => p.id !== id);
@@ -130,6 +137,7 @@ export class GameEngine {
     this._emit();
 
     if (this.players.length === 2 && this.players.every((p) => p.ready)) {
+      this.roundIndex = -1; // fresh match kickoff — this is the only place this resets
       this._startCountdown();
     }
   }
@@ -142,7 +150,6 @@ export class GameEngine {
     this._countdownTimer = setTimeout(() => {
       this.countdownEndsAt = null;
       this._countdownTimer = null;
-      this.roundIndex = -1;
       this._startNextSection();
     }, this.config.COUNTDOWN_MS);
   }
@@ -178,7 +185,7 @@ export class GameEngine {
   _serveNextQuestion() {
     const remaining = this.sectionEndsAt - Date.now();
     if (remaining <= 0 || this.roundQueue.length === 0) {
-      this._startNextSection();
+      this._endSection();
       return;
     }
 
@@ -195,6 +202,39 @@ export class GameEngine {
       clearTimeout(this._questionTimer);
       this._questionTimer = null;
     }
+  }
+
+  // A round's time (or question pool) is up: pause with a score recap before the
+  // next round, or finish outright if that was the last round.
+  _endSection() {
+    this._cancelQuestionTimer();
+    this.currentQuestion = null;
+    const isLastRound = this.roundIndex >= ROUNDS.length - 1;
+    if (isLastRound) {
+      this._finish();
+    } else {
+      this._startBreak();
+    }
+  }
+
+  _startBreak() {
+    this.state = GAME_STATES.BREAK;
+    this.breakEndsAt = Date.now() + this.config.BREAK_MS;
+    this._emit();
+
+    this._breakTimer = setTimeout(() => {
+      this.breakEndsAt = null;
+      this._breakTimer = null;
+      this._startCountdown();
+    }, this.config.BREAK_MS);
+  }
+
+  _cancelBreak() {
+    if (this._breakTimer) {
+      clearTimeout(this._breakTimer);
+      this._breakTimer = null;
+    }
+    this.breakEndsAt = null;
   }
 
   submitAnswer(playerId, questionId, choice) {
@@ -225,8 +265,11 @@ export class GameEngine {
   }
 
   _finish() {
-    this._cancelCountdown(); // otherwise a forceEnd() during COUNTDOWN leaves that timer live,
-    this._cancelQuestionTimer(); // and it fires later, flipping "finished" back to "playing"
+    // Cancel every pending timer — otherwise a forceEnd() (or a natural finish racing
+    // with one) leaves one live, and it fires later flipping "finished" back to active.
+    this._cancelCountdown();
+    this._cancelQuestionTimer();
+    this._cancelBreak();
     this.state = GAME_STATES.FINISHED;
     this.currentRound = null;
     this.currentQuestion = null;
@@ -237,7 +280,7 @@ export class GameEngine {
   // Admin recovery control: end a stuck match right now, keeping whatever scores
   // stand — goes through the normal finish path, so the result still persists.
   forceEnd() {
-    if (this.state !== GAME_STATES.COUNTDOWN && this.state !== GAME_STATES.PLAYING) return;
+    if (![GAME_STATES.COUNTDOWN, GAME_STATES.PLAYING, GAME_STATES.BREAK].includes(this.state)) return;
     this._finish();
   }
 

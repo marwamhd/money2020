@@ -4,6 +4,7 @@ export const GAME_STATES = Object.freeze({
   LOBBY: "lobby",
   COUNTDOWN: "countdown",
   PLAYING: "playing",
+  BREAK: "break", // brief pause between rounds, showing a score recap, before the next countdown
   FINISHED: "finished",
 });
 
@@ -25,6 +26,7 @@ export const DEFAULTS = Object.freeze({
   SECTION_DURATION_MS: 60000,
   QUESTION_TIMEOUT_MS: 25000,
   RUNNER_UP_POINTS: 30,
+  BREAK_MS: 5000,
 });
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

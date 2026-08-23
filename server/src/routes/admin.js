@@ -13,7 +13,7 @@ import {
   listMatchResults,
 } from "../db.js";
 
-const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS"];
+const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS", "BREAK_MS"];
 
 function validateQuestion(input) {
   const errors = [];
