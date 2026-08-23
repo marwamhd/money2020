@@ -31,8 +31,11 @@ export class GameEngine {
     );
   }
 
-  // Admin config changes (section/question timing, runner-up points) apply from the
-  // next section/match onward — timers already scheduled keep their original duration.
+  // Admin config changes apply as soon as they'd naturally come up next: SECTION_DURATION_MS
+  // and COUNTDOWN_MS only affect the next section/match (sectionEndsAt/countdownEndsAt are
+  // fixed timestamps computed once and not recomputed), but QUESTION_TIMEOUT_MS and
+  // RUNNER_UP_POINTS take effect on the very next question, even mid-section, since those
+  // are read live each time. Either way, nothing already scheduled changes duration.
   updateConfig(partial) {
     this.config = { ...this.config, ...partial };
   }
@@ -162,6 +165,12 @@ export class GameEngine {
     this.state = GAME_STATES.PLAYING;
     this.currentRound = ROUNDS[this.roundIndex];
     this.roundQueue = shuffle(this.questionsByRound[this.currentRound] || []);
+    if (this.roundQueue.length === 0) {
+      // Not a crash, but a real operational trap: this round (or the whole match, if every
+      // round is empty) will be skipped silently with no visible warning otherwise — an
+      // admin who deactivated/deleted every question in a round should see this in the log.
+      console.warn(`[gameEngine] round ${this.currentRound} has zero active questions — skipping it`);
+    }
     this.sectionEndsAt = Date.now() + this.config.SECTION_DURATION_MS;
     this._serveNextQuestion();
   }
@@ -216,7 +225,8 @@ export class GameEngine {
   }
 
   _finish() {
-    this._cancelQuestionTimer();
+    this._cancelCountdown(); // otherwise a forceEnd() during COUNTDOWN leaves that timer live,
+    this._cancelQuestionTimer(); // and it fires later, flipping "finished" back to "playing"
     this.state = GAME_STATES.FINISHED;
     this.currentRound = null;
     this.currentQuestion = null;

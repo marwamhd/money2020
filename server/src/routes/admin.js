@@ -19,7 +19,8 @@ function validateQuestion(input) {
   const errors = [];
   if (!ROUNDS.includes(input.round)) errors.push(`round must be one of ${ROUNDS.join(", ")}`);
   if (!input.prompt || typeof input.prompt !== "string" || !input.prompt.trim()) errors.push("prompt is required");
-  if (!input.optionA || !input.optionB) errors.push("both options are required");
+  if (typeof input.optionA !== "string" || !input.optionA.trim()) errors.push("optionA is required and must be a string");
+  if (typeof input.optionB !== "string" || !input.optionB.trim()) errors.push("optionB is required and must be a string");
   if (input.optionA === input.optionB) errors.push("options must be different");
   if (!["A", "B"].includes(input.correctOption)) errors.push("correctOption must be 'A' or 'B'");
   if (!Object.keys(DIFFICULTY_POINTS).includes(input.difficulty)) {

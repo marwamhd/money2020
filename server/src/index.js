@@ -46,16 +46,26 @@ const envConfig = {
 // the organizer's most recent, intentional choice and survives a server restart.
 const config = { ...envConfig, ...getConfigOverrides() };
 
-// Populated on every finish with { [playerId]: matchResultRowId }, so a player's
-// post-game submitEmail can be attached to the right row. Overwritten on the next
-// finish; fine since only one match is ever active/pending email capture at a time.
+// Populated on every finish with { [playerId]: matchResultRowId }. This is the sole
+// source of truth for "which result can this playerId currently email" — see submitEmail
+// below, which requires the client to echo back the exact id it was handed on finish,
+// not just trust whatever this map currently holds for their id. That guards against a
+// slow player submitting an email for match A after the organizer has already reset and
+// completed match B on the same device/token in the meantime (the map would have moved on
+// to B's id by then, so A's stale echoed id correctly fails to match).
 let matchResultIdsByPlayerId = {};
 
 const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
-  io.emit(STATE_EVENT, snapshot);
-  if (snapshot.state === "finished") {
-    matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score }) => ({ id, name, score })));
+  if (snapshot.state !== "finished") {
+    io.emit(STATE_EVENT, snapshot);
+    return;
   }
+
+  matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score }) => ({ id, name, score })));
+  io.emit(STATE_EVENT, {
+    ...snapshot,
+    players: snapshot.players.map((p) => ({ ...p, matchResultId: matchResultIdsByPlayerId[p.id] ?? null })),
+  });
 }, config);
 
 app.use("/api/admin", (req, res, next) => {
@@ -100,13 +110,18 @@ io.on("connection", (socket) => {
   });
 
   socket.on(COMMANDS.SUBMIT_EMAIL, (payload, ack) => {
-    const { email } = payload || {};
+    const { email, matchResultId } = payload || {};
     const playerId = socketToPlayerId.get(socket.id);
     if (!playerId) return ack?.({ ok: false, error: "Not in a match" });
     if (!isValidEmail(email)) return ack?.({ ok: false, error: "Invalid email" });
 
-    const matchResultId = matchResultIdsByPlayerId[playerId];
-    if (!matchResultId) return ack?.({ ok: false, error: "No completed result to attach an email to" });
+    // matchResultId must be the exact id the client was handed in the finished-state
+    // snapshot for its own player entry — if a newer match has since finished for this
+    // same playerId, the canonical map has moved on and a stale id is correctly rejected
+    // instead of silently attaching this email to the wrong (newer) match's result.
+    if (!matchResultId || matchResultId !== matchResultIdsByPlayerId[playerId]) {
+      return ack?.({ ok: false, error: "No completed result to attach an email to" });
+    }
 
     setMatchResultEmail(matchResultId, email.trim());
     ack?.({ ok: true });
