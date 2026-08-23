@@ -6,7 +6,7 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 
-import { getActiveQuestions, persistMatchResults, getConfigOverrides, setMatchResultEmail } from "./db.js";
+import { getActiveQuestions, persistMatchResults, getConfigOverrides, setMatchResultEmail, getTopLeaderboard } from "./db.js";
 import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
@@ -56,17 +56,24 @@ const config = { ...envConfig, ...getConfigOverrides() };
 // to B's id by then, so A's stale echoed id correctly fails to match).
 let matchResultIdsByPlayerId = {};
 
+// The booth display (idle screen) needs the persistent top-5, so every broadcast
+// carries a fresh read of it — cheap query, and it only actually changes right
+// after a match finishes anyway.
+function withLeaderboard(snapshot) {
+  return { ...snapshot, leaderboard: getTopLeaderboard(5) };
+}
+
 const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
   if (snapshot.state !== "finished") {
-    io.emit(STATE_EVENT, snapshot);
+    io.emit(STATE_EVENT, withLeaderboard(snapshot));
     return;
   }
 
   matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score }) => ({ id, name, score })));
-  io.emit(STATE_EVENT, {
+  io.emit(STATE_EVENT, withLeaderboard({
     ...snapshot,
     players: snapshot.players.map((p) => ({ ...p, matchResultId: matchResultIdsByPlayerId[p.id] ?? null })),
-  });
+  }));
 }, config);
 
 app.use("/api/admin", (req, res, next) => {
@@ -82,7 +89,7 @@ app.use("/api/admin", (req, res, next) => {
 const socketToPlayerId = new Map();
 
 io.on("connection", (socket) => {
-  socket.emit(STATE_EVENT, engine.getSnapshot());
+  socket.emit(STATE_EVENT, withLeaderboard(engine.getSnapshot()));
 
   // Payloads are untrusted client input — a bare emit with no/null/malformed data must
   // never throw here, since an uncaught exception in a socket handler crashes the whole
