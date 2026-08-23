@@ -13,7 +13,7 @@ import {
   listMatchResults,
 } from "../db.js";
 
-const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS", "BREAK_MS"];
+const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS", "REVEAL_MS"];
 
 function validateQuestion(input) {
   const errors = [];
@@ -26,6 +26,9 @@ function validateQuestion(input) {
   if (!Object.keys(DIFFICULTY_POINTS).includes(input.difficulty)) {
     errors.push(`difficulty must be one of ${Object.keys(DIFFICULTY_POINTS).join(", ")}`);
   }
+  if (input.optionAImage != null && typeof input.optionAImage !== "string") errors.push("optionAImage must be a string URL if provided");
+  if (input.optionBImage != null && typeof input.optionBImage !== "string") errors.push("optionBImage must be a string URL if provided");
+  if (input.questionImage != null && typeof input.questionImage !== "string") errors.push("questionImage must be a string URL if provided");
 
   const points = input.points ?? DIFFICULTY_POINTS[input.difficulty];
   if (!Number.isInteger(points) || points <= 0) errors.push("points must be a positive integer");

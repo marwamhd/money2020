@@ -41,7 +41,7 @@ const envConfig = {
   ...(process.env.M2020_SECTION_DURATION_MS && { SECTION_DURATION_MS: Number(process.env.M2020_SECTION_DURATION_MS) }),
   ...(process.env.M2020_QUESTION_TIMEOUT_MS && { QUESTION_TIMEOUT_MS: Number(process.env.M2020_QUESTION_TIMEOUT_MS) }),
   ...(process.env.M2020_RUNNER_UP_POINTS && { RUNNER_UP_POINTS: Number(process.env.M2020_RUNNER_UP_POINTS) }),
-  ...(process.env.M2020_BREAK_MS && { BREAK_MS: Number(process.env.M2020_BREAK_MS) }),
+  ...(process.env.M2020_REVEAL_MS && { REVEAL_MS: Number(process.env.M2020_REVEAL_MS) }),
 };
 // db-stored config (set via the admin panel) wins over env vars, since it reflects
 // the organizer's most recent, intentional choice and survives a server restart.
@@ -133,6 +133,10 @@ io.on("connection", (socket) => {
 
     setMatchResultEmail(matchResultId, email.trim());
     ack?.({ ok: true });
+  });
+
+  socket.on(COMMANDS.OPEN_NEXT_MATCH, () => {
+    engine.openNextMatch();
   });
 
   socket.on("disconnect", () => {

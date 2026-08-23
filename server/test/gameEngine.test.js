@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { GameEngine } from "../src/gameEngine.js";
 import { TEST_QUESTIONS, waitUntil } from "../testSupport/fixtures.js";
 
-const FAST_CONFIG = { COUNTDOWN_MS: 30, SECTION_DURATION_MS: 500, QUESTION_TIMEOUT_MS: 200, RUNNER_UP_POINTS: 30, BREAK_MS: 30 };
+const FAST_CONFIG = { COUNTDOWN_MS: 30, SECTION_DURATION_MS: 500, QUESTION_TIMEOUT_MS: 200, RUNNER_UP_POINTS: 30, REVEAL_MS: 10 };
 
 function makeEngine(config = FAST_CONFIG) {
   const events = [];
@@ -71,6 +71,27 @@ test("a duplicate answer for the same question is ignored", async () => {
   assert.equal(engine.answerOrder[0].choice, "A");
 });
 
+test("answering tracks answeredCount and timeSpentMs per player; not answering leaves both untouched", async () => {
+  const { engine } = makeEngine({ COUNTDOWN_MS: 30, SECTION_DURATION_MS: 500, QUESTION_TIMEOUT_MS: 200, RUNNER_UP_POINTS: 30 });
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  await waitUntil(() => engine.state === "playing");
+
+  const qid = engine.currentQuestion.id;
+  await new Promise((r) => setTimeout(r, 30)); // let a little real time pass before answering
+  engine.submitAnswer("p1", qid, "A");
+  // p2 never answers this question — the timeout will advance it.
+
+  const alice = engine.players.find((p) => p.id === "p1");
+  const bob = engine.players.find((p) => p.id === "p2");
+  assert.equal(alice.answeredCount, 1);
+  assert.ok(alice.timeSpentMs >= 25, `expected some measurable time spent, got ${alice.timeSpentMs}ms`);
+  assert.equal(bob.answeredCount, 0);
+  assert.equal(bob.timeSpentMs, 0);
+});
+
 test("answers only count for the currently active question id", async () => {
   const { engine } = makeEngine();
   engine.addPlayer("p1", "Alice");
@@ -125,20 +146,22 @@ test("a full match scores correctly and produces deterministic totals", async ()
   const bob = engine.players.find((p) => p.id === "p2");
   // Alice answers first & correct every time -> full points for all 6 fixture questions (750 total).
   assert.equal(alice.score, 750);
-  // Bob answers second & correct every time -> runner-up (30) each -> 6 * 30 = 180.
-  assert.equal(bob.score, 180);
+  // Bob answers second & correct every time -> each question's own points minus the 30pt
+  // runner-up penalty: 3x(100-30) + 3x(150-30) = 210 + 360 = 570.
+  assert.equal(bob.score, 570);
 });
 
 test("a section ends when its time is up, even with unanswered questions left in the pool", async () => {
-  const { engine } = makeEngine({ COUNTDOWN_MS: 10, SECTION_DURATION_MS: 60, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, BREAK_MS: 10 });
+  const { engine } = makeEngine({ COUNTDOWN_MS: 10, SECTION_DURATION_MS: 60, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, REVEAL_MS: 10 });
   engine.addPlayer("p1", "Alice");
   engine.addPlayer("p2", "Bob");
   engine.setReady("p1");
   engine.setReady("p2");
 
   // Nobody answers anything; section time (60ms) is far shorter than the question timeout (5s),
-  // so the round must end on the clock (moving into a break), not by exhausting/timing out every question.
-  await waitUntil(() => engine.state === "break" || engine.state === "finished", 2000);
+  // so the round must end on the clock (moving into the next round's countdown), not by
+  // exhausting/timing out every question.
+  await waitUntil(() => (engine.state === "countdown" && engine.roundIndex === 0) || engine.state === "finished", 2000);
   assert.notEqual(engine.state, "playing");
 });
 
@@ -199,24 +222,23 @@ test("disconnecting during the countdown cancels it and returns to lobby", () =>
   assert.equal(engine.players[0].ready, false);
 });
 
-test("a full round transitions playing -> break -> countdown -> playing (round 2), not straight to the next round", async () => {
-  const { engine } = makeEngine({ COUNTDOWN_MS: 20, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, BREAK_MS: 60 });
+test("a full round transitions playing -> countdown (showing the upcoming round) -> playing (round 2), with no separate break", async () => {
+  const { engine } = makeEngine({ COUNTDOWN_MS: 60, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, REVEAL_MS: 10 });
   engine.addPlayer("p1", "Alice");
   engine.addPlayer("p2", "Bob");
   engine.setReady("p1");
   engine.setReady("p2");
   await waitUntil(() => engine.state === "playing"); // round 1
 
-  await waitUntil(() => engine.state === "break");
+  await waitUntil(() => engine.state === "countdown" && engine.roundIndex === 0);
+  assert.equal(engine.currentRound, "R2", "the between-round countdown must already show the upcoming round, not the one that just ended");
   assert.equal(engine.currentQuestion, null);
-  assert.ok(engine.breakEndsAt > Date.now());
 
-  await waitUntil(() => engine.state === "countdown");
   await waitUntil(() => engine.state === "playing" && engine.currentRound === "R2");
 });
 
 test("disconnecting during a between-round countdown (round 2/3) does NOT wipe progress, unlike the kickoff countdown", async () => {
-  const { engine } = makeEngine({ COUNTDOWN_MS: 20, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, BREAK_MS: 30 });
+  const { engine } = makeEngine({ COUNTDOWN_MS: 60, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, REVEAL_MS: 10 });
   engine.addPlayer("p1", "Alice");
   engine.addPlayer("p2", "Bob");
   engine.setReady("p1");
@@ -230,20 +252,21 @@ test("disconnecting during a between-round countdown (round 2/3) does NOT wipe p
   assert.equal(engine.players.find((p) => p.id === "p2").connected, false);
 });
 
-test("forceEnd during a round break finishes the match", async () => {
-  const { engine } = makeEngine({ COUNTDOWN_MS: 20, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, BREAK_MS: 5000 });
+test("forceEnd during the initial countdown finishes cleanly and does not resurrect afterward", async () => {
+  const { engine } = makeEngine({ COUNTDOWN_MS: 100, SECTION_DURATION_MS: 500, QUESTION_TIMEOUT_MS: 200, RUNNER_UP_POINTS: 30 });
   engine.addPlayer("p1", "Alice");
   engine.addPlayer("p2", "Bob");
   engine.setReady("p1");
   engine.setReady("p2");
-  await waitUntil(() => engine.state === "playing");
-  await waitUntil(() => engine.state === "break");
+  assert.equal(engine.state, "countdown");
 
   engine.forceEnd();
   assert.equal(engine.state, "finished");
 
-  await new Promise((r) => setTimeout(r, 100));
-  assert.equal(engine.state, "finished", "the break's own timer must not resurrect the match afterward");
+  // Wait well past the original countdown duration — if its timer wasn't cancelled,
+  // it would fire here and flip the match back to "playing".
+  await new Promise((r) => setTimeout(r, 200));
+  assert.equal(engine.state, "finished", "the countdown's own timer must not resurrect the match afterward");
 });
 
 test("a finished match is immutable: disconnecting afterward does not change players or re-emit", async () => {
@@ -265,4 +288,21 @@ test("a finished match is immutable: disconnecting afterward does not change pla
 
   assert.equal(events.length, eventCountAtFinish, "no further state broadcasts after finish");
   assert.equal(JSON.stringify(engine.players), playersSnapshotAtFinish, "players must not change after finish");
+});
+
+test("openNextMatch is a no-op unless the match has actually finished, unlike admin resetMatch", async () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  await waitUntil(() => engine.state === "playing");
+
+  engine.openNextMatch();
+  assert.equal(engine.state, "playing", "must not disrupt a live match — this is what makes it safe with no admin token");
+
+  await waitUntil(() => engine.state === "finished", 5000);
+  engine.openNextMatch();
+  assert.equal(engine.state, "lobby");
+  assert.equal(engine.players.length, 0);
 });

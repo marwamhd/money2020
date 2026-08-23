@@ -22,7 +22,10 @@ db.exec(`
     points INTEGER NOT NULL,
     host_note TEXT,
     active INTEGER NOT NULL DEFAULT 1,
-    sort_order INTEGER NOT NULL DEFAULT 0
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    option_a_image TEXT,
+    option_b_image TEXT,
+    question_image TEXT
   );
 
   CREATE TABLE IF NOT EXISTS leaderboard (
@@ -47,11 +50,25 @@ db.exec(`
   );
 `);
 
+// Migration for DBs created before optional per-option logo images existed —
+// CREATE TABLE IF NOT EXISTS doesn't retroactively add columns to an existing table.
+const questionColumns = db.prepare("PRAGMA table_info(questions)").all().map((c) => c.name);
+if (!questionColumns.includes("option_a_image")) {
+  db.exec("ALTER TABLE questions ADD COLUMN option_a_image TEXT");
+}
+if (!questionColumns.includes("option_b_image")) {
+  db.exec("ALTER TABLE questions ADD COLUMN option_b_image TEXT");
+}
+if (!questionColumns.includes("question_image")) {
+  db.exec("ALTER TABLE questions ADD COLUMN question_image TEXT");
+}
+
 export function getActiveQuestions() {
   const rows = db
     .prepare(
       `SELECT id, round, prompt, option_a AS optionA, option_b AS optionB,
-              correct_option AS correctOption, difficulty, points, host_note AS hostNote
+              correct_option AS correctOption, difficulty, points, host_note AS hostNote,
+              option_a_image AS optionAImage, option_b_image AS optionBImage, question_image AS questionImage
        FROM questions WHERE active = 1 ORDER BY sort_order ASC`
     )
     .all();
@@ -73,7 +90,8 @@ export function listQuestions() {
     .prepare(
       `SELECT id, round, prompt, option_a AS optionA, option_b AS optionB,
               correct_option AS correctOption, difficulty, points, host_note AS hostNote,
-              active, sort_order AS sortOrder
+              active, sort_order AS sortOrder, option_a_image AS optionAImage, option_b_image AS optionBImage,
+              question_image AS questionImage
        FROM questions ORDER BY sort_order ASC`
     )
     .all();
@@ -86,18 +104,22 @@ export function upsertQuestion(q) {
     : (db.prepare("SELECT COALESCE(MAX(sort_order), -1) AS maxOrder FROM questions").get().maxOrder + 1);
 
   db.prepare(
-    `INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, active, sort_order)
-     VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @active, @sortOrder)
+    `INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, active, sort_order, option_a_image, option_b_image, question_image)
+     VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @active, @sortOrder, @optionAImage, @optionBImage, @questionImage)
      ON CONFLICT(id) DO UPDATE SET
        round = excluded.round, prompt = excluded.prompt, option_a = excluded.option_a,
        option_b = excluded.option_b, correct_option = excluded.correct_option,
        difficulty = excluded.difficulty, points = excluded.points, host_note = excluded.host_note,
-       active = excluded.active`
+       active = excluded.active, option_a_image = excluded.option_a_image, option_b_image = excluded.option_b_image,
+       question_image = excluded.question_image`
   ).run({
     ...q,
     hostNote: q.hostNote ?? null,
     active: q.active === false ? 0 : 1,
     sortOrder,
+    optionAImage: q.optionAImage ?? null,
+    questionImage: q.questionImage ?? null,
+    optionBImage: q.optionBImage ?? null,
   });
 }
 
@@ -168,12 +190,20 @@ function seedQuestionsIfEmpty() {
 
   const questions = JSON.parse(readFileSync(QUESTIONS_SEED_PATH, "utf-8"));
   const insert = db.prepare(`
-    INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, sort_order)
-    VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @sortOrder)
+    INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, sort_order, option_a_image, option_b_image, question_image)
+    VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @sortOrder, @optionAImage, @optionBImage, @questionImage)
   `);
 
   const insertAll = db.transaction((rows) => {
-    rows.forEach((q, index) => insert.run({ ...q, sortOrder: index }));
+    rows.forEach((q, index) =>
+      insert.run({
+        ...q,
+        sortOrder: index,
+        optionAImage: q.optionAImage ?? null,
+        optionBImage: q.optionBImage ?? null,
+        questionImage: q.questionImage ?? null,
+      })
+    );
   });
   insertAll(questions);
 }

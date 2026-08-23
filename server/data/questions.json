@@ -8,7 +8,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq since 1980."
+    "hostNote": "Listed on Nasdaq since 1980.",
+    "questionImage": "/logos/apple.svg"
   },
   {
     "id": "R1-2",
@@ -19,7 +20,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq since 1997."
+    "hostNote": "Listed on Nasdaq since 1997.",
+    "questionImage": "/logos/amazon.svg"
   },
   {
     "id": "R1-3",
@@ -30,7 +32,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq since 1986."
+    "hostNote": "Listed on Nasdaq since 1986.",
+    "questionImage": "/logos/microsoft.svg"
   },
   {
     "id": "R1-4",
@@ -41,7 +44,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE since 1980."
+    "hostNote": "Listed on the NYSE since 1980.",
+    "questionImage": "/logos/nike.svg"
   },
   {
     "id": "R1-5",
@@ -52,7 +56,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE since 1919."
+    "hostNote": "Listed on the NYSE since 1919.",
+    "questionImage": "/logos/coca-cola.svg"
   },
   {
     "id": "R1-6",
@@ -63,7 +68,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq since 2010."
+    "hostNote": "Listed on Nasdaq since 2010.",
+    "questionImage": "/logos/tesla.svg"
   },
   {
     "id": "R1-7",
@@ -74,7 +80,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "One of the world's most valuable listed companies."
+    "hostNote": "One of the world's most valuable listed companies.",
+    "questionImage": "/logos/nvidia.svg"
   },
   {
     "id": "R1-8",
@@ -96,7 +103,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE since 2008, one of the largest IPOs ever at the time."
+    "hostNote": "Listed on the NYSE since 2008, one of the largest IPOs ever at the time.",
+    "questionImage": "/logos/visa.svg"
   },
   {
     "id": "R1-10",
@@ -107,7 +115,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the NYSE since 1999, after decades as a private partnership."
+    "hostNote": "Listed on the NYSE since 1999, after decades as a private partnership.",
+    "questionImage": "/logos/goldman-sachs.svg"
   },
   {
     "id": "R1-11",
@@ -151,7 +160,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "IPO'd in June 2026 in one of the largest listings in history, ending years of speculation."
+    "hostNote": "IPO'd in June 2026 in one of the largest listings in history, ending years of speculation.",
+    "questionImage": "/logos/spacex.svg"
   },
   {
     "id": "R1-15",
@@ -316,7 +326,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Still private as of mid-2026 despite a $150bn+ valuation and years of IPO speculation."
+    "hostNote": "Still private as of mid-2026 despite a $150bn+ valuation and years of IPO speculation.",
+    "questionImage": "/logos/stripe.svg"
   },
   {
     "id": "R1-30",
@@ -602,7 +613,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "One of the largest listed banks in the world."
+    "hostNote": "One of the largest listed banks in the world.",
+    "questionImage": "/logos/jpmorgan-chase.svg"
   },
   {
     "id": "R1-56",
@@ -712,7 +724,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The buy-now-pay-later company, listed on the NYSE in September 2025 after years of delay."
+    "hostNote": "The buy-now-pay-later company, listed on the NYSE in September 2025 after years of delay.",
+    "questionImage": "/logos/klarna.svg"
   },
   {
     "id": "R1-66",
@@ -965,7 +978,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Apple's market cap has run well ahead of Aramco's since 2020. (as of Mid-2026)"
+    "hostNote": "Apple's market cap has run well ahead of Aramco's since 2020. (as of Mid-2026)",
+    "optionAImage": "/logos/apple.svg"
   },
   {
     "id": "R2-2",
@@ -976,7 +990,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Nvidia has traded as one of the two largest companies in the world by market cap. (as of Mid-2026)"
+    "hostNote": "Nvidia has traded as one of the two largest companies in the world by market cap. (as of Mid-2026)",
+    "optionAImage": "/logos/nvidia.svg"
   },
   {
     "id": "R2-3",
@@ -987,7 +1002,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "SpaceX listed in June 2026 at a valuation in the trillions; Stripe remains private at roughly $150-160bn. (as of Mid-2026)"
+    "hostNote": "SpaceX listed in June 2026 at a valuation in the trillions; Stripe remains private at roughly $150-160bn. (as of Mid-2026)",
+    "optionAImage": "/logos/spacex.svg",
+    "optionBImage": "/logos/stripe.svg"
   },
   {
     "id": "R2-4",
@@ -998,7 +1015,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Stripe ~$150-160bn vs Databricks ~$130-170bn; close, but Stripe has generally led. (as of Mid-2026)"
+    "hostNote": "Stripe ~$150-160bn vs Databricks ~$130-170bn; close, but Stripe has generally led. (as of Mid-2026)",
+    "optionAImage": "/logos/stripe.svg"
   },
   {
     "id": "R2-5",
@@ -1064,7 +1082,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Visa has generally held a larger market cap than Mastercard. (as of Mid-2026)"
+    "hostNote": "Visa has generally held a larger market cap than Mastercard. (as of Mid-2026)",
+    "optionAImage": "/logos/visa.svg"
   },
   {
     "id": "R2-11",
@@ -1108,7 +1127,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Coca-Cola has generally carried a higher market cap than PepsiCo despite PepsiCo's larger revenue base. (as of Mid-2026)"
+    "hostNote": "Coca-Cola has generally carried a higher market cap than PepsiCo despite PepsiCo's larger revenue base. (as of Mid-2026)",
+    "optionAImage": "/logos/coca-cola.svg"
   },
   {
     "id": "R2-15",
@@ -1119,7 +1139,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Netflix's market cap overtook Disney's in recent years. (as of Mid-2026)"
+    "hostNote": "Netflix's market cap overtook Disney's in recent years. (as of Mid-2026)",
+    "optionAImage": "/logos/netflix.svg"
   },
   {
     "id": "R2-16",
@@ -1130,7 +1151,9 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Amazon's market cap has run many multiples ahead of Coca-Cola's for years. (as of Mid-2026)"
+    "hostNote": "Amazon's market cap has run many multiples ahead of Coca-Cola's for years. (as of Mid-2026)",
+    "optionAImage": "/logos/amazon.svg",
+    "optionBImage": "/logos/coca-cola.svg"
   },
   {
     "id": "R2-17",
@@ -1141,7 +1164,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Microsoft is one of the largest listed companies in the world by a wide margin. (as of Mid-2026)"
+    "hostNote": "Microsoft is one of the largest listed companies in the world by a wide margin. (as of Mid-2026)",
+    "optionAImage": "/logos/microsoft.svg"
   },
   {
     "id": "R2-18",
@@ -1152,7 +1176,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Apple's market cap dwarfs that of legacy automakers. (as of Mid-2026)"
+    "hostNote": "Apple's market cap dwarfs that of legacy automakers. (as of Mid-2026)",
+    "optionAImage": "/logos/apple.svg"
   },
   {
     "id": "R2-19",
@@ -1163,7 +1188,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Nvidia's AI-driven rise has left Intel far behind by market cap. (as of Mid-2026)"
+    "hostNote": "Nvidia's AI-driven rise has left Intel far behind by market cap. (as of Mid-2026)",
+    "optionAImage": "/logos/nvidia.svg"
   },
   {
     "id": "R2-20",
@@ -1174,7 +1200,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "JPMorgan has generally carried a larger market cap than Goldman Sachs. (as of Mid-2026)"
+    "hostNote": "JPMorgan has generally carried a larger market cap than Goldman Sachs. (as of Mid-2026)",
+    "optionAImage": "/logos/jpmorgan-chase.svg",
+    "optionBImage": "/logos/goldman-sachs.svg"
   },
   {
     "id": "R2-21",
@@ -1185,7 +1213,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Visa's payments network scale has kept it ahead of Amex by market cap. (as of Mid-2026)"
+    "hostNote": "Visa's payments network scale has kept it ahead of Amex by market cap. (as of Mid-2026)",
+    "optionAImage": "/logos/visa.svg"
   },
   {
     "id": "R2-22",
@@ -1218,7 +1247,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Chime's IPO valued it near $18bn, ahead of Klarna's roughly $15bn listing a few months later. (as of Mid-2026)"
+    "hostNote": "Chime's IPO valued it near $18bn, ahead of Klarna's roughly $15bn listing a few months later. (as of Mid-2026)",
+    "optionBImage": "/logos/klarna.svg"
   },
   {
     "id": "R2-25",
@@ -1262,7 +1292,9 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Even after SpaceX's record-breaking 2026 listing, Apple's market cap has stayed larger. (as of Mid-2026)"
+    "hostNote": "Even after SpaceX's record-breaking 2026 listing, Apple's market cap has stayed larger. (as of Mid-2026)",
+    "optionAImage": "/logos/spacex.svg",
+    "optionBImage": "/logos/apple.svg"
   },
   {
     "id": "R3-1",

@@ -1,0 +1,34 @@
+* , *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --navy: #020844;
+  --blue: #4984fd;
+  --sky: #8ec7f0;
+  --tint: #edf3ff;
+  --tint2: #eef1f8;
+  --line: #dce5f5;
+  --muted: #7b85a6;
+  --body: #4a5578;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #e7ecf7;
+  font-family: "Manrope", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--navy);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(1000px) rotate(680deg); }
+}

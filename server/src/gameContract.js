@@ -2,9 +2,8 @@
 
 export const GAME_STATES = Object.freeze({
   LOBBY: "lobby",
-  COUNTDOWN: "countdown",
+  COUNTDOWN: "countdown", // also used between rounds (shows the upcoming round's name), not just the initial kickoff
   PLAYING: "playing",
-  BREAK: "break", // brief pause between rounds, showing a score recap, before the next countdown
   FINISHED: "finished",
 });
 
@@ -16,6 +15,7 @@ export const COMMANDS = Object.freeze({
   READY: "ready",
   ANSWER: "answer",
   SUBMIT_EMAIL: "submitEmail",
+  OPEN_NEXT_MATCH: "openNextMatch", // no admin token needed — engine only acts on it once finished
 });
 
 // Server -> client: a single full-state snapshot, broadcast on every change.
@@ -26,7 +26,7 @@ export const DEFAULTS = Object.freeze({
   SECTION_DURATION_MS: 60000,
   QUESTION_TIMEOUT_MS: 25000,
   RUNNER_UP_POINTS: 30,
-  BREAK_MS: 5000,
+  REVEAL_MS: 1800, // how long the correct answer + pick counts stay visible before the next question
 });
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,10 +45,11 @@ export const DIFFICULTY_POINTS = Object.freeze({
  * Score a single question given the order players answered in.
  * @param {{ correctOption: "A"|"B", points: number }} question
  * @param {Array<{ playerId: string, choice: "A"|"B" }>} orderedAnswers - in server-receipt order
- * @param {number} runnerUpPoints
+ * @param {number} runnerUpPenalty - deducted from the question's own points when the
+ *   second player is also correct (e.g. a 200pt Hard question nets 170, not a flat amount)
  * @returns {Record<string, number>} playerId -> points awarded for this question
  */
-export function scoreAnswers(question, orderedAnswers, runnerUpPoints = DEFAULTS.RUNNER_UP_POINTS) {
+export function scoreAnswers(question, orderedAnswers, runnerUpPenalty = DEFAULTS.RUNNER_UP_POINTS) {
   const results = {};
   if (orderedAnswers.length === 0) return results;
 
@@ -59,7 +60,7 @@ export function scoreAnswers(question, orderedAnswers, runnerUpPoints = DEFAULTS
   if (second) {
     const secondCorrect = second.choice === question.correctOption;
     if (secondCorrect && firstCorrect) {
-      results[second.playerId] = runnerUpPoints;
+      results[second.playerId] = Math.max(0, question.points - runnerUpPenalty);
     } else if (secondCorrect && !firstCorrect) {
       results[second.playerId] = question.points;
     } else {

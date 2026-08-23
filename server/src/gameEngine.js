@@ -9,10 +9,15 @@ function shuffle(array) {
   return copy;
 }
 
-function publicQuestion(question) {
+// correctOption is only ever included once both players have answered (or the question
+// timed out) — that's the "reveal" window, when it's no longer possible to cheat with it.
+function publicQuestion(question, { reveal = false } = {}) {
   if (!question) return null;
-  const { id, prompt, optionA, optionB } = question;
-  return { id, prompt, optionA, optionB };
+  const { id, prompt, optionA, optionB, difficulty, points, correctOption, optionAImage, optionBImage, questionImage } = question;
+  return {
+    id, prompt, optionA, optionB, difficulty, points, optionAImage, optionBImage, questionImage,
+    ...(reveal ? { correctOption } : {}),
+  };
 }
 
 export class GameEngine {
@@ -43,31 +48,40 @@ export class GameEngine {
   reset() {
     this._cancelCountdown();
     this._cancelQuestionTimer();
-    this._cancelBreak();
+    this._cancelReveal();
     this.state = GAME_STATES.LOBBY;
-    this.players = []; // { id, name, slot, ready, score, connected }
+    this.players = []; // { id, name, slot, ready, score, connected, answeredCount, timeSpentMs }
     this.countdownEndsAt = null;
     this.roundIndex = -1;
     this.currentRound = null;
     this.roundQueue = [];
-    this.currentQuestion = null; // full question, incl. correctOption (never sent to clients directly)
+    this.currentQuestion = null; // full question, incl. correctOption (only sent to clients during the reveal window)
+    this.questionShownAt = null;
     this.sectionEndsAt = null;
-    this.breakEndsAt = null;
+    this.revealUntil = null;
     this.answerOrder = []; // [{ playerId, choice }] in receipt order, for the current question
   }
 
   getSnapshot() {
     const counts = { A: 0, B: 0 };
     this.answerOrder.forEach(({ choice }) => counts[choice]++);
+    const revealing = this.revealUntil !== null;
+    const answeredIds = new Set(this.answerOrder.map((a) => a.playerId));
 
     return {
       state: this.state,
-      players: this.players.map(({ id, name, slot, ready, score, connected }) => ({ id, name, slot, ready, score, connected })),
+      players: this.players.map(({ id, name, slot, ready, score, connected, answeredCount, timeSpentMs }) => ({
+        id, name, slot, ready, score, connected, answeredCount, timeSpentMs,
+        // Whether they've locked in an answer for the CURRENT question — not what they
+        // picked (that stays hidden until reveal), just that they've answered.
+        hasAnsweredCurrent: answeredIds.has(id),
+      })),
       countdownEndsAt: this.countdownEndsAt,
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
-      breakEndsAt: this.breakEndsAt,
-      currentQuestion: publicQuestion(this.currentQuestion),
+      sectionDurationMs: this.config.SECTION_DURATION_MS, // so clients can render an accurate round-progress bar
+      currentQuestion: publicQuestion(this.currentQuestion, { reveal: revealing }),
+      revealUntil: this.revealUntil,
       answerCounts: counts,
     };
   }
@@ -93,7 +107,7 @@ export class GameEngine {
     }
 
     const slot = this.players.length + 1;
-    this.players.push({ id, name, slot, ready: false, score: 0, connected: true });
+    this.players.push({ id, name, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
     this._emit();
     return { ok: true, slot };
   }
@@ -145,6 +159,9 @@ export class GameEngine {
   _startCountdown() {
     this.state = GAME_STATES.COUNTDOWN;
     this.countdownEndsAt = Date.now() + this.config.COUNTDOWN_MS;
+    // Show the round this countdown is FOR (upcoming), not the one that just ended —
+    // roundIndex hasn't been incremented yet, so peek one ahead.
+    this.currentRound = ROUNDS[this.roundIndex + 1];
     this._emit();
 
     this._countdownTimer = setTimeout(() => {
@@ -190,6 +207,7 @@ export class GameEngine {
     }
 
     this.currentQuestion = this.roundQueue.shift();
+    this.questionShownAt = Date.now();
     this.answerOrder = [];
     this._emit();
 
@@ -204,8 +222,8 @@ export class GameEngine {
     }
   }
 
-  // A round's time (or question pool) is up: pause with a score recap before the
-  // next round, or finish outright if that was the last round.
+  // A round's time (or question pool) is up: go straight into the next round's
+  // countdown (which already shows that round's name), or finish if it was the last one.
   _endSection() {
     this._cancelQuestionTimer();
     this.currentQuestion = null;
@@ -213,28 +231,8 @@ export class GameEngine {
     if (isLastRound) {
       this._finish();
     } else {
-      this._startBreak();
-    }
-  }
-
-  _startBreak() {
-    this.state = GAME_STATES.BREAK;
-    this.breakEndsAt = Date.now() + this.config.BREAK_MS;
-    this._emit();
-
-    this._breakTimer = setTimeout(() => {
-      this.breakEndsAt = null;
-      this._breakTimer = null;
       this._startCountdown();
-    }, this.config.BREAK_MS);
-  }
-
-  _cancelBreak() {
-    if (this._breakTimer) {
-      clearTimeout(this._breakTimer);
-      this._breakTimer = null;
     }
-    this.breakEndsAt = null;
   }
 
   submitAnswer(playerId, questionId, choice) {
@@ -242,7 +240,11 @@ export class GameEngine {
     if (!this.currentQuestion || this.currentQuestion.id !== questionId) return;
     if (!["A", "B"].includes(choice)) return;
     if (this.answerOrder.some((a) => a.playerId === playerId)) return; // one answer per player per question
-    if (!this.players.some((p) => p.id === playerId)) return;
+    const player = this.players.find((p) => p.id === playerId);
+    if (!player) return;
+
+    player.answeredCount += 1;
+    player.timeSpentMs += Math.max(0, Date.now() - this.questionShownAt);
 
     this.answerOrder.push({ playerId, choice });
     this._emit();
@@ -260,8 +262,28 @@ export class GameEngine {
       const player = this.players.find((p) => p.id === playerId);
       if (player) player.score += points;
     });
+    this._startReveal();
+  }
+
+  // Hold on the resolved question for a beat — correct answer + pick counts visible —
+  // before moving on. Without this, the question would change before anyone could see it.
+  _startReveal() {
+    this.revealUntil = Date.now() + this.config.REVEAL_MS;
     this._emit();
-    this._serveNextQuestion();
+
+    this._revealTimer = setTimeout(() => {
+      this.revealUntil = null;
+      this._revealTimer = null;
+      this._serveNextQuestion();
+    }, this.config.REVEAL_MS);
+  }
+
+  _cancelReveal() {
+    if (this._revealTimer) {
+      clearTimeout(this._revealTimer);
+      this._revealTimer = null;
+    }
+    this.revealUntil = null;
   }
 
   _finish() {
@@ -269,7 +291,7 @@ export class GameEngine {
     // with one) leaves one live, and it fires later flipping "finished" back to active.
     this._cancelCountdown();
     this._cancelQuestionTimer();
-    this._cancelBreak();
+    this._cancelReveal();
     this.state = GAME_STATES.FINISHED;
     this.currentRound = null;
     this.currentQuestion = null;
@@ -280,13 +302,22 @@ export class GameEngine {
   // Admin recovery control: end a stuck match right now, keeping whatever scores
   // stand — goes through the normal finish path, so the result still persists.
   forceEnd() {
-    if (![GAME_STATES.COUNTDOWN, GAME_STATES.PLAYING, GAME_STATES.BREAK].includes(this.state)) return;
+    if (![GAME_STATES.COUNTDOWN, GAME_STATES.PLAYING].includes(this.state)) return;
     this._finish();
   }
 
   // Admin recovery control: abort the current match entirely — no persistence,
   // back to an empty lobby. For when a match is broken and shouldn't be logged.
   resetMatch() {
+    this.reset();
+    this._emit();
+  }
+
+  // Unauthenticated-safe: only ever does anything once the match has already finished
+  // (result already persisted), so unlike resetMatch() it can't be used to disrupt a
+  // live game — that's what lets the booth display offer it without an admin token.
+  openNextMatch() {
+    if (this.state !== GAME_STATES.FINISHED) return;
     this.reset();
     this._emit();
   }
