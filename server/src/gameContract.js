@@ -27,6 +27,12 @@ export const DEFAULTS = Object.freeze({
   RUNNER_UP_POINTS: 30,
 });
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function isValidEmail(email) {
+  return typeof email === "string" && EMAIL_PATTERN.test(email.trim());
+}
+
 export const DIFFICULTY_POINTS = Object.freeze({
   Easy: 100,
   Medium: 150,

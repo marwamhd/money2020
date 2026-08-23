@@ -136,13 +136,31 @@ const insertLeaderboardEntry = db.prepare(`
   VALUES (@name, @score, @achievedAt)
 `);
 
+// Returns { [player.id]: matchResultRowId } so the caller can later attach an
+// email to the right row once the player submits one post-game.
 export const persistMatchResults = db.transaction((players, matchCode = null) => {
   const now = new Date().toISOString();
-  players.forEach(({ name, score }) => {
-    insertMatchResult.run({ matchCode, playerName: name, score, email: null, createdAt: now });
+  const resultIdsByPlayerId = {};
+  players.forEach(({ id, name, score }) => {
+    const { lastInsertRowid } = insertMatchResult.run({ matchCode, playerName: name, score, email: null, createdAt: now });
+    resultIdsByPlayerId[id] = lastInsertRowid;
     insertLeaderboardEntry.run({ name, score, achievedAt: now });
   });
+  return resultIdsByPlayerId;
 });
+
+export function setMatchResultEmail(matchResultId, email) {
+  db.prepare("UPDATE match_results SET email = ? WHERE id = ?").run(email, matchResultId);
+}
+
+export function listMatchResults() {
+  return db
+    .prepare(
+      `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt
+       FROM match_results ORDER BY created_at DESC`
+    )
+    .all();
+}
 
 function seedQuestionsIfEmpty() {
   const { count } = db.prepare("SELECT COUNT(*) AS count FROM questions").get();

@@ -6,9 +6,9 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 
-import { getActiveQuestions, persistMatchResults, getConfigOverrides } from "./db.js";
+import { getActiveQuestions, persistMatchResults, getConfigOverrides, setMatchResultEmail } from "./db.js";
 import { GameEngine } from "./gameEngine.js";
-import { COMMANDS, STATE_EVENT } from "./gameContract.js";
+import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,10 +40,15 @@ const envConfig = {
 // the organizer's most recent, intentional choice and survives a server restart.
 const config = { ...envConfig, ...getConfigOverrides() };
 
+// Populated on every finish with { [playerId]: matchResultRowId }, so a player's
+// post-game submitEmail can be attached to the right row. Overwritten on the next
+// finish; fine since only one match is ever active/pending email capture at a time.
+let matchResultIdsByPlayerId = {};
+
 const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
   io.emit(STATE_EVENT, snapshot);
   if (snapshot.state === "finished") {
-    persistMatchResults(snapshot.players.map(({ name, score }) => ({ name, score })));
+    matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score }) => ({ id, name, score })));
   }
 }, config);
 
@@ -77,6 +82,18 @@ io.on("connection", (socket) => {
   socket.on(COMMANDS.ANSWER, ({ questionId, choice }) => {
     const playerId = socketToPlayerId.get(socket.id);
     if (playerId) engine.submitAnswer(playerId, questionId, choice);
+  });
+
+  socket.on(COMMANDS.SUBMIT_EMAIL, ({ email }, ack) => {
+    const playerId = socketToPlayerId.get(socket.id);
+    if (!playerId) return ack?.({ ok: false, error: "Not in a match" });
+    if (!isValidEmail(email)) return ack?.({ ok: false, error: "Invalid email" });
+
+    const matchResultId = matchResultIdsByPlayerId[playerId];
+    if (!matchResultId) return ack?.({ ok: false, error: "No completed result to attach an email to" });
+
+    setMatchResultEmail(matchResultId, email.trim());
+    ack?.({ ok: true });
   });
 
   socket.on("disconnect", () => {

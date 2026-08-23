@@ -10,6 +10,7 @@ import {
   getActiveQuestions,
   resetLeaderboard,
   setConfigValue,
+  listMatchResults,
 } from "../db.js";
 
 const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS"];
@@ -132,6 +133,23 @@ export function buildAdminRouter(engine) {
     }
     resetLeaderboard();
     res.json({ ok: true });
+  });
+
+  router.get("/results", (req, res) => {
+    res.json(listMatchResults());
+  });
+
+  router.get("/results/export", (req, res) => {
+    const rows = listMatchResults();
+    const csvCell = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const lines = [
+      "id,matchCode,playerName,score,email,createdAt",
+      ...rows.map((r) => [r.id, r.matchCode, r.playerName, r.score, r.email, r.createdAt].map(csvCell).join(",")),
+    ];
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=results.csv");
+    res.send(lines.join("\n"));
   });
 
   return router;
