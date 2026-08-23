@@ -17,12 +17,24 @@ function publicQuestion(question) {
 
 export class GameEngine {
   constructor(questions, onChange = () => {}, config = {}) {
-    this.questionsByRound = Object.fromEntries(
-      ROUNDS.map((round) => [round, questions.filter((q) => q.round === round)])
-    );
+    this.setQuestions(questions);
     this.onChange = onChange;
     this.config = { ...DEFAULTS, ...config };
     this.reset();
+  }
+
+  // Admin edits to the question bank only take effect for the next section/match —
+  // a round already in progress keeps the queue it already shuffled.
+  setQuestions(questions) {
+    this.questionsByRound = Object.fromEntries(
+      ROUNDS.map((round) => [round, questions.filter((q) => q.round === round)])
+    );
+  }
+
+  // Admin config changes (section/question timing, runner-up points) apply from the
+  // next section/match onward — timers already scheduled keep their original duration.
+  updateConfig(partial) {
+    this.config = { ...this.config, ...partial };
   }
 
   reset() {
@@ -208,6 +220,20 @@ export class GameEngine {
     this.currentRound = null;
     this.currentQuestion = null;
     this.sectionEndsAt = null;
+    this._emit();
+  }
+
+  // Admin recovery control: end a stuck match right now, keeping whatever scores
+  // stand — goes through the normal finish path, so the result still persists.
+  forceEnd() {
+    if (this.state !== GAME_STATES.COUNTDOWN && this.state !== GAME_STATES.PLAYING) return;
+    this._finish();
+  }
+
+  // Admin recovery control: abort the current match entirely — no persistence,
+  // back to an empty lobby. For when a match is broken and shouldn't be logged.
+  resetMatch() {
+    this.reset();
     this._emit();
   }
 }

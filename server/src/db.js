@@ -64,6 +64,68 @@ export function getTopLeaderboard(limit = 5) {
     .all(limit);
 }
 
+export function resetLeaderboard() {
+  db.prepare("DELETE FROM leaderboard").run();
+}
+
+export function listQuestions() {
+  return db
+    .prepare(
+      `SELECT id, round, prompt, option_a AS optionA, option_b AS optionB,
+              correct_option AS correctOption, difficulty, points, host_note AS hostNote,
+              active, sort_order AS sortOrder
+       FROM questions ORDER BY sort_order ASC`
+    )
+    .all();
+}
+
+export function upsertQuestion(q) {
+  const existing = db.prepare("SELECT sort_order FROM questions WHERE id = ?").get(q.id);
+  const sortOrder = existing
+    ? existing.sort_order
+    : (db.prepare("SELECT COALESCE(MAX(sort_order), -1) AS maxOrder FROM questions").get().maxOrder + 1);
+
+  db.prepare(
+    `INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, active, sort_order)
+     VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @active, @sortOrder)
+     ON CONFLICT(id) DO UPDATE SET
+       round = excluded.round, prompt = excluded.prompt, option_a = excluded.option_a,
+       option_b = excluded.option_b, correct_option = excluded.correct_option,
+       difficulty = excluded.difficulty, points = excluded.points, host_note = excluded.host_note,
+       active = excluded.active`
+  ).run({
+    ...q,
+    hostNote: q.hostNote ?? null,
+    active: q.active === false ? 0 : 1,
+    sortOrder,
+  });
+}
+
+export function deleteQuestion(id) {
+  db.prepare("DELETE FROM questions WHERE id = ?").run(id);
+}
+
+export function setQuestionActive(id, active) {
+  db.prepare("UPDATE questions SET active = ? WHERE id = ?").run(active ? 1 : 0, id);
+}
+
+export const reorderQuestions = db.transaction((orderedIds) => {
+  const update = db.prepare("UPDATE questions SET sort_order = ? WHERE id = ?");
+  orderedIds.forEach((id, index) => update.run(index, id));
+});
+
+export function getConfigOverrides() {
+  const rows = db.prepare("SELECT key, value FROM config").all();
+  return Object.fromEntries(rows.map(({ key, value }) => [key, Number(value)]));
+}
+
+export function setConfigValue(key, value) {
+  db.prepare(
+    `INSERT INTO config (key, value) VALUES (?, ?)
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value`
+  ).run(key, String(value));
+}
+
 const insertMatchResult = db.prepare(`
   INSERT INTO match_results (match_code, player_name, score, email, created_at)
   VALUES (@matchCode, @playerName, @score, @email, @createdAt)

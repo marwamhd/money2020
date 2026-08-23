@@ -6,13 +6,19 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 
-import { getActiveQuestions, persistMatchResults } from "./db.js";
+import { getActiveQuestions, persistMatchResults, getConfigOverrides } from "./db.js";
 import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT } from "./gameContract.js";
+import { buildAdminRouter } from "./routes/admin.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 const CLIENT_DIST = path.join(__dirname, "..", "..", "client", "dist");
+
+// Never shipped to the browser: only the organizer's admin panel has this, entered
+// at runtime. If unset, a random one is generated and printed once at startup.
+const ADMIN_TOKEN = process.env.M2020_ADMIN_TOKEN || randomUUID();
+console.log(`Admin token (also settable via M2020_ADMIN_TOKEN): ${ADMIN_TOKEN}`);
 
 const app = express();
 app.use(cors());
@@ -24,12 +30,15 @@ app.get(["/play/:code", "/screen/:code", "/admin"], (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*" } });
 
-const config = {
+const envConfig = {
   ...(process.env.M2020_COUNTDOWN_MS && { COUNTDOWN_MS: Number(process.env.M2020_COUNTDOWN_MS) }),
   ...(process.env.M2020_SECTION_DURATION_MS && { SECTION_DURATION_MS: Number(process.env.M2020_SECTION_DURATION_MS) }),
   ...(process.env.M2020_QUESTION_TIMEOUT_MS && { QUESTION_TIMEOUT_MS: Number(process.env.M2020_QUESTION_TIMEOUT_MS) }),
   ...(process.env.M2020_RUNNER_UP_POINTS && { RUNNER_UP_POINTS: Number(process.env.M2020_RUNNER_UP_POINTS) }),
 };
+// db-stored config (set via the admin panel) wins over env vars, since it reflects
+// the organizer's most recent, intentional choice and survives a server restart.
+const config = { ...envConfig, ...getConfigOverrides() };
 
 const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
   io.emit(STATE_EVENT, snapshot);
@@ -37,6 +46,13 @@ const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
     persistMatchResults(snapshot.players.map(({ name, score }) => ({ name, score })));
   }
 }, config);
+
+app.use("/api/admin", (req, res, next) => {
+  if (req.headers["x-admin-token"] !== ADMIN_TOKEN) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}, buildAdminRouter(engine));
 
 // Player identity must survive a socket reconnect, so it can't be socket.id (which
 // changes on every reload/reconnect). Each connection maps to a durable player token:
