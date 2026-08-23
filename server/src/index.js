@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 
 import { getActiveQuestions, persistMatchResults } from "./db.js";
@@ -37,24 +38,35 @@ const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
   }
 }, config);
 
+// Player identity must survive a socket reconnect, so it can't be socket.id (which
+// changes on every reload/reconnect). Each connection maps to a durable player token:
+// the client sends back the token it was given on first join, or gets a fresh one.
+const socketToPlayerId = new Map();
+
 io.on("connection", (socket) => {
   socket.emit(STATE_EVENT, engine.getSnapshot());
 
-  socket.on(COMMANDS.JOIN, ({ name }, ack) => {
-    const result = engine.addPlayer(socket.id, name);
-    ack?.(result);
+  socket.on(COMMANDS.JOIN, ({ name, token }, ack) => {
+    const playerId = token || randomUUID();
+    socketToPlayerId.set(socket.id, playerId);
+    const result = engine.addPlayer(playerId, name);
+    ack?.({ ...result, token: playerId });
   });
 
   socket.on(COMMANDS.READY, () => {
-    engine.setReady(socket.id);
+    const playerId = socketToPlayerId.get(socket.id);
+    if (playerId) engine.setReady(playerId);
   });
 
   socket.on(COMMANDS.ANSWER, ({ questionId, choice }) => {
-    engine.submitAnswer(socket.id, questionId, choice);
+    const playerId = socketToPlayerId.get(socket.id);
+    if (playerId) engine.submitAnswer(playerId, questionId, choice);
   });
 
   socket.on("disconnect", () => {
-    engine.removePlayer(socket.id);
+    const playerId = socketToPlayerId.get(socket.id);
+    if (playerId) engine.disconnectPlayer(playerId);
+    socketToPlayerId.delete(socket.id);
   });
 });
 

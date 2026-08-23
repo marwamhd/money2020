@@ -29,7 +29,7 @@ export class GameEngine {
     this._cancelCountdown();
     this._cancelQuestionTimer();
     this.state = GAME_STATES.LOBBY;
-    this.players = []; // { id, name, slot, ready, score }
+    this.players = []; // { id, name, slot, ready, score, connected }
     this.countdownEndsAt = null;
     this.roundIndex = -1;
     this.currentRound = null;
@@ -45,7 +45,7 @@ export class GameEngine {
 
     return {
       state: this.state,
-      players: this.players.map(({ id, name, slot, ready, score }) => ({ id, name, slot, ready, score })),
+      players: this.players.map(({ id, name, slot, ready, score, connected }) => ({ id, name, slot, ready, score, connected })),
       countdownEndsAt: this.countdownEndsAt,
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
@@ -60,7 +60,11 @@ export class GameEngine {
 
   addPlayer(id, name) {
     const existing = this.players.find((p) => p.id === id);
-    if (existing) return { ok: true, slot: existing.slot };
+    if (existing) {
+      existing.connected = true;
+      this._emit();
+      return { ok: true, slot: existing.slot };
+    }
 
     if (this.state !== GAME_STATES.LOBBY) {
       return { ok: false, error: "Match already in progress" };
@@ -70,20 +74,35 @@ export class GameEngine {
     }
 
     const slot = this.players.length + 1;
-    this.players.push({ id, name, slot, ready: false, score: 0 });
+    this.players.push({ id, name, slot, ready: false, score: 0, connected: true });
     this._emit();
     return { ok: true, slot };
   }
 
-  removePlayer(id) {
+  // Called when a player's socket disconnects. Mid-match this only flags them as
+  // offline — their slot/score/ready are preserved so the same id can reconnect
+  // and resume via addPlayer. Only lobby (nothing at stake yet) frees the slot outright.
+  disconnectPlayer(id) {
+    const player = this.players.find((p) => p.id === id);
+    if (!player) return;
     if (this.state === GAME_STATES.FINISHED) return; // finished result is immutable until admin reset
-    if (!this.players.some((p) => p.id === id)) return;
-    this.players = this.players.filter((p) => p.id !== id);
+
+    if (this.state === GAME_STATES.LOBBY) {
+      this.players = this.players.filter((p) => p.id !== id);
+      this._emit();
+      return;
+    }
+
     if (this.state === GAME_STATES.COUNTDOWN) {
       this._cancelCountdown();
       this.state = GAME_STATES.LOBBY;
+      this.players = this.players.filter((p) => p.id !== id);
       this.players.forEach((p) => (p.ready = false));
+      this._emit();
+      return;
     }
+
+    player.connected = false;
     this._emit();
   }
 

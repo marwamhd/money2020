@@ -23,7 +23,7 @@ export const STATE_EVENT = "state";
 export const DEFAULTS = Object.freeze({
   COUNTDOWN_MS: 3000,
   SECTION_DURATION_MS: 60000,
-  QUESTION_TIMEOUT_MS: 8000,
+  QUESTION_TIMEOUT_MS: 25000,
   RUNNER_UP_POINTS: 30,
 });
 
