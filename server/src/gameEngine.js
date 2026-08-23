@@ -74,6 +74,7 @@ export class GameEngine {
     const existing = this.players.find((p) => p.id === id);
     if (existing) {
       existing.connected = true;
+      if (name) existing.name = name; // a repeat/retry join can arrive with the real name after an earlier placeholder one
       this._emit();
       return { ok: true, slot: existing.slot };
     }

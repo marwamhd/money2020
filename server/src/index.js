@@ -11,6 +11,12 @@ import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
 
+// Last-resort safety net: at a live booth, staying up (even degraded) beats a hard
+// crash nobody notices until players complain. Handler bugs should still be fixed —
+// this only guards against the unknown/unforeseen one.
+process.on("uncaughtException", (err) => console.error("uncaughtException:", err));
+process.on("unhandledRejection", (err) => console.error("unhandledRejection:", err));
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 const CLIENT_DIST = path.join(__dirname, "..", "..", "client", "dist");
@@ -67,10 +73,18 @@ const socketToPlayerId = new Map();
 io.on("connection", (socket) => {
   socket.emit(STATE_EVENT, engine.getSnapshot());
 
-  socket.on(COMMANDS.JOIN, ({ name, token }, ack) => {
-    const playerId = token || randomUUID();
+  // Payloads are untrusted client input — a bare emit with no/null/malformed data must
+  // never throw here, since an uncaught exception in a socket handler crashes the whole
+  // process (both players' match, for everyone at the booth), not just this connection.
+  socket.on(COMMANDS.JOIN, (payload, ack) => {
+    const { name, token } = payload || {};
+    // Reuse this connection's own id for a repeated join without a token (e.g. a client
+    // retry before it received its token back) — otherwise each such call would mint a
+    // fresh id and silently consume a second slot on the very same connection.
+    const playerId = token || socketToPlayerId.get(socket.id) || randomUUID();
     socketToPlayerId.set(socket.id, playerId);
-    const result = engine.addPlayer(playerId, name);
+    const safeName = typeof name === "string" && name.trim() ? name.trim().slice(0, 40) : "Player";
+    const result = engine.addPlayer(playerId, safeName);
     ack?.({ ...result, token: playerId });
   });
 
@@ -79,12 +93,14 @@ io.on("connection", (socket) => {
     if (playerId) engine.setReady(playerId);
   });
 
-  socket.on(COMMANDS.ANSWER, ({ questionId, choice }) => {
+  socket.on(COMMANDS.ANSWER, (payload) => {
+    const { questionId, choice } = payload || {};
     const playerId = socketToPlayerId.get(socket.id);
     if (playerId) engine.submitAnswer(playerId, questionId, choice);
   });
 
-  socket.on(COMMANDS.SUBMIT_EMAIL, ({ email }, ack) => {
+  socket.on(COMMANDS.SUBMIT_EMAIL, (payload, ack) => {
+    const { email } = payload || {};
     const playerId = socketToPlayerId.get(socket.id);
     if (!playerId) return ack?.({ ok: false, error: "Not in a match" });
     if (!isValidEmail(email)) return ack?.({ ok: false, error: "Invalid email" });

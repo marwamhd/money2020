@@ -27,6 +27,20 @@ test("joining again with the same id returns the existing slot, not a new player
   assert.equal(engine.players.length, 1);
 });
 
+test("a later join with the same id updates the name (e.g. a placeholder name from an earlier retry)", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Player");
+  engine.addPlayer("p1", "Alice");
+  assert.equal(engine.players.find((p) => p.id === "p1").name, "Alice");
+});
+
+test("a later join with the same id but no name keeps the existing name", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p1", undefined);
+  assert.equal(engine.players.find((p) => p.id === "p1").name, "Alice");
+});
+
 test("stays in lobby until both players ready, then counts down and starts playing", async () => {
   const { engine } = makeEngine();
   engine.addPlayer("p1", "Alice");
