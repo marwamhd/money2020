@@ -91,6 +91,18 @@ export function getTopLeaderboard(limit = 5) {
     .all(limit);
 }
 
+// Admin-only — includes email, unlike getTopLeaderboard(), which is what's broadcast
+// to every player and must never leak it. This is how the organizer actually contacts
+// whoever ranks in the prize-eligible top N after the event.
+export function listFullLeaderboard() {
+  return db
+    .prepare(
+      `SELECT name, score, email, achieved_at AS achievedAt
+       FROM leaderboard WHERE email IS NOT NULL ORDER BY score DESC, achieved_at ASC`
+    )
+    .all();
+}
+
 export function resetLeaderboard() {
   db.prepare("DELETE FROM leaderboard").run();
 }

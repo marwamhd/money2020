@@ -11,6 +11,7 @@ import {
   resetLeaderboard,
   setConfigValue,
   listMatchResults,
+  listFullLeaderboard,
 } from "../db.js";
 
 const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS", "REVEAL_MS"];
@@ -153,6 +154,25 @@ export function buildAdminRouter(engine) {
 
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", "attachment; filename=results.csv");
+    res.send(lines.join("\n"));
+  });
+
+  // Admin-only — includes email, unlike the live game state broadcast to players
+  // (getTopLeaderboard), which never does. This is for contacting prize winners.
+  router.get("/leaderboard", (req, res) => {
+    res.json(listFullLeaderboard());
+  });
+
+  router.get("/leaderboard/export", (req, res) => {
+    const rows = listFullLeaderboard();
+    const csvCell = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const lines = [
+      "rank,name,score,email,achievedAt",
+      ...rows.map((r, i) => [i + 1, r.name, r.score, r.email, r.achievedAt].map(csvCell).join(",")),
+    ];
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=leaderboard.csv");
     res.send(lines.join("\n"));
   });
 
