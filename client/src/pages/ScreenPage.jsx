@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
 
@@ -81,6 +82,26 @@ function IdleScreen({ state }) {
   const joinUrl = `${window.location.origin}/play/${state.matchCode}`;
   const board = state.leaderboard;
 
+  // Deliberately not visually indicated as clickable (no cursor change, no hover
+  // style) — this is a discreet way for whoever knows to pull the leaderboard's
+  // emails for prize contact, without exposing that entry point to booth visitors.
+  const [emailPanel, setEmailPanel] = useState(null); // null | { rows: [...] } | { error: "..." }
+
+  async function openEmailPanel() {
+    const token = window.prompt("Admin code:");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/admin/leaderboard", { headers: { "x-admin-token": token } });
+      if (!res.ok) {
+        setEmailPanel({ error: "Wrong code." });
+        return;
+      }
+      setEmailPanel({ rows: await res.json() });
+    } catch {
+      setEmailPanel({ error: "Couldn't load — check the connection." });
+    }
+  }
+
   return (
     <div style={{ flex: 1, display: "flex" }}>
       <div
@@ -158,7 +179,7 @@ function IdleScreen({ state }) {
       >
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
           <h4 style={{ margin: 0, fontFamily: SERIF, fontSize: "1.8cqw", fontWeight: 400, color: NAVY }}>Leaderboard</h4>
-          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>TOP 5</span>
+          <span onClick={openEmailPanel} style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>TOP 5</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.1cqh" }}>
           {board.length === 0 && <span style={{ fontSize: "1.3cqw", color: MUTED }}>No games played yet — be the first!</span>}
@@ -212,6 +233,49 @@ function IdleScreen({ state }) {
           )}
         </div>
       </div>
+
+      {emailPanel && (
+        <div
+          onClick={() => setEmailPanel(null)}
+          style={{ position: "fixed", inset: 0, zIndex: 2000, background: "rgba(2,8,68,.85)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 16, padding: 28, minWidth: 420, maxWidth: "80vw", maxHeight: "80vh", overflow: "auto", display: "flex", flexDirection: "column", gap: 14 }}
+          >
+            <h4 style={{ margin: 0, fontFamily: SERIF, fontWeight: 400, color: NAVY }}>Leaderboard emails</h4>
+            {emailPanel.error ? (
+              <span style={{ color: "#C0392B" }}>{emailPanel.error}</span>
+            ) : emailPanel.rows.length === 0 ? (
+              <span style={{ color: MUTED }}>No entries yet.</span>
+            ) : (
+              <table style={{ borderCollapse: "collapse", fontSize: 14 }}>
+                <thead>
+                  <tr style={{ textAlign: "left", color: MUTED }}>
+                    <th style={{ padding: "4px 12px" }}>#</th>
+                    <th style={{ padding: "4px 12px" }}>Name</th>
+                    <th style={{ padding: "4px 12px" }}>Score</th>
+                    <th style={{ padding: "4px 12px" }}>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {emailPanel.rows.map((r, i) => (
+                    <tr key={i} style={{ borderTop: `1px solid ${LINE}` }}>
+                      <td style={{ padding: "6px 12px", color: NAVY }}>{i + 1}</td>
+                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.name}</td>
+                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.score}</td>
+                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.email}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            <div onClick={() => setEmailPanel(null)} style={{ alignSelf: "flex-end", padding: "8px 16px", borderRadius: 10, background: NAVY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              Close
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
