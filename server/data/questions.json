@@ -92,7 +92,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq since 1992."
+    "hostNote": "Listed on Nasdaq since 1992.",
+    "questionImage": "/logos/starbucks.svg"
   },
   {
     "id": "R1-9",
@@ -127,7 +128,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "IPO'd on the NYSE in March 2024."
+    "hostNote": "IPO'd on the NYSE in March 2024.",
+    "questionImage": "/logos/reddit.svg"
   },
   {
     "id": "R1-12",
@@ -138,7 +140,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on Nasdaq in December 2020."
+    "hostNote": "Listed on Nasdaq in December 2020.",
+    "questionImage": "/logos/airbnb.svg"
   },
   {
     "id": "R1-13",
@@ -149,7 +152,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Re-listed on the NYSE in 2019 after decades as a family-controlled private company."
+    "hostNote": "Re-listed on the NYSE in 2019 after decades as a family-controlled private company.",
+    "questionImage": "/logos/levis.svg"
   },
   {
     "id": "R1-14",
@@ -172,7 +176,8 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Owned by Dutch and Swedish foundations, never listed."
+    "hostNote": "Owned by Dutch and Swedish foundations, never listed.",
+    "questionImage": "/logos/ikea.svg"
   },
   {
     "id": "R1-16",
@@ -183,7 +188,8 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Majority owned by the Kirk Kristiansen family."
+    "hostNote": "Majority owned by the Kirk Kristiansen family.",
+    "questionImage": "/logos/lego.svg"
   },
   {
     "id": "R1-17",
@@ -194,7 +200,8 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Family-owned by the Wertheimer family."
+    "hostNote": "Family-owned by the Wertheimer family.",
+    "questionImage": "/logos/chanel.svg"
   },
   {
     "id": "R1-18",
@@ -205,7 +212,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "One of the largest family-owned businesses in the world, makers of M&M's and Snickers."
+    "hostNote": "One of the largest family-owned businesses in the world, makers of M&M's and Snickers.",
+    "questionImage": "/logos/mars.svg"
   },
   {
     "id": "R1-19",
@@ -216,7 +224,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "The largest privately held company in the United States by revenue."
+    "hostNote": "The largest privately held company in the United States by revenue.",
+    "questionImage": "/logos/cargill.svg"
   },
   {
     "id": "R1-20",
@@ -227,7 +236,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Owned by a German family trust, not listed anywhere."
+    "hostNote": "Owned by a German family trust, not listed anywhere.",
+    "questionImage": "/logos/trader-joes.svg"
   },
   {
     "id": "R1-21",
@@ -238,7 +248,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Remains family-owned; deliberately closed on Sundays."
+    "hostNote": "Remains family-owned; deliberately closed on Sundays.",
+    "questionImage": "/logos/chick-fil-a.svg"
   },
   {
     "id": "R1-22",
@@ -249,7 +260,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Family-owned since 1948, has resisted franchising and never listed."
+    "hostNote": "Family-owned since 1948, has resisted franchising and never listed.",
+    "questionImage": "/logos/in-n-out.svg"
   },
   {
     "id": "R1-23",
@@ -260,7 +272,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Majority owned by founder Michael Bloomberg."
+    "hostNote": "Majority owned by founder Michael Bloomberg.",
+    "questionImage": "/logos/bloomberg.svg"
   },
   {
     "id": "R1-24",
@@ -271,7 +284,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "One of the largest asset managers in the world, still family-controlled."
+    "hostNote": "One of the largest asset managers in the world, still family-controlled.",
+    "questionImage": "/logos/fidelity.svg"
   },
   {
     "id": "R1-25",
@@ -282,7 +296,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Owned by the Ferrero family."
+    "hostNote": "Owned by the Ferrero family.",
+    "questionImage": "/logos/ferrero.svg"
   },
   {
     "id": "R1-26",
@@ -293,7 +308,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Majority owned by a charitable foundation; shares are not publicly traded."
+    "hostNote": "Majority owned by a charitable foundation; shares are not publicly traded.",
+    "questionImage": "/logos/bosch.svg"
   },
   {
     "id": "R1-27",
@@ -304,7 +320,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Privately owned by the Albrecht family."
+    "hostNote": "Privately owned by the Albrecht family.",
+    "questionImage": "/logos/aldi.svg"
   },
   {
     "id": "R1-28",
@@ -315,7 +332,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Owned by a private foundation; releases no public financial statements."
+    "hostNote": "Owned by a private foundation; releases no public financial statements.",
+    "questionImage": "/logos/rolex.svg"
   },
   {
     "id": "R1-29",
@@ -338,7 +356,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Valued well over $100bn privately, with no confirmed IPO date."
+    "hostNote": "Valued well over $100bn privately, with no confirmed IPO date.",
+    "questionImage": "/logos/databricks.svg"
   },
   {
     "id": "R1-31",
@@ -349,7 +368,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Taken private in 2022 after being publicly listed for nearly a decade."
+    "hostNote": "Taken private in 2022 after being publicly listed for nearly a decade.",
+    "questionImage": "/logos/x-twitter.svg"
   },
   {
     "id": "R1-32",
@@ -360,7 +380,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Delisted from Nasdaq Dubai in 2020 and taken fully private."
+    "hostNote": "Delisted from Nasdaq Dubai in 2020 and taken fully private.",
+    "questionImage": "/logos/dp-world.svg"
   },
   {
     "id": "R1-33",
@@ -371,7 +392,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Tadawul since its landmark 2019 IPO."
+    "hostNote": "Listed on Tadawul since its landmark 2019 IPO.",
+    "questionImage": "/logos/saudi-aramco.jpg"
   },
   {
     "id": "R1-34",
@@ -382,7 +404,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "One of the largest listed companies on Tadawul."
+    "hostNote": "One of the largest listed companies on Tadawul.",
+    "questionImage": "/logos/stc.svg"
   },
   {
     "id": "R1-35",
@@ -393,7 +416,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the Saudi stock exchange since 2005."
+    "hostNote": "Listed on the Saudi stock exchange since 2005.",
+    "questionImage": "/logos/almarai.svg"
   },
   {
     "id": "R1-36",
@@ -404,7 +428,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the Dubai Financial Market."
+    "hostNote": "Listed on the Dubai Financial Market.",
+    "questionImage": "/logos/emaar.svg"
   },
   {
     "id": "R1-37",
@@ -415,7 +440,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Abu Dhabi Securities Exchange."
+    "hostNote": "Listed on the Abu Dhabi Securities Exchange.",
+    "questionImage": "/logos/e-and.svg"
   },
   {
     "id": "R1-38",
@@ -426,7 +452,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Dubai Financial Market in December 2024, the largest tech IPO globally that year."
+    "hostNote": "Listed on the Dubai Financial Market in December 2024, the largest tech IPO globally that year.",
+    "questionImage": "/logos/talabat.svg"
   },
   {
     "id": "R1-39",
@@ -437,7 +464,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Abu Dhabi Securities Exchange in 2024 after decades as a private retailer."
+    "hostNote": "Listed on the Abu Dhabi Securities Exchange in 2024 after decades as a private retailer.",
+    "questionImage": "/logos/lulu-group.webp"
   },
   {
     "id": "R1-40",
@@ -448,7 +476,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Dual-listed on Tadawul and the Abu Dhabi Securities Exchange."
+    "hostNote": "Dual-listed on Tadawul and the Abu Dhabi Securities Exchange.",
+    "questionImage": "/logos/americana.jpeg"
   },
   {
     "id": "R1-41",
@@ -459,7 +488,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on Tadawul's main market."
+    "hostNote": "Listed on Tadawul's main market.",
+    "questionImage": "/logos/jahez.png"
   },
   {
     "id": "R1-42",
@@ -470,7 +500,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on Bahrain Bourse, Dubai Financial Market, and Boursa Kuwait."
+    "hostNote": "Listed on Bahrain Bourse, Dubai Financial Market, and Boursa Kuwait.",
+    "questionImage": "/logos/gfh.svg"
   },
   {
     "id": "R1-43",
@@ -481,7 +512,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on Tadawul; chaired by Prince Alwaleed bin Talal."
+    "hostNote": "Listed on Tadawul; chaired by Prince Alwaleed bin Talal.",
+    "questionImage": "/logos/kingdom-holding.svg"
   },
   {
     "id": "R1-44",
@@ -492,7 +524,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Wholly owned by the Government of Dubai; not publicly traded."
+    "hostNote": "Wholly owned by the Government of Dubai; not publicly traded.",
+    "questionImage": "/logos/emirates.svg"
   },
   {
     "id": "R1-45",
@@ -503,7 +536,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The parent stays wholly state-owned, even though several of its subsidiaries like ADNOC Distribution are separately listed."
+    "hostNote": "The parent stays wholly state-owned, even though several of its subsidiaries like ADNOC Distribution are separately listed.",
+    "questionImage": "/logos/adnoc.webp"
   },
   {
     "id": "R1-46",
@@ -514,7 +548,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "One of the largest family conglomerates in the UAE, spanning autos, retail and real estate."
+    "hostNote": "One of the largest family conglomerates in the UAE, spanning autos, retail and real estate.",
+    "questionImage": "/logos/al-futtaim.png"
   },
   {
     "id": "R1-47",
@@ -525,7 +560,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Privately owned; operates malls and the regional Carrefour franchise."
+    "hostNote": "Privately owned; operates malls and the regional Carrefour franchise.",
+    "questionImage": "/logos/majid-al-futtaim.jpg"
   },
   {
     "id": "R1-48",
@@ -536,7 +572,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "A major regional luxury retail conglomerate, family-owned since 1955."
+    "hostNote": "A major regional luxury retail conglomerate, family-owned since 1955.",
+    "questionImage": "/logos/chalhoub.png"
   },
   {
     "id": "R1-49",
@@ -547,7 +584,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE."
+    "hostNote": "Listed on the NYSE.",
+    "questionImage": "/logos/boeing.svg"
   },
   {
     "id": "R1-50",
@@ -558,7 +596,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE since 1956."
+    "hostNote": "Listed on the NYSE since 1956.",
+    "questionImage": "/logos/ford.svg"
   },
   {
     "id": "R1-51",
@@ -569,7 +608,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE."
+    "hostNote": "Listed on the NYSE.",
+    "questionImage": "/logos/johnson-and-johnson.svg"
   },
   {
     "id": "R1-52",
@@ -580,7 +620,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE since 1972."
+    "hostNote": "Listed on the NYSE since 1972.",
+    "questionImage": "/logos/walmart.svg"
   },
   {
     "id": "R1-53",
@@ -591,7 +632,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq."
+    "hostNote": "Listed on Nasdaq.",
+    "questionImage": "/logos/costco.svg"
   },
   {
     "id": "R1-54",
@@ -602,7 +644,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Warren Buffett's holding company, listed on the NYSE."
+    "hostNote": "Warren Buffett's holding company, listed on the NYSE.",
+    "questionImage": "/logos/berkshire-hathaway.svg"
   },
   {
     "id": "R1-55",
@@ -625,7 +668,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the NYSE."
+    "hostNote": "Listed on the NYSE.",
+    "questionImage": "/logos/american-express.svg"
   },
   {
     "id": "R1-57",
@@ -636,7 +680,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on Nasdaq."
+    "hostNote": "Listed on Nasdaq.",
+    "questionImage": "/logos/adobe.svg"
   },
   {
     "id": "R1-58",
@@ -647,7 +692,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the NYSE."
+    "hostNote": "Listed on the NYSE.",
+    "questionImage": "/logos/salesforce.svg"
   },
   {
     "id": "R1-59",
@@ -658,7 +704,8 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Listed on the Tokyo Stock Exchange."
+    "hostNote": "Listed on the Tokyo Stock Exchange.",
+    "questionImage": "/logos/toyota.svg"
   },
   {
     "id": "R1-60",
@@ -669,7 +716,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Dual-listed in New York and Hong Kong."
+    "hostNote": "Dual-listed in New York and Hong Kong.",
+    "questionImage": "/logos/alibaba.svg"
   },
   {
     "id": "R1-61",
@@ -680,7 +728,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on both the NYSE and TSX."
+    "hostNote": "Listed on both the NYSE and TSX.",
+    "questionImage": "/logos/shopify.svg"
   },
   {
     "id": "R1-62",
@@ -691,7 +740,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on Nasdaq since 2021."
+    "hostNote": "Listed on Nasdaq since 2021.",
+    "questionImage": "/logos/coinbase.svg"
   },
   {
     "id": "R1-63",
@@ -702,7 +752,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The USDC stablecoin issuer, listed in 2025 in one of the year's standout debuts."
+    "hostNote": "The USDC stablecoin issuer, listed in 2025 in one of the year's standout debuts.",
+    "questionImage": "/logos/circle.svg"
   },
   {
     "id": "R1-64",
@@ -713,7 +764,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The AI cloud-computing company, listed on Nasdaq in March 2025."
+    "hostNote": "The AI cloud-computing company, listed on Nasdaq in March 2025.",
+    "questionImage": "/logos/coreweave.svg"
   },
   {
     "id": "R1-65",
@@ -736,7 +788,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The digital bank, listed on Nasdaq in June 2025."
+    "hostNote": "The digital bank, listed on Nasdaq in June 2025.",
+    "questionImage": "/logos/chime.svg"
   },
   {
     "id": "R1-67",
@@ -747,7 +800,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Listed in 2025 after Adobe's attempted acquisition fell through in 2024."
+    "hostNote": "Listed in 2025 after Adobe's attempted acquisition fell through in 2024.",
+    "questionImage": "/logos/figma.svg"
   },
   {
     "id": "R1-68",
@@ -758,7 +812,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The AI chipmaker, listed in 2026 with a strong debut."
+    "hostNote": "The AI chipmaker, listed in 2026 with a strong debut.",
+    "questionImage": "/logos/cerebras.svg"
   },
   {
     "id": "R1-69",
@@ -769,7 +824,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Has filed confidentially for an IPO but remained private as of mid-2026."
+    "hostNote": "Has filed confidentially for an IPO but remained private as of mid-2026.",
+    "questionImage": "/logos/discord.svg"
   },
   {
     "id": "R1-70",
@@ -780,7 +836,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "One of the largest privately held conglomerates in the United States."
+    "hostNote": "One of the largest privately held conglomerates in the United States.",
+    "questionImage": "/logos/koch.svg"
   },
   {
     "id": "R1-71",
@@ -791,7 +848,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Employee-owned; shares are not traded on a public exchange."
+    "hostNote": "Employee-owned; shares are not traded on a public exchange.",
+    "questionImage": "/logos/publix.png"
   },
   {
     "id": "R1-72",
@@ -802,7 +860,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Family-owned arts and crafts retail chain."
+    "hostNote": "Family-owned arts and crafts retail chain.",
+    "questionImage": "/logos/hobby-lobby.svg"
   },
   {
     "id": "R1-73",
@@ -813,7 +872,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Family-owned maker of household products like Glade and Ziploc."
+    "hostNote": "Family-owned maker of household products like Glade and Ziploc.",
+    "questionImage": "/logos/sc-johnson.svg"
   },
   {
     "id": "R1-74",
@@ -824,7 +884,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "A partnership, like the other 'Big Four' accounting firms."
+    "hostNote": "A partnership, like the other 'Big Four' accounting firms.",
+    "questionImage": "/logos/deloitte.svg"
   },
   {
     "id": "R1-75",
@@ -835,7 +896,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "The German parent of Lidl and Kaufland, privately held."
+    "hostNote": "The German parent of Lidl and Kaufland, privately held.",
+    "questionImage": "/logos/lidl.svg"
   },
   {
     "id": "R1-76",
@@ -846,7 +908,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "The largest bank in Saudi Arabia by assets, listed on Tadawul."
+    "hostNote": "The largest bank in Saudi Arabia by assets, listed on Tadawul.",
+    "questionImage": "/logos/saudi-national-bank.svg"
   },
   {
     "id": "R1-77",
@@ -857,7 +920,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Dubai Financial Market."
+    "hostNote": "Listed on the Dubai Financial Market.",
+    "questionImage": "/logos/emirates-nbd.jpg"
   },
   {
     "id": "R1-78",
@@ -868,7 +932,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Abu Dhabi Securities Exchange."
+    "hostNote": "Listed on the Abu Dhabi Securities Exchange.",
+    "questionImage": "/logos/fab.svg"
   },
   {
     "id": "R1-79",
@@ -879,7 +944,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Dubai Financial Market; one of the world's oldest Islamic banks."
+    "hostNote": "Listed on the Dubai Financial Market; one of the world's oldest Islamic banks.",
+    "questionImage": "/logos/dib.jpeg"
   },
   {
     "id": "R1-80",
@@ -890,7 +956,8 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Listed on the Dubai Financial Market after its 2022 IPO."
+    "hostNote": "Listed on the Dubai Financial Market after its 2022 IPO.",
+    "questionImage": "/logos/salik.jpg"
   },
   {
     "id": "R1-81",
@@ -901,7 +968,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "An Abu Dhabi-based AI company listed on ADX in 2023."
+    "hostNote": "An Abu Dhabi-based AI company listed on ADX in 2023.",
+    "questionImage": "/logos/presight.jpeg"
   },
   {
     "id": "R1-82",
@@ -912,7 +980,8 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "A UAE edtech company listed on ADX in 2024."
+    "hostNote": "A UAE edtech company listed on ADX in 2024.",
+    "questionImage": "/logos/alef-education.jpg"
   },
   {
     "id": "R1-83",
@@ -923,7 +992,8 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "The Kuwaiti family business behind the region's Starbucks, H&M and many other retail franchises."
+    "hostNote": "The Kuwaiti family business behind the region's Starbucks, H&M and many other retail franchises.",
+    "questionImage": "/logos/alshaya.png"
   },
   {
     "id": "R1-84",
@@ -934,7 +1004,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "A long-established Bahrain-founded alternative investment firm, privately held."
+    "hostNote": "A long-established Bahrain-founded alternative investment firm, privately held.",
+    "questionImage": "/logos/investcorp.png"
   },
   {
     "id": "R1-85",
@@ -945,7 +1016,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "One of Saudi Arabia's oldest and largest family conglomerates."
+    "hostNote": "One of Saudi Arabia's oldest and largest family conglomerates.",
+    "questionImage": "/logos/olayan.jpg"
   },
   {
     "id": "R1-86",
@@ -956,7 +1028,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "One of Kuwait's largest privately held family conglomerates."
+    "hostNote": "One of Kuwait's largest privately held family conglomerates.",
+    "questionImage": "/logos/alghanim.jpeg"
   },
   {
     "id": "R1-87",
@@ -967,7 +1040,8 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "A long-established, family-owned Bahraini conglomerate."
+    "hostNote": "A long-established, family-owned Bahraini conglomerate.",
+    "questionImage": "/logos/kanoo.png"
   },
   {
     "id": "R2-1",
@@ -979,7 +1053,8 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Apple's market cap has run well ahead of Aramco's since 2020. (as of Mid-2026)",
-    "optionAImage": "/logos/apple.svg"
+    "optionAImage": "/logos/apple.svg",
+    "optionBImage": "/logos/saudi-aramco.jpg"
   },
   {
     "id": "R2-2",
@@ -991,7 +1066,8 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Nvidia has traded as one of the two largest companies in the world by market cap. (as of Mid-2026)",
-    "optionAImage": "/logos/nvidia.svg"
+    "optionAImage": "/logos/nvidia.svg",
+    "optionBImage": "/logos/saudi-aramco.jpg"
   },
   {
     "id": "R2-3",
@@ -1016,7 +1092,8 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Stripe ~$150-160bn vs Databricks ~$130-170bn; close, but Stripe has generally led. (as of Mid-2026)",
-    "optionAImage": "/logos/stripe.svg"
+    "optionAImage": "/logos/stripe.svg",
+    "optionBImage": "/logos/databricks.svg"
   },
   {
     "id": "R2-5",
@@ -1027,7 +1104,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "OpenAI's private valuation (~$850bn) has pulled well ahead of ByteDance's (~$480bn). (as of Mid-2026)"
+    "hostNote": "OpenAI's private valuation (~$850bn) has pulled well ahead of ByteDance's (~$480bn). (as of Mid-2026)",
+    "optionAImage": "/logos/openai.svg",
+    "optionBImage": "/logos/bytedance.svg"
   },
   {
     "id": "R2-6",
@@ -1038,7 +1117,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "xAI's valuation (~$230bn) has run ahead of Databricks' (~$130-170bn). (as of Mid-2026)"
+    "hostNote": "xAI's valuation (~$230bn) has run ahead of Databricks' (~$130-170bn). (as of Mid-2026)",
+    "optionBImage": "/logos/databricks.svg",
+    "optionAImage": "/logos/xai.jpg"
   },
   {
     "id": "R2-7",
@@ -1049,7 +1130,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Talabat's 2024 IPO valued it near $10bn, well above Jahez's market cap on Tadawul. (as of Mid-2026)"
+    "hostNote": "Talabat's 2024 IPO valued it near $10bn, well above Jahez's market cap on Tadawul. (as of Mid-2026)",
+    "optionAImage": "/logos/talabat.svg",
+    "optionBImage": "/logos/jahez.png"
   },
   {
     "id": "R2-8",
@@ -1060,7 +1143,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Saudi Telecom (stc) is substantially larger by market cap than Kuwait's Zain. (as of Mid-2026)"
+    "hostNote": "Saudi Telecom (stc) is substantially larger by market cap than Kuwait's Zain. (as of Mid-2026)",
+    "optionAImage": "/logos/stc.svg",
+    "optionBImage": "/logos/zain.svg"
   },
   {
     "id": "R2-9",
@@ -1071,7 +1156,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Aramco has consistently ranked as the larger of the two oil majors by market cap. (as of Mid-2026)"
+    "hostNote": "Aramco has consistently ranked as the larger of the two oil majors by market cap. (as of Mid-2026)",
+    "optionBImage": "/logos/exxonmobil.svg",
+    "optionAImage": "/logos/saudi-aramco.jpg"
   },
   {
     "id": "R2-10",
@@ -1083,7 +1170,8 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Visa has generally held a larger market cap than Mastercard. (as of Mid-2026)",
-    "optionAImage": "/logos/visa.svg"
+    "optionAImage": "/logos/visa.svg",
+    "optionBImage": "/logos/mastercard.svg"
   },
   {
     "id": "R2-11",
@@ -1094,7 +1182,9 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "LVMH is publicly listed with a market cap far above most private-market estimates of Chanel's value. (as of Mid-2026)"
+    "hostNote": "LVMH is publicly listed with a market cap far above most private-market estimates of Chanel's value. (as of Mid-2026)",
+    "optionAImage": "/logos/lvmh.svg",
+    "optionBImage": "/logos/chanel.svg"
   },
   {
     "id": "R2-12",
@@ -1105,7 +1195,9 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Emaar's market cap on DFM has generally run ahead of Almarai's on Tadawul. (as of Mid-2026)"
+    "hostNote": "Emaar's market cap on DFM has generally run ahead of Almarai's on Tadawul. (as of Mid-2026)",
+    "optionAImage": "/logos/emaar.svg",
+    "optionBImage": "/logos/almarai.svg"
   },
   {
     "id": "R2-13",
@@ -1116,7 +1208,9 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Cargill is typically ranked as the larger of the two by revenue and estimated value, though both are private and don't disclose figures. (as of Mid-2026)"
+    "hostNote": "Cargill is typically ranked as the larger of the two by revenue and estimated value, though both are private and don't disclose figures. (as of Mid-2026)",
+    "optionAImage": "/logos/cargill.svg",
+    "optionBImage": "/logos/mars.svg"
   },
   {
     "id": "R2-14",
@@ -1128,7 +1222,8 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Coca-Cola has generally carried a higher market cap than PepsiCo despite PepsiCo's larger revenue base. (as of Mid-2026)",
-    "optionAImage": "/logos/coca-cola.svg"
+    "optionAImage": "/logos/coca-cola.svg",
+    "optionBImage": "/logos/pepsico.svg"
   },
   {
     "id": "R2-15",
@@ -1140,7 +1235,8 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Netflix's market cap overtook Disney's in recent years. (as of Mid-2026)",
-    "optionAImage": "/logos/netflix.svg"
+    "optionAImage": "/logos/netflix.svg",
+    "optionBImage": "/logos/disney.svg"
   },
   {
     "id": "R2-16",
@@ -1165,7 +1261,8 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Microsoft is one of the largest listed companies in the world by a wide margin. (as of Mid-2026)",
-    "optionAImage": "/logos/microsoft.svg"
+    "optionAImage": "/logos/microsoft.svg",
+    "optionBImage": "/logos/mcdonalds.svg"
   },
   {
     "id": "R2-18",
@@ -1177,7 +1274,8 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Apple's market cap dwarfs that of legacy automakers. (as of Mid-2026)",
-    "optionAImage": "/logos/apple.svg"
+    "optionAImage": "/logos/apple.svg",
+    "optionBImage": "/logos/ford.svg"
   },
   {
     "id": "R2-19",
@@ -1189,7 +1287,8 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Nvidia's AI-driven rise has left Intel far behind by market cap. (as of Mid-2026)",
-    "optionAImage": "/logos/nvidia.svg"
+    "optionAImage": "/logos/nvidia.svg",
+    "optionBImage": "/logos/intel.svg"
   },
   {
     "id": "R2-20",
@@ -1214,7 +1313,8 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Visa's payments network scale has kept it ahead of Amex by market cap. (as of Mid-2026)",
-    "optionAImage": "/logos/visa.svg"
+    "optionAImage": "/logos/visa.svg",
+    "optionBImage": "/logos/american-express.svg"
   },
   {
     "id": "R2-22",
@@ -1225,7 +1325,9 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Buffett's holding company has run far ahead of Boeing in recent years. (as of Mid-2026)"
+    "hostNote": "Buffett's holding company has run far ahead of Boeing in recent years. (as of Mid-2026)",
+    "optionBImage": "/logos/boeing.svg",
+    "optionAImage": "/logos/berkshire-hathaway.svg"
   },
   {
     "id": "R2-23",
@@ -1236,7 +1338,9 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Chime's ~$18bn IPO valuation in June 2025 outsized Talabat's roughly $10bn debut. (as of Mid-2026)"
+    "hostNote": "Chime's ~$18bn IPO valuation in June 2025 outsized Talabat's roughly $10bn debut. (as of Mid-2026)",
+    "optionBImage": "/logos/talabat.svg",
+    "optionAImage": "/logos/chime.svg"
   },
   {
     "id": "R2-24",
@@ -1248,7 +1352,8 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Chime's IPO valued it near $18bn, ahead of Klarna's roughly $15bn listing a few months later. (as of Mid-2026)",
-    "optionBImage": "/logos/klarna.svg"
+    "optionBImage": "/logos/klarna.svg",
+    "optionAImage": "/logos/chime.svg"
   },
   {
     "id": "R2-25",
@@ -1259,7 +1364,9 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Tether (~$500bn) and ByteDance (~$480bn) are close, but Tether has generally edged ahead. (as of Mid-2026)"
+    "hostNote": "Tether (~$500bn) and ByteDance (~$480bn) are close, but Tether has generally edged ahead. (as of Mid-2026)",
+    "optionAImage": "/logos/tether.svg",
+    "optionBImage": "/logos/bytedance.svg"
   },
   {
     "id": "R2-26",
@@ -1270,7 +1377,9 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Databricks' valuation of well over $100bn dwarfs Discord's roughly $15bn. (as of Mid-2026)"
+    "hostNote": "Databricks' valuation of well over $100bn dwarfs Discord's roughly $15bn. (as of Mid-2026)",
+    "optionAImage": "/logos/databricks.svg",
+    "optionBImage": "/logos/discord.svg"
   },
   {
     "id": "R2-27",
@@ -1281,7 +1390,9 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Even after a strong 2026 debut, Cerebras still trails Databricks' much larger valuation. (as of Mid-2026)"
+    "hostNote": "Even after a strong 2026 debut, Cerebras still trails Databricks' much larger valuation. (as of Mid-2026)",
+    "optionAImage": "/logos/cerebras.svg",
+    "optionBImage": "/logos/databricks.svg"
   },
   {
     "id": "R2-28",

@@ -107,7 +107,7 @@ export class GameEngine {
     }
 
     const slot = this.players.length + 1;
-    this.players.push({ id, name, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
+    this.players.push({ id, name: name || `Player ${slot}`, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
     this._emit();
     return { ok: true, slot };
   }

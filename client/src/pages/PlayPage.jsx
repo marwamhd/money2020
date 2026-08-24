@@ -131,9 +131,16 @@ function PlayPageBody() {
     socket.emit("join", { name: value, token: myToken });
   }
 
+  // Re-joins on the current connection before sending "ready", rather than assuming a
+  // prior join already landed on this exact socket — closes a race where a phone's
+  // wifi/cellular blip reconnects with a fresh socket.id just as "ready" is pressed,
+  // and the bare "ready" emit would silently drop since the server can't yet map that
+  // new socket back to our player token.
   function pressReady() {
     if (!name.trim()) return;
-    socket.emit("ready");
+    socket.emit("join", { token: myTokenRef.current }, () => {
+      socket.emit("ready");
+    });
   }
 
   function submitEmail() {

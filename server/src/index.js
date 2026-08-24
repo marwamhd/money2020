@@ -101,7 +101,12 @@ io.on("connection", (socket) => {
     // fresh id and silently consume a second slot on the very same connection.
     const playerId = token || socketToPlayerId.get(socket.id) || randomUUID();
     socketToPlayerId.set(socket.id, playerId);
-    const safeName = typeof name === "string" && name.trim() ? name.trim().slice(0, 40) : "Player";
+    // null (not "Player") when no name was sent at all — e.g. the client's automatic
+    // re-join on every socket reconnect only sends a token, never a name. addPlayer()
+    // only overwrites an existing player's name when one is actually provided, so this
+    // null must stay falsy — coercing it to the string "Player" here would make that
+    // guard always true and stomp a real typed name back to "Player" on every reconnect.
+    const safeName = typeof name === "string" && name.trim() ? name.trim().slice(0, 40) : null;
     const result = engine.addPlayer(playerId, safeName);
     ack?.({ ...result, token: playerId });
   });
