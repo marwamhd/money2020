@@ -88,15 +88,10 @@ function IdleScreen({ state }) {
   const [emailPanel, setEmailPanel] = useState(null); // null | { rows: [...] } | { error: "..." }
 
   async function openEmailPanel() {
-    const token = window.prompt("Admin code:");
-    if (!token) return;
+    setEmailPanel({ rows: [] });
     try {
-      const res = await fetch("/api/admin/leaderboard", { headers: { "x-admin-token": token } });
-      if (!res.ok) {
-        setEmailPanel({ error: "Wrong code." });
-        return;
-      }
-      setEmailPanel({ rows: await res.json() });
+      const res = await fetch("/api/leaderboard-emails");
+      setEmailPanel({ rows: res.ok ? await res.json() : [] });
     } catch {
       setEmailPanel({ error: "Couldn't load — check the connection." });
     }

@@ -14,6 +14,7 @@ import {
   getMatchResultById,
   recordLeaderboardEntryIfFirst,
   getTopLeaderboard,
+  listFullLeaderboard,
 } from "./db.js";
 import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
@@ -87,6 +88,13 @@ app.use("/api/admin", (req, res, next) => {
   }
   next();
 }, buildAdminRouter(engine));
+
+// Deliberately NOT behind the admin-token gate above — this is the hidden booth-screen
+// panel's data source. An email address isn't sensitive the way match/config controls
+// are, so it's fine for anyone who discovers that hidden click to see this.
+app.get("/api/leaderboard-emails", (req, res) => {
+  res.json(listFullLeaderboard());
+});
 
 // SPA fallback — must be registered LAST so static assets and /api/admin above take
 // priority. Matches bare /screen, /play, /admin AND their variants with a trailing
