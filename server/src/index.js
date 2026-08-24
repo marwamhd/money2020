@@ -6,7 +6,15 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { Server } from "socket.io";
 
-import { getActiveQuestions, persistMatchResults, getConfigOverrides, setMatchResultEmail, getTopLeaderboard } from "./db.js";
+import {
+  getActiveQuestions,
+  persistMatchResults,
+  getConfigOverrides,
+  setMatchResultEmail,
+  getMatchResultById,
+  recordLeaderboardEntryIfFirst,
+  getTopLeaderboard,
+} from "./db.js";
 import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
@@ -95,7 +103,7 @@ io.on("connection", (socket) => {
   // never throw here, since an uncaught exception in a socket handler crashes the whole
   // process (both players' match, for everyone at the booth), not just this connection.
   socket.on(COMMANDS.JOIN, (payload, ack) => {
-    const { name, token } = payload || {};
+    const { name, token, code } = payload || {};
     // Reuse this connection's own id for a repeated join without a token (e.g. a client
     // retry before it received its token back) — otherwise each such call would mint a
     // fresh id and silently consume a second slot on the very same connection.
@@ -107,7 +115,7 @@ io.on("connection", (socket) => {
     // null must stay falsy — coercing it to the string "Player" here would make that
     // guard always true and stomp a real typed name back to "Player" on every reconnect.
     const safeName = typeof name === "string" && name.trim() ? name.trim().slice(0, 40) : null;
-    const result = engine.addPlayer(playerId, safeName);
+    const result = engine.addPlayer(playerId, safeName, code);
     ack?.({ ...result, token: playerId });
   });
 
@@ -136,7 +144,15 @@ io.on("connection", (socket) => {
       return ack?.({ ok: false, error: "No completed result to attach an email to" });
     }
 
-    setMatchResultEmail(matchResultId, email.trim());
+    const trimmedEmail = email.trim();
+    setMatchResultEmail(matchResultId, trimmedEmail);
+
+    // Submitting an email is what enters a player into the persistent leaderboard —
+    // if this email already has an entry (a repeat player), their first score stands.
+    const result = getMatchResultById(matchResultId);
+    if (result) {
+      recordLeaderboardEntryIfFirst({ name: result.playerName, score: result.score, email: trimmedEmail });
+    }
     ack?.({ ok: true });
   });
 

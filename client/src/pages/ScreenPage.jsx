@@ -76,7 +76,9 @@ function Confetti() {
 function IdleScreen({ state }) {
   const readyCount = state.players.filter((p) => p.ready).length;
   const stillNeeded = 2 - readyCount;
-  const joinUrl = `${window.location.origin}/play/booth`;
+  // Keyed to this session's matchCode (fresh every reset/openNextMatch) so a screenshot
+  // or a leftover browser tab from a previous match's QR can't be used to join this one.
+  const joinUrl = `${window.location.origin}/play/${state.matchCode}`;
   const board = state.leaderboard;
 
   return (
@@ -415,7 +417,7 @@ function FinishedScreen({ state }) {
 
   const playerA = state.players.find((p) => p.slot === 1);
   const playerB = state.players.find((p) => p.slot === 2);
-  const winner = playerA.score === playerB.score ? null : playerA.score > playerB.score ? playerA : playerB;
+  const winner = state.winnerId === null ? null : state.winnerId === playerA.id ? playerA : playerB;
   const runnerUp = winner ? (winner === playerA ? playerB : playerA) : null;
   const hi = Math.max(playerA.score, playerB.score);
   const lo = Math.min(playerA.score, playerB.score);
@@ -442,6 +444,9 @@ function FinishedScreen({ state }) {
       <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
         {winner ? `${winner.name} takes it` : "Dead heat"}
       </h3>
+      {winner && state.tieBroken && (
+        <span style={{ fontSize: "1.2cqw", color: MUTED }}>Tied on points — {winner.name} answered faster.</span>
+      )}
       <div style={{ display: "flex", gap: "1.6cqw" }}>
         <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: "#fff", border: `2px solid ${BLUE}`, display: "flex", flexDirection: "column", gap: 6 }}>
           <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>WINNER</span>

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = path.join(__dirname, "..", "data", "game.db");
+const DB_PATH = process.env.M2020_DB_PATH || path.join(__dirname, "..", "data", "game.db");
 const QUESTIONS_SEED_PATH = path.join(__dirname, "..", "data", "questions.json");
 
 export const db = new Database(DB_PATH);
@@ -32,6 +32,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     score INTEGER NOT NULL,
+    email TEXT,
     achieved_at TEXT NOT NULL
   );
 
@@ -63,6 +64,15 @@ if (!questionColumns.includes("question_image")) {
   db.exec("ALTER TABLE questions ADD COLUMN question_image TEXT");
 }
 
+// Migration for DBs created before leaderboard entries were keyed by email.
+const leaderboardColumns = db.prepare("PRAGMA table_info(leaderboard)").all().map((c) => c.name);
+if (!leaderboardColumns.includes("email")) {
+  db.exec("ALTER TABLE leaderboard ADD COLUMN email TEXT");
+}
+// SQLite treats every NULL as distinct for uniqueness purposes, so this only enforces
+// one row per non-null email — legacy rows from before email was required are unaffected.
+db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_leaderboard_email ON leaderboard(email)");
+
 export function getActiveQuestions() {
   const rows = db
     .prepare(
@@ -77,7 +87,7 @@ export function getActiveQuestions() {
 
 export function getTopLeaderboard(limit = 5) {
   return db
-    .prepare(`SELECT name, score FROM leaderboard ORDER BY score DESC, achieved_at ASC LIMIT ?`)
+    .prepare(`SELECT name, score FROM leaderboard WHERE email IS NOT NULL ORDER BY score DESC, achieved_at ASC LIMIT ?`)
     .all(limit);
 }
 
@@ -153,9 +163,12 @@ const insertMatchResult = db.prepare(`
   VALUES (@matchCode, @playerName, @score, @email, @createdAt)
 `);
 
+// Only inserted once a player submits an email (see recordLeaderboardEntryIfFirst below) —
+// a played-but-unclaimed match still gets a match_results row, just never a leaderboard one.
 const insertLeaderboardEntry = db.prepare(`
-  INSERT INTO leaderboard (name, score, achieved_at)
-  VALUES (@name, @score, @achievedAt)
+  INSERT INTO leaderboard (name, score, email, achieved_at)
+  VALUES (@name, @score, @email, @achievedAt)
+  ON CONFLICT(email) DO NOTHING
 `);
 
 // Returns { [player.id]: matchResultRowId } so the caller can later attach an
@@ -166,13 +179,28 @@ export const persistMatchResults = db.transaction((players, matchCode = null) =>
   players.forEach(({ id, name, score }) => {
     const { lastInsertRowid } = insertMatchResult.run({ matchCode, playerName: name, score, email: null, createdAt: now });
     resultIdsByPlayerId[id] = lastInsertRowid;
-    insertLeaderboardEntry.run({ name, score, achievedAt: now });
   });
   return resultIdsByPlayerId;
 });
 
 export function setMatchResultEmail(matchResultId, email) {
   db.prepare("UPDATE match_results SET email = ? WHERE id = ?").run(email, matchResultId);
+}
+
+export function getMatchResultById(id) {
+  return db
+    .prepare(
+      `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt
+       FROM match_results WHERE id = ?`
+    )
+    .get(id);
+}
+
+// Submitting an email is what enters a player into the persistent leaderboard. If this
+// email already has an entry (a repeat player), the new score is silently ignored —
+// their first submitted score stands, per the "no repeat-play overwrites" requirement.
+export function recordLeaderboardEntryIfFirst({ name, score, email }) {
+  insertLeaderboardEntry.run({ name, score, email, achievedAt: new Date().toISOString() });
 }
 
 export function listMatchResults() {

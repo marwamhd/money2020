@@ -7,7 +7,11 @@ import "./styles.css";
 
 function Router() {
   const path = window.location.pathname;
-  if (path.startsWith("/play")) return <PlayPage />;
+  if (path.startsWith("/play")) {
+    // /play/:code — the match code from the booth screen's QR, required to join.
+    const code = path.split("/")[2] || null;
+    return <PlayPage code={code} />;
+  }
   if (path.startsWith("/screen")) return <ScreenPage />;
   if (path.startsWith("/admin")) return <AdminPage />;
   return <ScreenPage />;

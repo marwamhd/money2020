@@ -60,22 +60,23 @@ function QHeader({ state }) {
   );
 }
 
-export default function PlayPage() {
+export default function PlayPage({ code }) {
   const { connected } = useGameSocket();
   return (
     <>
       <ReconnectingBanner connected={connected} />
-      <PlayPageBody />
+      <PlayPageBody code={code} />
     </>
   );
 }
 
-function PlayPageBody() {
+function PlayPageBody({ code }) {
   const { state, socket } = useGameSocket();
   const [name, setName] = useState("");
   const [myToken, setMyToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
   const myTokenRef = useRef(myToken);
   myTokenRef.current = myToken;
+  const [joinError, setJoinError] = useState(null);
 
   // Track locally what I picked for the current question (the server never echoes this
   // back to avoid leaking it to the opponent), and my score right as this question
@@ -93,17 +94,18 @@ function PlayPageBody() {
   useEffect(() => {
     if (!socket) return;
     const doJoin = () => {
-      socket.emit("join", { token: myTokenRef.current }, (ack) => {
+      socket.emit("join", { token: myTokenRef.current, code }, (ack) => {
         if (ack?.token) {
           localStorage.setItem(TOKEN_KEY, ack.token);
           setMyToken(ack.token);
         }
+        if (ack && ack.ok === false) setJoinError(ack.error || "Unable to join this match.");
       });
     };
     doJoin();
     socket.on("connect", doJoin);
     return () => socket.off("connect", doJoin);
-  }, [socket]);
+  }, [socket, code]);
 
   const me = state?.players.find((p) => p.id === myToken);
 
@@ -114,6 +116,15 @@ function PlayPageBody() {
       scoreAtQuestionStartRef.current = me?.score ?? 0;
     }
   }, [state, me]);
+
+  if (joinError) {
+    return (
+      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 34, textAlign: "center" }}>
+        <span style={{ fontSize: 20, fontWeight: 600, color: NAVY }}>Can't join this match</span>
+        <span style={{ fontSize: 15, color: MUTED }}>{joinError}</span>
+      </div>
+    );
+  }
 
   if (!state) {
     return (
@@ -128,7 +139,7 @@ function PlayPageBody() {
 
   function submitName(value) {
     setName(value);
-    socket.emit("join", { name: value, token: myToken });
+    socket.emit("join", { name: value, token: myToken, code });
   }
 
   // Re-joins on the current connection before sending "ready", rather than assuming a
@@ -138,7 +149,8 @@ function PlayPageBody() {
   // new socket back to our player token.
   function pressReady() {
     if (!name.trim()) return;
-    socket.emit("join", { token: myTokenRef.current }, () => {
+    socket.emit("join", { token: myTokenRef.current, code }, (ack) => {
+      if (ack && ack.ok === false) return setJoinError(ack.error || "Unable to join this match.");
       socket.emit("ready");
     });
   }
@@ -329,8 +341,13 @@ function PlayPageBody() {
   if (state.state === "finished") {
     const myScore = me?.score ?? 0;
     const otherScore = other?.score ?? 0;
-    const win = myScore > otherScore;
-    const tie = myScore === otherScore;
+    const win = state.winnerId === myToken;
+    const tie = state.winnerId === null;
+    const tieNote = state.tieBroken
+      ? win
+        ? `Tied on points — you answered faster.`
+        : `Tied on points — ${otherName} answered faster.`
+      : null;
 
     return (
       <div style={{ height: "100vh", background: TINT, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22 }}>
@@ -339,6 +356,7 @@ function PlayPageBody() {
           <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
             {tie ? "Dead heat" : win ? "You won" : "You lost"}
           </h3>
+          {tieNote && <span style={{ fontSize: 14, color: MUTED }}>{tieNote}</span>}
         </div>
 
         <div style={{ display: "flex", gap: 12 }}>
@@ -354,54 +372,53 @@ function PlayPageBody() {
           </div>
         </div>
 
-        {win ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>EMAIL FOR PRIZES</span>
-            {emailStatus === "sent" ? (
-              <div style={{ padding: 20, borderRadius: 14, background: "#fff", border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
-                Thanks — we'll be in touch.
-              </div>
-            ) : (
-              <>
-                <input
-                  value={email}
-                  placeholder="name@company.com"
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{ padding: "18px 20px", borderRadius: 14, background: "#fff", border: "1px solid #C9D2E8", fontSize: 16, color: NAVY, fontFamily: "inherit", outline: "none" }}
-                />
-                <div
-                  onClick={submitEmail}
-                  style={{
-                    padding: 20,
-                    borderRadius: 14,
-                    textAlign: "center",
-                    fontSize: 17,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    background: NAVY,
-                    color: "#fff",
-                  }}
-                >
-                  {emailStatus === "sending" ? "Sending…" : "Claim my reward"}
-                </div>
-                {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>Couldn't submit that — check the email and try again.</span>}
-                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>Winners get $200 credited on their first investment.</p>
-              </>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ padding: 22, borderRadius: 16, background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
-              <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? "So close." : "Good run."}</span>
-              <span style={{ fontSize: 14, lineHeight: 1.55, color: BODY }}>
-                You answered {me?.answeredCount ?? 0} questions in {duration(me?.timeSpentMs ?? 0)}. Come back and take the title.
-              </span>
-            </div>
-            <div style={{ padding: 20, borderRadius: 14, textAlign: "center", fontSize: 17, fontWeight: 600, background: "#DCE1EE", color: "#9AA3BF" }}>
-              Waiting for the booth host to open the next match
-            </div>
+        {!win && (
+          <div style={{ padding: 22, borderRadius: 16, background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? "So close." : "Good run."}</span>
+            <span style={{ fontSize: 14, lineHeight: 1.55, color: BODY }}>
+              You answered {me?.answeredCount ?? 0} questions in {duration(me?.timeSpentMs ?? 0)}. Come back and take the title.
+            </span>
           </div>
         )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>EMAIL TO ENTER THE LEADERBOARD</span>
+          {emailStatus === "sent" ? (
+            <div style={{ padding: 20, borderRadius: 14, background: "#fff", border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
+              Thanks — we'll be in touch.
+            </div>
+          ) : (
+            <>
+              <input
+                value={email}
+                placeholder="name@company.com"
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ padding: "18px 20px", borderRadius: 14, background: "#fff", border: "1px solid #C9D2E8", fontSize: 16, color: NAVY, fontFamily: "inherit", outline: "none" }}
+              />
+              <div
+                onClick={submitEmail}
+                style={{
+                  padding: 20,
+                  borderRadius: 14,
+                  textAlign: "center",
+                  fontSize: 17,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: NAVY,
+                  color: "#fff",
+                }}
+              >
+                {emailStatus === "sending" ? "Sending…" : "Submit"}
+              </div>
+              {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>Couldn't submit that — check the email and try again.</span>}
+              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>Top 5 on the leaderboard get $200 credited on their first investment.</p>
+            </>
+          )}
+        </div>
+
+        <div style={{ padding: 20, borderRadius: 14, textAlign: "center", fontSize: 17, fontWeight: 600, background: "#DCE1EE", color: "#9AA3BF" }}>
+          Waiting for the booth host to open the next match
+        </div>
       </div>
     );
   }

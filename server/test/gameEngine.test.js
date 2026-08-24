@@ -8,8 +8,49 @@ const FAST_CONFIG = { COUNTDOWN_MS: 30, SECTION_DURATION_MS: 500, QUESTION_TIMEO
 function makeEngine(config = FAST_CONFIG) {
   const events = [];
   const engine = new GameEngine(TEST_QUESTIONS, (snap) => events.push(snap), config);
+  // Auto-supplies the current match code so every existing addPlayer(id, name) call below
+  // keeps working unchanged — those tests are about other behavior, not code validation,
+  // which gets its own dedicated tests further down using the real 3-arg form directly.
+  const realAddPlayer = engine.addPlayer.bind(engine);
+  engine.addPlayer = (id, name) => realAddPlayer(id, name, engine.matchCode);
   return { engine, events };
 }
+
+test("a join with the wrong match code (a stale QR from a previous session) is rejected", () => {
+  const engine = new GameEngine(TEST_QUESTIONS, () => {}, FAST_CONFIG);
+  const result = engine.addPlayer("p1", "Alice", "not-the-real-code");
+  assert.equal(result.ok, false);
+  assert.equal(engine.players.length, 0);
+});
+
+test("a join with the correct current match code succeeds", () => {
+  const engine = new GameEngine(TEST_QUESTIONS, () => {}, FAST_CONFIG);
+  const result = engine.addPlayer("p1", "Alice", engine.matchCode);
+  assert.equal(result.ok, true);
+});
+
+test("openNextMatch issues a fresh match code, invalidating the previous session's QR", async () => {
+  const engine = new GameEngine(TEST_QUESTIONS, () => {}, FAST_CONFIG);
+  const oldCode = engine.matchCode;
+  engine.addPlayer("p1", "Alice", oldCode);
+  engine.addPlayer("p2", "Bob", oldCode);
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine.forceEnd();
+  assert.equal(engine.state, "finished");
+
+  engine.openNextMatch();
+  assert.notEqual(engine.matchCode, oldCode);
+  const stale = engine.addPlayer("p3", "Carl", oldCode);
+  assert.equal(stale.ok, false, "the previous session's code must no longer work");
+});
+
+test("a reconnecting player must still supply the current match code, not just any code", () => {
+  const engine = new GameEngine(TEST_QUESTIONS, () => {}, FAST_CONFIG);
+  engine.addPlayer("p1", "Alice", engine.matchCode);
+  const staleReconnect = engine.addPlayer("p1", "Alice", "wrong-code");
+  assert.equal(staleReconnect.ok, false);
+});
 
 test("exactly two players can join; a third is rejected", () => {
   const { engine } = makeEngine();
@@ -267,6 +308,51 @@ test("forceEnd during the initial countdown finishes cleanly and does not resurr
   // it would fire here and flip the match back to "playing".
   await new Promise((r) => setTimeout(r, 200));
   assert.equal(engine.state, "finished", "the countdown's own timer must not resurrect the match afterward");
+});
+
+test("the higher score wins outright, regardless of time spent", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine.players[0].score = 300;
+  engine.players[0].timeSpentMs = 50000; // slower...
+  engine.players[1].score = 200;
+  engine.players[1].timeSpentMs = 10000; // ...but faster; score still decides it
+  engine.forceEnd();
+  assert.equal(engine.winnerId, "p1");
+  assert.equal(engine.tieBroken, false);
+});
+
+test("an equal score is broken by whoever spent less total time", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine.players[0].score = 300;
+  engine.players[0].timeSpentMs = 40000;
+  engine.players[1].score = 300;
+  engine.players[1].timeSpentMs = 25000; // faster
+  engine.forceEnd();
+  assert.equal(engine.winnerId, "p2");
+  assert.equal(engine.tieBroken, true);
+});
+
+test("an equal score AND equal time is a genuine, undecided tie", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine.players[0].score = 150;
+  engine.players[0].timeSpentMs = 30000;
+  engine.players[1].score = 150;
+  engine.players[1].timeSpentMs = 30000;
+  engine.forceEnd();
+  assert.equal(engine.winnerId, null);
+  assert.equal(engine.tieBroken, false);
 });
 
 test("a finished match is immutable: disconnecting afterward does not change players or re-emit", async () => {

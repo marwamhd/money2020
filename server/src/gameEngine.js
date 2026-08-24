@@ -1,4 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { GAME_STATES, ROUNDS, DEFAULTS, scoreAnswers } from "./gameContract.js";
+
+// Short, URL-friendly code identifying one match "session" — embedded in the booth
+// screen's QR code so a stale/previous session's QR can't be used to join a new one.
+function generateMatchCode() {
+  return randomUUID().replace(/-/g, "").slice(0, 8);
+}
 
 function shuffle(array) {
   const copy = [...array];
@@ -60,6 +67,9 @@ export class GameEngine {
     this.sectionEndsAt = null;
     this.revealUntil = null;
     this.answerOrder = []; // [{ playerId, choice }] in receipt order, for the current question
+    this.winnerId = null; // set once, in _finish() — null means a genuine tie (equal score AND equal time)
+    this.tieBroken = false; // true when winnerId was decided by time-spent, not score
+    this.matchCode = generateMatchCode();
   }
 
   getSnapshot() {
@@ -76,6 +86,9 @@ export class GameEngine {
         // picked (that stays hidden until reveal), just that they've answered.
         hasAnsweredCurrent: answeredIds.has(id),
       })),
+      winnerId: this.winnerId,
+      tieBroken: this.tieBroken,
+      matchCode: this.matchCode,
       countdownEndsAt: this.countdownEndsAt,
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
@@ -90,7 +103,15 @@ export class GameEngine {
     this.onChange(this.getSnapshot());
   }
 
-  addPlayer(id, name) {
+  // `code` must match this session's matchCode (from the QR the player scanned) — this
+  // is what stops a stale QR from a previous match (or a screenshot of one) from being
+  // used to join or silently re-enter a later session, even for an already-joined
+  // player reconnecting: their code is fixed at page-load time from the URL they're on,
+  // so it naturally stops matching once the match they were in ends and a new one starts.
+  addPlayer(id, name, code) {
+    if (code !== this.matchCode) {
+      return { ok: false, error: "This QR code has expired — scan the current one on the booth screen." };
+    }
     const existing = this.players.find((p) => p.id === id);
     if (existing) {
       existing.connected = true;
@@ -296,7 +317,31 @@ export class GameEngine {
     this.currentRound = null;
     this.currentQuestion = null;
     this.sectionEndsAt = null;
+    this._decideWinner();
     this._emit();
+  }
+
+  // Server-authoritative winner decision, computed once at finish so every client reads
+  // the same answer instead of each independently comparing raw scores. A tied score is
+  // broken by total time spent (faster wins); only an exact tie on BOTH score and time
+  // is a genuine, undecided tie (winnerId stays null).
+  _decideWinner() {
+    const [a, b] = this.players;
+    if (!a || !b) {
+      this.winnerId = null;
+      this.tieBroken = false;
+      return;
+    }
+    if (a.score !== b.score) {
+      this.winnerId = a.score > b.score ? a.id : b.id;
+      this.tieBroken = false;
+    } else if (a.timeSpentMs !== b.timeSpentMs) {
+      this.winnerId = a.timeSpentMs < b.timeSpentMs ? a.id : b.id;
+      this.tieBroken = true;
+    } else {
+      this.winnerId = null;
+      this.tieBroken = false;
+    }
   }
 
   // Admin recovery control: end a stuck match right now, keeping whatever scores

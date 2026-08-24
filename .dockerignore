@@ -1,0 +1,10 @@
+node_modules
+client/node_modules
+server/node_modules
+client/dist
+server/data/game.db
+server/data/game.db-shm
+server/data/game.db-wal
+.git
+.DS_Store
+*.log
