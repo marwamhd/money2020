@@ -37,9 +37,6 @@ console.log(`Admin token (also settable via M2020_ADMIN_TOKEN): ${ADMIN_TOKEN}`)
 const app = express();
 app.use(cors());
 app.use(express.static(CLIENT_DIST));
-app.get(["/play/:code", "/screen/:code", "/admin"], (req, res) => {
-  res.sendFile(path.join(CLIENT_DIST, "index.html"));
-});
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*" } });
@@ -90,6 +87,14 @@ app.use("/api/admin", (req, res, next) => {
   }
   next();
 }, buildAdminRouter(engine));
+
+// SPA fallback — must be registered LAST so static assets and /api/admin above take
+// priority. Matches bare /screen, /play, /admin AND their variants with a trailing
+// segment (/play/:code, /screen/:code); the client's own router (main.jsx) decides
+// what to actually render for the path once index.html loads.
+app.get("*", (req, res) => {
+  res.sendFile(path.join(CLIENT_DIST, "index.html"));
+});
 
 // Player identity must survive a socket reconnect, so it can't be socket.id (which
 // changes on every reload/reconnect). Each connection maps to a durable player token:
