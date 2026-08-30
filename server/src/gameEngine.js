@@ -178,6 +178,7 @@ export class GameEngine {
   }
 
   _startCountdown() {
+    this._cancelCountdown(); // in case a stray prior timer is still pending — never leave two live
     this.state = GAME_STATES.COUNTDOWN;
     this.countdownEndsAt = Date.now() + this.config.COUNTDOWN_MS;
     // Show the round this countdown is FOR (upcoming), not the one that just ended —
@@ -201,6 +202,10 @@ export class GameEngine {
   }
 
   _startNextSection() {
+    // Guards against a stray/orphaned countdown timer (see _startCountdown) firing this
+    // a second time after the state has already moved on — that would double-increment
+    // roundIndex and silently skip an entire round straight to _finish().
+    if (this.state !== GAME_STATES.COUNTDOWN) return;
     this.roundIndex++;
     if (this.roundIndex >= ROUNDS.length) {
       this._finish();
@@ -221,6 +226,11 @@ export class GameEngine {
   }
 
   _serveNextQuestion() {
+    // Guards against a stray/orphaned reveal timer (see _startReveal) firing this after
+    // the state has already moved on (e.g. into the next round's countdown) — without
+    // this, it would read stale leftover sectionEndsAt/roundQueue and could trigger a
+    // second, uninvited _endSection() for a round that's already been left behind.
+    if (this.state !== GAME_STATES.PLAYING) return;
     const remaining = this.sectionEndsAt - Date.now();
     if (remaining <= 0 || this.roundQueue.length === 0) {
       this._endSection();
@@ -248,6 +258,7 @@ export class GameEngine {
   _endSection() {
     this._cancelQuestionTimer();
     this.currentQuestion = null;
+    this.sectionEndsAt = null;
     const isLastRound = this.roundIndex >= ROUNDS.length - 1;
     if (isLastRound) {
       this._finish();
@@ -289,6 +300,7 @@ export class GameEngine {
   // Hold on the resolved question for a beat — correct answer + pick counts visible —
   // before moving on. Without this, the question would change before anyone could see it.
   _startReveal() {
+    this._cancelReveal(); // in case a stray prior timer is still pending — never leave two live
     this.revealUntil = Date.now() + this.config.REVEAL_MS;
     this._emit();
 

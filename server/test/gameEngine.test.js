@@ -278,6 +278,48 @@ test("a full round transitions playing -> countdown (showing the upcoming round)
   await waitUntil(() => engine.state === "playing" && engine.currentRound === "R2");
 });
 
+test("an orphaned duplicate countdown timer firing after the round already started does not skip a round", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  assert.equal(engine.state, "countdown");
+
+  engine._startNextSection(); // the real transition into round 1
+  assert.equal(engine.state, "playing");
+  assert.equal(engine.roundIndex, 0);
+
+  // Simulates a second, orphaned countdown timer (see _startCountdown's own guard
+  // against this) firing again after the state already moved on — must be a no-op,
+  // not a second incrementing of roundIndex.
+  engine._startNextSection();
+  assert.equal(engine.roundIndex, 0, "roundIndex must not double-increment from a stray call");
+  assert.equal(engine.state, "playing");
+  assert.equal(engine.currentRound, "R1");
+});
+
+test("an orphaned duplicate reveal timer firing after the round already ended does not re-trigger _endSection", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine._startNextSection(); // into round 1, playing
+  assert.equal(engine.state, "playing");
+
+  engine._endSection(); // simulates the round's real, legitimate end
+  const roundIndexAfterRealEnd = engine.roundIndex;
+  const stateAfterRealEnd = engine.state;
+
+  // Simulates a second, orphaned reveal timer (see _startReveal's own guard against
+  // this) calling _serveNextQuestion after the state already moved past "playing" —
+  // must be a no-op, not a second _endSection() acting on stale leftover state.
+  engine._serveNextQuestion();
+  assert.equal(engine.roundIndex, roundIndexAfterRealEnd, "a stray call must not advance roundIndex again");
+  assert.equal(engine.state, stateAfterRealEnd, "a stray call must not change state again");
+});
+
 test("disconnecting during a between-round countdown (round 2/3) does NOT wipe progress, unlike the kickoff countdown", async () => {
   const { engine } = makeEngine({ COUNTDOWN_MS: 60, SECTION_DURATION_MS: 40, QUESTION_TIMEOUT_MS: 5000, RUNNER_UP_POINTS: 30, REVEAL_MS: 10 });
   engine.addPlayer("p1", "Alice");
