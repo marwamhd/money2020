@@ -108,6 +108,8 @@ function PlayPageBody({ code }) {
   }, [socket, code]);
 
   const me = state?.players.find((p) => p.id === myToken);
+  const other = state?.players.find((p) => p.id !== myToken);
+  const otherName = other?.name ?? "Player 2";
 
   useEffect(() => {
     const qid = state?.currentQuestion?.id;
@@ -116,6 +118,146 @@ function PlayPageBody({ code }) {
       scoreAtQuestionStartRef.current = me?.score ?? 0;
     }
   }, [state, me]);
+
+  // Freezes this player's own finished-match view the moment their match ends. Every
+  // match has its own one-time QR code, so once it ends this player can never rejoin or
+  // take part in anything that comes next — there's no "live state" worth following
+  // afterward, just this terminal result screen. Scoped to `code` (this specific match's
+  // one-time URL) + myToken, NOT persisted forever: a fresh page load with a different
+  // `code` (a genuinely new match, even on a reused token) must not restore stale data.
+  const stickyKey = `m2020_sticky_result_${code}_${myToken}`;
+  const [stickyResult, setStickyResult] = useState(() => {
+    if (!myToken) return null;
+    try {
+      const raw = localStorage.getItem(stickyKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+  useEffect(() => {
+    if (state?.state === "finished" && me?.matchResultId && !stickyResult) {
+      const snapshot = {
+        myScore: me.score,
+        myName: me.name,
+        myAnsweredCount: me.answeredCount,
+        myTimeSpentMs: me.timeSpentMs,
+        matchResultId: me.matchResultId,
+        otherScore: other?.score ?? 0,
+        otherName,
+        winnerId: state.winnerId,
+        tieBroken: state.tieBroken,
+      };
+      setStickyResult(snapshot);
+      try {
+        localStorage.setItem(stickyKey, JSON.stringify(snapshot));
+      } catch {
+        // ignore — worst case this player just can't resume after a refresh
+      }
+      // A submission already recorded for this exact match (e.g. before a page refresh)
+      // must stay final — never re-show the form and risk a second, different email.
+      if (localStorage.getItem(`m2020_email_sent_${me.matchResultId}`)) {
+        setEmailStatus("sent");
+      }
+    }
+  }, [state, me, other, otherName, stickyResult, stickyKey]);
+
+  // Every match has its own one-time QR code, so once this player's match ends they can
+  // never rejoin or take part in whatever comes next — there's no "live state" worth
+  // following afterward, just this terminal result screen. Checked BEFORE joinError/
+  // connecting: a stale-code rejoin (the booth having moved to the next pair) or even
+  // a not-yet-connected socket must never hide an already-known result — stickyResult
+  // (restored from localStorage on mount) already covers both of those cases.
+  if (stickyResult || state?.state === "finished") {
+    const data = stickyResult ?? {
+      myScore: me?.score ?? 0,
+      myName: me?.name,
+      myAnsweredCount: me?.answeredCount ?? 0,
+      myTimeSpentMs: me?.timeSpentMs ?? 0,
+      otherScore: other?.score ?? 0,
+      otherName,
+      winnerId: state?.winnerId,
+      tieBroken: state?.tieBroken,
+    };
+    const myScore = data.myScore;
+    const otherScore = data.otherScore;
+    const win = data.winnerId === myToken;
+    const tie = data.winnerId === null;
+    const tieNote = data.tieBroken
+      ? win
+        ? `Tied on points — you answered faster.`
+        : `Tied on points — ${data.otherName} answered faster.`
+      : null;
+
+    return (
+      <div style={{ height: "100vh", background: TINT, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <span style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>FINAL · 3 ROUNDS</span>
+          <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
+            {tie ? "Dead heat" : win ? "You won" : "You lost"}
+          </h3>
+          {tieNote && <span style={{ fontSize: 14, color: MUTED }}>{tieNote}</span>}
+        </div>
+
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ flex: 1, padding: 18, borderRadius: 14, background: win ? NAVY : "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: win ? "rgba(255,255,255,.6)" : MUTED }}>
+              {(data.myName ?? "YOU").toUpperCase()}
+            </span>
+            <span style={{ fontFamily: SERIF, fontSize: 36, color: win ? "#fff" : NAVY }}>{myScore.toLocaleString()}</span>
+          </div>
+          <div style={{ flex: 1, padding: 18, borderRadius: 14, background: "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>{data.otherName.toUpperCase()}</span>
+            <span style={{ fontFamily: SERIF, fontSize: 36, color: NAVY }}>{otherScore.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {!win && (
+          <div style={{ padding: 22, borderRadius: 16, background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? "So close." : "Good run."}</span>
+            <span style={{ fontSize: 14, lineHeight: 1.55, color: BODY }}>
+              You answered {data.myAnsweredCount} questions in {duration(data.myTimeSpentMs)}.
+            </span>
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>EMAIL TO ENTER THE LEADERBOARD</span>
+          {emailStatus === "sent" ? (
+            <div style={{ padding: 20, borderRadius: 14, background: "#fff", border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
+              Thanks — we'll be in touch.
+            </div>
+          ) : (
+            <>
+              <input
+                value={email}
+                placeholder="name@company.com"
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ padding: "18px 20px", borderRadius: 14, background: "#fff", border: "1px solid #C9D2E8", fontSize: 16, color: NAVY, fontFamily: "inherit", outline: "none" }}
+              />
+              <div
+                onClick={submitEmail}
+                style={{
+                  padding: 20,
+                  borderRadius: 14,
+                  textAlign: "center",
+                  fontSize: 17,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: NAVY,
+                  color: "#fff",
+                }}
+              >
+                {emailStatus === "sending" ? "Sending…" : "Submit"}
+              </div>
+              {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>Couldn't submit that — check the email and try again.</span>}
+              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>Top 5 on the leaderboard get $200 credited on their first investment.</p>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (joinError) {
     return (
@@ -133,9 +275,6 @@ function PlayPageBody({ code }) {
       </div>
     );
   }
-
-  const other = state.players.find((p) => p.id !== myToken);
-  const otherName = other?.name ?? "Player 2";
 
   function submitName(value) {
     setName(value);
@@ -156,9 +295,11 @@ function PlayPageBody({ code }) {
   }
 
   function submitEmail() {
-    if (!email.trim() || !me?.matchResultId) return;
+    const matchResultId = stickyResult?.matchResultId ?? me?.matchResultId;
+    if (!email.trim() || !matchResultId || emailStatus === "sent" || !socket) return;
     setEmailStatus("sending");
-    socket.emit("submitEmail", { email: email.trim(), matchResultId: me.matchResultId }, (ack) => {
+    socket.emit("submitEmail", { email: email.trim(), matchResultId }, (ack) => {
+      if (ack?.ok) localStorage.setItem(`m2020_email_sent_${matchResultId}`, "1");
       setEmailStatus(ack?.ok ? "sent" : "error");
     });
   }
@@ -333,91 +474,6 @@ function PlayPageBody({ code }) {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (state.state === "finished") {
-    const myScore = me?.score ?? 0;
-    const otherScore = other?.score ?? 0;
-    const win = state.winnerId === myToken;
-    const tie = state.winnerId === null;
-    const tieNote = state.tieBroken
-      ? win
-        ? `Tied on points — you answered faster.`
-        : `Tied on points — ${otherName} answered faster.`
-      : null;
-
-    return (
-      <div style={{ height: "100vh", background: TINT, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>FINAL · 3 ROUNDS</span>
-          <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
-            {tie ? "Dead heat" : win ? "You won" : "You lost"}
-          </h3>
-          {tieNote && <span style={{ fontSize: 14, color: MUTED }}>{tieNote}</span>}
-        </div>
-
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ flex: 1, padding: 18, borderRadius: 14, background: win ? NAVY : "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: win ? "rgba(255,255,255,.6)" : MUTED }}>
-              {(me?.name ?? "YOU").toUpperCase()}
-            </span>
-            <span style={{ fontFamily: SERIF, fontSize: 36, color: win ? "#fff" : NAVY }}>{myScore.toLocaleString()}</span>
-          </div>
-          <div style={{ flex: 1, padding: 18, borderRadius: 14, background: "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>{otherName.toUpperCase()}</span>
-            <span style={{ fontFamily: SERIF, fontSize: 36, color: NAVY }}>{otherScore.toLocaleString()}</span>
-          </div>
-        </div>
-
-        {!win && (
-          <div style={{ padding: 22, borderRadius: 16, background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
-            <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? "So close." : "Good run."}</span>
-            <span style={{ fontSize: 14, lineHeight: 1.55, color: BODY }}>
-              You answered {me?.answeredCount ?? 0} questions in {duration(me?.timeSpentMs ?? 0)}. Come back and take the title.
-            </span>
-          </div>
-        )}
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>EMAIL TO ENTER THE LEADERBOARD</span>
-          {emailStatus === "sent" ? (
-            <div style={{ padding: 20, borderRadius: 14, background: "#fff", border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
-              Thanks — we'll be in touch.
-            </div>
-          ) : (
-            <>
-              <input
-                value={email}
-                placeholder="name@company.com"
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ padding: "18px 20px", borderRadius: 14, background: "#fff", border: "1px solid #C9D2E8", fontSize: 16, color: NAVY, fontFamily: "inherit", outline: "none" }}
-              />
-              <div
-                onClick={submitEmail}
-                style={{
-                  padding: 20,
-                  borderRadius: 14,
-                  textAlign: "center",
-                  fontSize: 17,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background: NAVY,
-                  color: "#fff",
-                }}
-              >
-                {emailStatus === "sending" ? "Sending…" : "Submit"}
-              </div>
-              {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>Couldn't submit that — check the email and try again.</span>}
-              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>Top 5 on the leaderboard get $200 credited on their first investment.</p>
-            </>
-          )}
-        </div>
-
-        <div style={{ padding: 20, borderRadius: 14, textAlign: "center", fontSize: 17, fontWeight: 600, background: "#DCE1EE", color: "#9AA3BF" }}>
-          Waiting for the booth host to open the next match
         </div>
       </div>
     );

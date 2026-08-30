@@ -470,7 +470,7 @@ function FinishedScreen({ state }) {
   const { socket } = useGameSocket();
 
   function openNextMatch() {
-    if (!window.confirm("Open the booth for the next pair? Any player who hasn't submitted their email yet will lose that chance.")) return;
+    if (!window.confirm("Go to the leaderboard and open the booth for the next pair?")) return;
     socket.emit("openNextMatch");
   }
 
@@ -528,7 +528,7 @@ function FinishedScreen({ state }) {
         onClick={openNextMatch}
         style={{ padding: "1.4cqh 2cqw", borderRadius: 999, background: NAVY, color: "#fff", fontSize: "1.3cqw", fontWeight: 600, cursor: "pointer" }}
       >
-        Open the booth for the next pair
+        Go to leaderboard
       </div>
     </div>
   );
