@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
-import { useLanguage, formatDuration, translateDifficulty } from "../i18n.js";
+import { useLanguage, formatDuration, translateDifficulty, logoSrc } from "../i18n.js";
 
 const NAVY = "#020844";
 const BLUE = "#4984fd";
@@ -70,7 +70,7 @@ function Confetti() {
   );
 }
 
-function IdleScreen({ state, t, fonts }) {
+function IdleScreen({ state, t, fonts, lang }) {
   const readyCount = state.players.filter((p) => p.ready).length;
   const stillNeeded = 2 - readyCount;
   // Keyed to this session's matchCode (fresh every reset/openNextMatch) so a screenshot
@@ -106,7 +106,7 @@ function IdleScreen({ state, t, fonts }) {
           minHeight: 0,
         }}
       >
-        <img src="/tanami-logo.png" alt="Tanami" style={{ height: "2.6cqw", width: "auto", alignSelf: "flex-start" }} />
+        <img src={logoSrc(lang)} alt="Tanami" style={{ height: "2.6cqw", width: "auto", alignSelf: "flex-start" }} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY }}>
@@ -350,7 +350,7 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "1.8cqh 2.5cqw", background: "#fff", borderBottom: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <img src="/tanami-logo.png" alt="Tanami" style={{ height: "1.7cqw", width: "auto" }} />
+        <img src={logoSrc(lang)} alt="Tanami" style={{ height: "1.7cqw", width: "auto" }} />
         <span style={{ fontSize: "1.1cqw", letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>
           {t("roundOf3", state.currentRound?.slice(1))} · {roundLabels[state.currentRound]?.toUpperCase()}
         </span>
@@ -549,7 +549,7 @@ function ScreenPageBody() {
   return (
     <div dir={dir} style={{ height: "100vh", width: "100vw", containerType: "size", background: "#fff", display: "flex", fontFamily: fonts.body }}>
       {state.state === "lobby" ? (
-        <IdleScreen state={state} t={t} fonts={fonts} />
+        <IdleScreen state={state} t={t} fonts={fonts} lang={lang} />
       ) : state.state === "countdown" ? (
         <CountdownScreen state={state} t={t} fonts={fonts} roundLabels={roundLabels} />
       ) : state.state === "playing" ? (

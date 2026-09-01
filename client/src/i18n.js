@@ -35,6 +35,12 @@ export function translateDifficulty(difficulty, lang) {
   return DIFFICULTY_LABELS[lang]?.[difficulty] ?? difficulty?.toUpperCase() ?? "";
 }
 
+// The Arabic wordmark from the brand guide (p.5, "Full Color") — separate asset, not a
+// CSS-mirrored version of the English one, since Arabic calligraphy doesn't mirror.
+export function logoSrc(lang) {
+  return lang === "ar" ? "/tanami-logo-ar.png" : "/tanami-logo.png";
+}
+
 // Arabic numeral-noun agreement (1 singular, 2 dual, 3-10 plural, 0/11+ singular-with-
 // digit) — the pattern real Arabic apps use, not classical case-precise duals, which
 // read as stiff/over-formal in casual UI copy. `two` is given in the oblique ("ين")
