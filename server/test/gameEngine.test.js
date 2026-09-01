@@ -434,3 +434,47 @@ test("openNextMatch is a no-op unless the match has actually finished, unlike ad
   assert.equal(engine.state, "lobby");
   assert.equal(engine.players.length, 0);
 });
+
+test("the match language defaults to English, and only the first player to join (slot 1) can change it", () => {
+  const { engine } = makeEngine();
+  assert.equal(engine.language, "en");
+
+  engine.addPlayer("p1", "Alice");
+  engine.addPlayer("p2", "Bob");
+
+  engine.setLanguage("p2", "ar");
+  assert.equal(engine.language, "en", "the second player must not be able to set the language");
+
+  engine.setLanguage("p1", "ar");
+  assert.equal(engine.language, "ar", "the first player's choice is what sticks");
+});
+
+test("setLanguage ignores an unknown language and a language change after the match has started", async () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+
+  engine.setLanguage("p1", "fr");
+  assert.equal(engine.language, "en", "an unsupported language must be ignored");
+
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  await waitUntil(() => engine.state === "playing");
+
+  engine.setLanguage("p1", "ar");
+  assert.equal(engine.language, "en", "language can't change once the match has left the lobby");
+});
+
+test("a fresh match resets the language back to English, even if the previous one was played in Arabic", async () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice");
+  engine.setLanguage("p1", "ar");
+  engine.addPlayer("p2", "Bob");
+  engine.setReady("p1");
+  engine.setReady("p2");
+  engine.forceEnd();
+  assert.equal(engine.state, "finished");
+
+  engine.openNextMatch();
+  assert.equal(engine.language, "en");
+});

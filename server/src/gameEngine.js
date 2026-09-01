@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { GAME_STATES, ROUNDS, DEFAULTS, scoreAnswers } from "./gameContract.js";
+import { GAME_STATES, ROUNDS, DEFAULTS, LANGUAGES, DEFAULT_LANGUAGE, scoreAnswers } from "./gameContract.js";
 
 // Short, URL-friendly code identifying one match "session" — embedded in the booth
 // screen's QR code so a stale/previous session's QR can't be used to join a new one.
@@ -70,6 +70,7 @@ export class GameEngine {
     this.winnerId = null; // set once, in _finish() — null means a genuine tie (equal score AND equal time)
     this.tieBroken = false; // true when winnerId was decided by time-spent, not score
     this.matchCode = generateMatchCode();
+    this.language = DEFAULT_LANGUAGE; // shared for both players — see setLanguage()
   }
 
   getSnapshot() {
@@ -89,6 +90,7 @@ export class GameEngine {
       winnerId: this.winnerId,
       tieBroken: this.tieBroken,
       matchCode: this.matchCode,
+      language: this.language,
       countdownEndsAt: this.countdownEndsAt,
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
@@ -108,9 +110,11 @@ export class GameEngine {
   // used to join or silently re-enter a later session, even for an already-joined
   // player reconnecting: their code is fixed at page-load time from the URL they're on,
   // so it naturally stops matching once the match they were in ends and a new one starts.
+  // `error` is an English fallback (server logs, admin/API debugging); `errorCode` is the
+  // stable identifier the client actually translates and displays — see client/src/i18n.js.
   addPlayer(id, name, code) {
     if (code !== this.matchCode) {
-      return { ok: false, error: "This QR code has expired — scan the current one on the booth screen." };
+      return { ok: false, errorCode: "qr_expired", error: "This QR code has expired — scan the current one on the booth screen." };
     }
     const existing = this.players.find((p) => p.id === id);
     if (existing) {
@@ -121,14 +125,17 @@ export class GameEngine {
     }
 
     if (this.state !== GAME_STATES.LOBBY) {
-      return { ok: false, error: "Match already in progress" };
+      return { ok: false, errorCode: "match_in_progress", error: "Match already in progress" };
     }
     if (this.players.length >= 2) {
-      return { ok: false, error: "Match is full" };
+      return { ok: false, errorCode: "match_full", error: "Match is full" };
     }
 
+    // name stays null (not a hardcoded English "Player N") until a real one is submitted —
+    // clients render their own translated placeholder for an unnamed opponent, since the
+    // engine itself has no notion of a display language.
     const slot = this.players.length + 1;
-    this.players.push({ id, name: name || `Player ${slot}`, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
+    this.players.push({ id, name: name || null, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
     this._emit();
     return { ok: true, slot };
   }
@@ -161,6 +168,19 @@ export class GameEngine {
     }
 
     player.connected = false;
+    this._emit();
+  }
+
+  // Only the first player to join (slot 1) can set the match language, and only before
+  // the match starts — this is what makes "first player's choice sets it for both" true
+  // without a race: player 2 never gets a setLanguage of their own, they just inherit
+  // whatever's already in the shared snapshot by the time they join.
+  setLanguage(id, language) {
+    if (this.state !== GAME_STATES.LOBBY) return;
+    if (!LANGUAGES.includes(language)) return;
+    const player = this.players.find((p) => p.id === id);
+    if (!player || player.slot !== 1) return;
+    this.language = language;
     this._emit();
   }
 

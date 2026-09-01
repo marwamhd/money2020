@@ -15,11 +15,18 @@ export const COMMANDS = Object.freeze({
   READY: "ready",
   ANSWER: "answer",
   SUBMIT_EMAIL: "submitEmail",
+  SET_LANGUAGE: "setLanguage", // only the first player to join (slot 1) may call this, and only pre-match
   OPEN_NEXT_MATCH: "openNextMatch", // no admin token needed — engine only acts on it once finished
 });
 
 // Server -> client: a single full-state snapshot, broadcast on every change.
 export const STATE_EVENT = "state";
+
+// The first player to join picks one of these; it becomes shared match state for both
+// players (see GameEngine#setLanguage) — question content itself stays English until a
+// translated bank is provided, this only drives the UI chrome + layout direction for now.
+export const LANGUAGES = Object.freeze(["en", "ar"]);
+export const DEFAULT_LANGUAGE = "en";
 
 export const DEFAULTS = Object.freeze({
   COUNTDOWN_MS: 3000,
