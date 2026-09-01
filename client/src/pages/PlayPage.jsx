@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
-import { useLanguage, formatDuration, translateDifficulty, translateJoinError } from "../i18n.js";
+import { useLanguage, formatDuration, translateDifficulty, translateJoinError, logoSrc } from "../i18n.js";
 
 const NAVY = "#020844";
 const BLUE = "#4984fd";
@@ -366,7 +366,7 @@ function PlayPageBody({ code }) {
       <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff", fontFamily: fonts.body }}>
         <StatusBar right={me?.slot ? t("seatOf2", me.slot) : ""} />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "40px 30px 36px" }}>
-          <img src="/tanami-logo.png" alt="Tanami" style={{ height: 28, width: "auto", alignSelf: "flex-start" }} />
+          <img src={logoSrc(lang)} alt="Tanami" style={{ height: 28, width: "auto", alignSelf: "flex-start" }} />
 
           <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 38, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
             {t("heroLine1")}
