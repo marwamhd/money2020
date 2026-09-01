@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
+import { useLanguage, formatDuration, translateDifficulty, translateJoinError } from "../i18n.js";
 
 const NAVY = "#020844";
 const BLUE = "#4984fd";
@@ -7,14 +8,13 @@ const TINT = "#edf3ff";
 const LINE = "#dce5f5";
 const MUTED = "#7b85a6";
 const BODY = "#4a5578";
-const SERIF = "'Merriweather',Georgia,serif";
-const SANS_BOLD = "'Merriweather Sans',sans-serif";
 
 const TOKEN_KEY = "m2020_player_token";
-const ROUND_LABELS = { R1: "Public or Private", R2: "Valuation Showdown", R3: "This or That" };
 
 // R1 prompts are always generated as "Is {Company} public or private?" — extracts the
 // company name so the placeholder badge can label it, without a separate schema field.
+// Question content stays English until a translated bank arrives (see TAN-2300), so this
+// English-only regex is correct even when the surrounding UI chrome is in Arabic.
 function extractR1Subject(prompt) {
   const match = /^Is (.+) public or private\?$/i.exec(prompt || "");
   return match ? match[1] : null;
@@ -23,11 +23,6 @@ function extractR1Subject(prompt) {
 function clock(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));
   return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
-}
-
-function duration(ms) {
-  const t = Math.round(ms / 1000);
-  return t >= 60 ? `${Math.floor(t / 60)}m ${t % 60}s` : `${t}s`;
 }
 
 // Shows the real logo once an admin sets one; renders nothing at all otherwise.
@@ -45,16 +40,61 @@ function StatusBar({ right }) {
   );
 }
 
-function QHeader({ state }) {
+function QHeader({ state, fonts }) {
   const msLeft = useCountdown(state.sectionEndsAt);
   const pct = state.sectionDurationMs ? Math.max(0, Math.min(100, (msLeft / state.sectionDurationMs) * 100)) : 0;
   return (
     <div style={{ padding: "20px 24px 14px", background: TINT, borderBottom: "1px solid #D8E3FF", display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <span style={{ fontFamily: SERIF, fontSize: 24, color: NAVY }}>{clock(msLeft)}</span>
+        <span style={{ fontFamily: fonts.serif, fontSize: 24, color: NAVY }}>{clock(msLeft)}</span>
       </div>
       <div style={{ height: 5, borderRadius: 999, background: "rgba(142,199,240,.45)", overflow: "hidden" }}>
         <div style={{ width: `${pct}%`, height: "100%", background: BLUE }} />
+      </div>
+    </div>
+  );
+}
+
+// Shown only to the first player to join (slot 1) — their pick becomes shared match
+// state, so player 2 (who joins after) never sees this and just inherits it.
+function LanguagePickerScreen({ onPick, fonts }) {
+  return (
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff", fontFamily: fonts.body }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "40px 30px 36px" }}>
+        <img src="/tanami-logo.png" alt="Tanami" style={{ height: 28, width: "auto", alignSelf: "flex-start" }} />
+
+        <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 34, lineHeight: 1.15, fontWeight: 400, color: NAVY, textAlign: "center" }}>
+          Choose your language
+          <br />
+          <span style={{ fontFamily: "'Noto Kufi Arabic', sans-serif" }}>اختر لغتك</span>
+        </h3>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div
+            onClick={() => onPick("en")}
+            style={{ padding: 22, borderRadius: 16, textAlign: "center", fontSize: 20, fontWeight: 600, cursor: "pointer", background: NAVY, color: "#fff" }}
+          >
+            English
+          </div>
+          <div
+            onClick={() => onPick("ar")}
+            style={{
+              padding: 22,
+              borderRadius: 16,
+              textAlign: "center",
+              fontSize: 22,
+              fontWeight: 600,
+              cursor: "pointer",
+              background: "#fff",
+              border: `2px solid ${BLUE}`,
+              color: NAVY,
+              fontFamily: "'Noto Kufi Arabic', sans-serif",
+            }}
+          >
+            العربية
+          </div>
+          <span style={{ textAlign: "center", fontSize: 12, color: "#9AA3BF" }}>This sets the language for both players — سيتم اعتماد هذه اللغة لكلا اللاعبين</span>
+        </div>
       </div>
     </div>
   );
@@ -72,11 +112,13 @@ export default function PlayPage({ code }) {
 
 function PlayPageBody({ code }) {
   const { state, socket } = useGameSocket();
+  const { lang, dir, t, fonts, roundLabels } = useLanguage(state?.language);
   const [name, setName] = useState("");
   const [myToken, setMyToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
   const myTokenRef = useRef(myToken);
   myTokenRef.current = myToken;
   const [joinError, setJoinError] = useState(null);
+  const [languagePicked, setLanguagePicked] = useState(false);
 
   // Track locally what I picked for the current question (the server never echoes this
   // back to avoid leaking it to the opponent), and my score right as this question
@@ -99,7 +141,7 @@ function PlayPageBody({ code }) {
           localStorage.setItem(TOKEN_KEY, ack.token);
           setMyToken(ack.token);
         }
-        if (ack && ack.ok === false) setJoinError(ack.error || "Unable to join this match.");
+        if (ack && ack.ok === false) setJoinError(ack.errorCode || "unable_to_join");
       });
     };
     doJoin();
@@ -109,7 +151,10 @@ function PlayPageBody({ code }) {
 
   const me = state?.players.find((p) => p.id === myToken);
   const other = state?.players.find((p) => p.id !== myToken);
-  const otherName = other?.name ?? "Player 2";
+  // Falls back to a translated "Player N" only when the opponent hasn't typed a name yet
+  // (the server never invents one) — other?.slot ?? 2 because if `other` doesn't exist at
+  // all yet, I must be slot 1, so the missing opponent is necessarily slot 2.
+  const otherName = other?.name || t("playerPlaceholder", other?.slot ?? 2);
 
   useEffect(() => {
     const qid = state?.currentQuestion?.id;
@@ -183,55 +228,51 @@ function PlayPageBody({ code }) {
     const otherScore = data.otherScore;
     const win = data.winnerId === myToken;
     const tie = data.winnerId === null;
-    const tieNote = data.tieBroken
-      ? win
-        ? `Tied on points — you answered faster.`
-        : `Tied on points — ${data.otherName} answered faster.`
-      : null;
+    const tieNote = data.tieBroken ? (win ? t("tiedFaster") : t("tiedOtherFaster", data.otherName)) : null;
 
     return (
-      <div style={{ height: "100vh", background: TINT, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22 }}>
+      <div dir={dir} style={{ height: "100vh", background: TINT, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22, fontFamily: fonts.body }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>FINAL · 3 ROUNDS</span>
-          <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
-            {tie ? "Dead heat" : win ? "You won" : "You lost"}
+          <span style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("finalThreeRounds")}</span>
+          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
+            {tie ? t("deadHeat") : win ? t("youWon") : t("youLost")}
           </h3>
           {tieNote && <span style={{ fontSize: 14, color: MUTED }}>{tieNote}</span>}
         </div>
 
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ flex: 1, padding: 18, borderRadius: 14, background: win ? NAVY : "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: win ? "rgba(255,255,255,.6)" : MUTED }}>
-              {(data.myName ?? "YOU").toUpperCase()}
+            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: fonts.sansBold, color: win ? "rgba(255,255,255,.6)" : MUTED }}>
+              {(data.myName ?? t("you")).toUpperCase()}
             </span>
-            <span style={{ fontFamily: SERIF, fontSize: 36, color: win ? "#fff" : NAVY }}>{myScore.toLocaleString()}</span>
+            <span style={{ fontFamily: fonts.serif, fontSize: 36, color: win ? "#fff" : NAVY }}>{myScore.toLocaleString()}</span>
           </div>
           <div style={{ flex: 1, padding: 18, borderRadius: 14, background: "#fff", display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>{data.otherName.toUpperCase()}</span>
-            <span style={{ fontFamily: SERIF, fontSize: 36, color: NAVY }}>{otherScore.toLocaleString()}</span>
+            <span style={{ fontSize: 11, letterSpacing: ".12em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>{data.otherName.toUpperCase()}</span>
+            <span style={{ fontFamily: fonts.serif, fontSize: 36, color: NAVY }}>{otherScore.toLocaleString()}</span>
           </div>
         </div>
 
         {!win && (
           <div style={{ padding: 22, borderRadius: 16, background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
-            <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? "So close." : "Good run."}</span>
+            <span style={{ fontSize: 17, fontWeight: 600, color: NAVY }}>{tie ? t("soClose") : t("goodRun")}</span>
             <span style={{ fontSize: 14, lineHeight: 1.55, color: BODY }}>
-              You answered {data.myAnsweredCount} questions in {duration(data.myTimeSpentMs)}.
+              {t("answeredInTime", data.myAnsweredCount, formatDuration(data.myTimeSpentMs, lang))}
             </span>
           </div>
         )}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>EMAIL TO ENTER THE LEADERBOARD</span>
+          <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>{t("emailToEnter")}</span>
           {emailStatus === "sent" ? (
             <div style={{ padding: 20, borderRadius: 14, background: "#fff", border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
-              Thanks — we'll be in touch.
+              {t("thanksInTouch")}
             </div>
           ) : (
             <>
               <input
                 value={email}
-                placeholder="name@company.com"
+                placeholder={t("emailPlaceholder")}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{ padding: "18px 20px", borderRadius: 14, background: "#fff", border: "1px solid #C9D2E8", fontSize: 16, color: NAVY, fontFamily: "inherit", outline: "none" }}
               />
@@ -248,10 +289,10 @@ function PlayPageBody({ code }) {
                   color: "#fff",
                 }}
               >
-                {emailStatus === "sending" ? "Sending…" : "Submit"}
+                {emailStatus === "sending" ? t("sending") : t("submit")}
               </div>
-              {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>Couldn't submit that — check the email and try again.</span>}
-              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>Top 5 on the leaderboard get $200 credited on their first investment.</p>
+              {emailStatus === "error" && <span style={{ fontSize: 12, color: "#C0392B" }}>{t("emailError")}</span>}
+              <p style={{ margin: 0, fontSize: 12, lineHeight: 1.55, color: MUTED }}>{t("prizeNote")}</p>
             </>
           )}
         </div>
@@ -261,17 +302,17 @@ function PlayPageBody({ code }) {
 
   if (joinError) {
     return (
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 34, textAlign: "center" }}>
-        <span style={{ fontSize: 20, fontWeight: 600, color: NAVY }}>Can't join this match</span>
-        <span style={{ fontSize: 15, color: MUTED }}>{joinError}</span>
+      <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 34, textAlign: "center", fontFamily: fonts.body }}>
+        <span style={{ fontSize: 20, fontWeight: 600, color: NAVY }}>{t("cantJoin")}</span>
+        <span style={{ fontSize: 15, color: MUTED }}>{translateJoinError(joinError, lang)}</span>
       </div>
     );
   }
 
   if (!state) {
     return (
-      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}>
-        Connecting…
+      <div dir={dir} style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, fontFamily: fonts.body }}>
+        {t("connecting")}
       </div>
     );
   }
@@ -279,6 +320,11 @@ function PlayPageBody({ code }) {
   function submitName(value) {
     setName(value);
     socket.emit("join", { name: value, token: myToken, code });
+  }
+
+  function pickLanguage(language) {
+    socket.emit("setLanguage", { language });
+    setLanguagePicked(true);
   }
 
   // Re-joins on the current connection before sending "ready", rather than assuming a
@@ -311,27 +357,31 @@ function PlayPageBody({ code }) {
     socket.emit("answer", { questionId: q.id, choice: letter });
   }
 
+  if (state.state === "lobby" && me?.slot === 1 && !languagePicked) {
+    return <LanguagePickerScreen onPick={pickLanguage} fonts={fonts} />;
+  }
+
   if (state.state === "lobby") {
     return (
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff" }}>
-        <StatusBar right={me?.slot ? `Seat ${me.slot} of 2` : ""} />
+      <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#fff", fontFamily: fonts.body }}>
+        <StatusBar right={me?.slot ? t("seatOf2", me.slot) : ""} />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "40px 30px 36px" }}>
           <img src="/tanami-logo.png" alt="Tanami" style={{ height: 28, width: "auto", alignSelf: "flex-start" }} />
 
-          <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: 38, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
-            Two players.
+          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 38, lineHeight: 1.05, fontWeight: 400, color: NAVY }}>
+            {t("heroLine1")}
             <br />
-            Three rounds.
+            {t("heroLine2")}
             <br />
-            <em style={{ color: BLUE }}>One minute each.</em>
+            <em style={{ color: BLUE }}>{t("heroLine3")}</em>
           </h3>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>YOUR NAME</span>
+              <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>{t("yourNameLabel")}</span>
               <input
                 value={name}
-                placeholder="Type your name"
+                placeholder={t("namePlaceholder")}
                 disabled={me?.ready}
                 onChange={(e) => submitName(e.target.value.slice(0, 18))}
                 style={{
@@ -349,7 +399,7 @@ function PlayPageBody({ code }) {
 
             {me?.ready ? (
               <div style={{ padding: 20, borderRadius: 14, background: TINT, border: `1px solid ${BLUE}`, textAlign: "center", fontSize: 16, fontWeight: 600, color: NAVY }}>
-                Ready. Waiting for {otherName}
+                {t("readyWaitingFor", otherName)}
               </div>
             ) : (
               <div
@@ -365,12 +415,12 @@ function PlayPageBody({ code }) {
                   color: name.trim() ? "#fff" : "#9AA3BF",
                 }}
               >
-                I'm ready
+                {t("imReady")}
               </div>
             )}
 
             <span style={{ textAlign: "center", fontSize: 12, color: "#9AA3BF" }}>
-              {other?.ready ? `${otherName} is ready` : "Add your name, then press ready"}
+              {other?.ready ? t("otherIsReady", otherName) : t("addNamePrompt")}
             </span>
           </div>
         </div>
@@ -380,15 +430,15 @@ function PlayPageBody({ code }) {
 
   if (state.state === "countdown") {
     return (
-      <div style={{ height: "100vh", background: TINT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 36 }}>
-        <span style={{ fontSize: 11, letterSpacing: ".22em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>
-          ROUND {state.currentRound?.slice(1)} OF 3
+      <div dir={dir} style={{ height: "100vh", background: TINT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 36, fontFamily: fonts.body }}>
+        <span style={{ fontSize: 11, letterSpacing: ".22em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
+          {t("roundOf3", state.currentRound?.slice(1))}
         </span>
-        <h3 style={{ margin: 0, textAlign: "center", fontFamily: SERIF, fontSize: 40, lineHeight: 1.02, fontWeight: 400, color: NAVY }}>
-          {ROUND_LABELS[state.currentRound]}
+        <h3 style={{ margin: 0, textAlign: "center", fontFamily: fonts.serif, fontSize: 40, lineHeight: 1.02, fontWeight: 400, color: NAVY }}>
+          {roundLabels[state.currentRound]}
         </h3>
-        <CountdownNumber endsAt={state.countdownEndsAt} />
-        <span style={{ fontSize: 16, color: MUTED }}>Get your thumbs ready</span>
+        <CountdownNumber endsAt={state.countdownEndsAt} fonts={fonts} />
+        <span style={{ fontSize: 16, color: MUTED }}>{t("getThumbsReady")}</span>
       </div>
     );
   }
@@ -400,10 +450,10 @@ function PlayPageBody({ code }) {
 
     if (!q && !revealing) {
       return (
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 34 }}>
-          <span style={{ fontSize: 12, letterSpacing: ".24em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>ROUND CLEARED</span>
-          <div style={{ fontFamily: SERIF, fontSize: 74, color: NAVY }}>{(me?.score ?? 0).toLocaleString()}</div>
-          <span style={{ fontSize: 15, color: MUTED }}>Waiting for the clock</span>
+        <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 34, fontFamily: fonts.body }}>
+          <span style={{ fontSize: 12, letterSpacing: ".24em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("roundCleared")}</span>
+          <div style={{ fontFamily: fonts.serif, fontSize: 74, color: NAVY }}>{(me?.score ?? 0).toLocaleString()}</div>
+          <span style={{ fontSize: 15, color: MUTED }}>{t("waitingForClock")}</span>
         </div>
       );
     }
@@ -413,14 +463,14 @@ function PlayPageBody({ code }) {
       const correct = gain > 0;
       // Runner-up = the question's own points minus a 30pt penalty (e.g. Hard 200 -> 170),
       // applied the same way across every difficulty level.
-      const note = !myChoice ? "Time's up" : correct && gain < (q?.points ?? 0) ? `${otherName} answered first, so you get ${gain} instead of ${q.points}` : "";
+      const note = !myChoice ? t("timesUp") : correct && gain < (q?.points ?? 0) ? t("runnerUpNote", otherName, gain, q.points) : "";
       return (
-        <div style={{ height: "100vh", background: correct ? TINT : "#fff", display: "flex", flexDirection: "column" }}>
+        <div dir={dir} style={{ height: "100vh", background: correct ? TINT : "#fff", display: "flex", flexDirection: "column", fontFamily: fonts.body }}>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, padding: 34 }}>
-            <span style={{ fontSize: 12, letterSpacing: ".24em", fontWeight: 700, fontFamily: SANS_BOLD, color: correct ? BLUE : "#9AA3BF" }}>
-              {correct ? "CORRECT" : "NOT THIS TIME"}
+            <span style={{ fontSize: 12, letterSpacing: ".24em", fontWeight: 700, fontFamily: fonts.sansBold, color: correct ? BLUE : "#9AA3BF" }}>
+              {correct ? t("correct") : t("notThisTime")}
             </span>
-            <div style={{ fontFamily: SERIF, fontSize: 96, lineHeight: 1, color: correct ? BLUE : NAVY }}>+{gain}</div>
+            <div style={{ fontFamily: fonts.serif, fontSize: 96, lineHeight: 1, color: correct ? BLUE : NAVY }}>+{gain}</div>
             {note && <span style={{ fontSize: 15, color: BODY }}>{note}</span>}
           </div>
         </div>
@@ -429,36 +479,36 @@ function PlayPageBody({ code }) {
 
     if (myChoice) {
       return (
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-          <QHeader state={state} />
+        <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", fontFamily: fonts.body }}>
+          <QHeader state={state} fonts={fonts} />
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 34 }}>
             <div style={{ padding: "18px 24px", borderRadius: 16, background: TINT, border: `2px solid ${BLUE}`, fontSize: 20, fontWeight: 600, color: NAVY }}>
               {myChoice === "A" ? q.optionA : q.optionB}
             </div>
-            <span style={{ fontSize: 15, color: MUTED, animation: "pulse 1.4s infinite" }}>Waiting for {otherName}…</span>
+            <span style={{ fontSize: 15, color: MUTED, animation: "pulse 1.4s infinite" }}>{t("waitingForOther", otherName)}</span>
           </div>
         </div>
       );
     }
 
     return (
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-        <QHeader state={state} />
+      <div dir={dir} style={{ height: "100vh", display: "flex", flexDirection: "column", fontFamily: fonts.body }}>
+        <QHeader state={state} fonts={fonts} />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "30px 24px 32px", gap: 20 }}>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 14, textAlign: "center" }}>
-            <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>
-              {q.difficulty?.toUpperCase()} · {q.points} PTS
+            <span style={{ fontSize: 11, letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
+              {t("difficultyPoints", translateDifficulty(q.difficulty, lang), q.points)}
             </span>
-            <h3 style={{ margin: 0, fontFamily: SANS_BOLD, fontSize: 25, lineHeight: 1.35, fontWeight: 700, color: NAVY }}>{q.prompt}</h3>
+            <h3 style={{ margin: 0, fontFamily: fonts.sansBold, fontSize: 25, lineHeight: 1.35, fontWeight: 700, color: NAVY }}>{q.prompt}</h3>
             {state.currentRound === "R1" && <CompanyLogo name={extractR1Subject(q.prompt)} imageUrl={q.questionImage} size={84} />}
             {state.currentRound === "R2" && (q.optionAImage || q.optionBImage) && (
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <CompanyLogo name={q.optionA} imageUrl={q.optionAImage} size={84} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: MUTED, fontFamily: SANS_BOLD }}>VS</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: MUTED, fontFamily: fonts.sansBold }}>{t("vs")}</span>
                 <CompanyLogo name={q.optionB} imageUrl={q.optionBImage} size={84} />
               </div>
             )}
-            {other?.hasAnsweredCurrent && <span style={{ fontSize: 13, fontWeight: 600, color: BLUE }}>{otherName} has answered. Your turn.</span>}
+            {other?.hasAnsweredCurrent && <span style={{ fontSize: 13, fontWeight: 600, color: BLUE }}>{t("otherAnswered", otherName)}</span>}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {[["A", q.optionA], ["B", q.optionB]].map(([letter, opt]) => (
@@ -480,13 +530,13 @@ function PlayPageBody({ code }) {
   }
 
   return (
-    <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, textAlign: "center", padding: 24 }}>
+    <div dir={dir} style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, textAlign: "center", padding: 24, fontFamily: fonts.body }}>
       {state.state} screen coming soon
     </div>
   );
 }
 
-function CountdownNumber({ endsAt }) {
+function CountdownNumber({ endsAt, fonts }) {
   const msLeft = useCountdown(endsAt);
-  return <div style={{ fontFamily: SERIF, fontSize: 132, lineHeight: 1, color: BLUE }}>{Math.ceil(msLeft / 1000)}</div>;
+  return <div style={{ fontFamily: fonts.serif, fontSize: 132, lineHeight: 1, color: BLUE }}>{Math.ceil(msLeft / 1000)}</div>;
 }

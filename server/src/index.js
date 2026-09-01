@@ -132,6 +132,12 @@ io.on("connection", (socket) => {
     ack?.({ ...result, token: playerId });
   });
 
+  socket.on(COMMANDS.SET_LANGUAGE, (payload) => {
+    const { language } = payload || {};
+    const playerId = socketToPlayerId.get(socket.id);
+    if (playerId) engine.setLanguage(playerId, language);
+  });
+
   socket.on(COMMANDS.READY, () => {
     const playerId = socketToPlayerId.get(socket.id);
     if (playerId) engine.setReady(playerId);

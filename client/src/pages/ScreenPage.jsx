@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
+import { useLanguage, formatDuration, translateDifficulty } from "../i18n.js";
 
 const NAVY = "#020844";
 const BLUE = "#4984fd";
@@ -9,18 +10,18 @@ const TINT = "#edf3ff";
 const LINE = "#dce5f5";
 const MUTED = "#7b85a6";
 const BODY = "#4a5578";
-const SERIF = "'Merriweather',Georgia,serif";
-const SANS_BOLD = "'Merriweather Sans',sans-serif";
 
-const ROUND_LABELS = { R1: "Public or Private", R2: "Valuation Showdown", R3: "This or That" };
-
-function playerName(state, slot) {
-  return state.players.find((p) => p.slot === slot)?.name ?? `Player ${slot}`;
+// Falls back to a translated "Player N" only when that seat hasn't typed a name yet —
+// the server never invents one (see gameEngine#addPlayer).
+function playerName(state, slot, t) {
+  return state.players.find((p) => p.slot === slot)?.name || t("playerPlaceholder", slot);
 }
 
 // R1 prompts are always generated as "Is {Company} public or private?" — extracts the
 // company name so the placeholder badge (and admin form) can label it, without a
-// separate "subject name" field in the schema.
+// separate "subject name" field in the schema. Question content stays English until a
+// translated bank arrives (see TAN-2300), so this English-only regex stays correct even
+// when the surrounding UI chrome is in Arabic.
 function extractR1Subject(prompt) {
   const match = /^Is (.+) public or private\?$/i.exec(prompt || "");
   return match ? match[1] : null;
@@ -30,11 +31,6 @@ function extractR1Subject(prompt) {
 function CompanyLogo({ name, imageUrl, size = "2.6cqw" }) {
   if (!imageUrl) return null;
   return <img src={imageUrl} alt={name} style={{ width: size, height: size, borderRadius: 10, objectFit: "contain", background: "#fff" }} />;
-}
-
-function duration(ms) {
-  const t = Math.round(ms / 1000);
-  return t >= 60 ? `${Math.floor(t / 60)}m ${t % 60}s` : `${t}s`;
 }
 
 const CONFETTI_PIECES = Array.from({ length: 70 }, (_, i) => {
@@ -74,7 +70,7 @@ function Confetti() {
   );
 }
 
-function IdleScreen({ state }) {
+function IdleScreen({ state, t, fonts }) {
   const readyCount = state.players.filter((p) => p.ready).length;
   const stillNeeded = 2 - readyCount;
   // Keyed to this session's matchCode (fresh every reset/openNextMatch) so a screenshot
@@ -113,14 +109,12 @@ function IdleScreen({ state }) {
         <img src="/tanami-logo.png" alt="Tanami" style={{ height: "2.6cqw", width: "auto", alignSelf: "flex-start" }} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY }}>
-            How well do you
+          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY }}>
+            {t("heroTitleLine1")}
             <br />
-            <em style={{ color: BLUE }}>really know money?</em>
+            <em style={{ color: BLUE }}>{t("heroTitleLine2")}</em>
           </h3>
-          <p style={{ margin: 0, maxWidth: "36cqw", fontSize: "1.5cqw", lineHeight: 1.5, color: BODY }}>
-            Two players, three 60-second rounds. Scan, add your name, press ready.
-          </p>
+          <p style={{ margin: 0, maxWidth: "36cqw", fontSize: "1.5cqw", lineHeight: 1.5, color: BODY }}>{t("idleSubtitle")}</p>
           <div style={{ display: "flex", alignItems: "center", gap: "1.6cqw", marginTop: "1cqh" }}>
             <div
               style={{
@@ -138,7 +132,7 @@ function IdleScreen({ state }) {
               <QRCodeSVG value={joinUrl} size={512} style={{ width: "100%", height: "100%" }} fgColor={NAVY} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.2cqh", alignItems: "flex-start" }}>
-              <span style={{ fontSize: "1.8cqw", fontWeight: 600, color: NAVY }}>Scan to join</span>
+              <span style={{ fontSize: "1.8cqw", fontWeight: 600, color: NAVY }}>{t("scanToJoin")}</span>
               <span
                 style={{
                   padding: "0.9cqh 1.4cqw",
@@ -147,17 +141,17 @@ function IdleScreen({ state }) {
                   color: BLUE,
                   fontSize: "1.3cqw",
                   fontWeight: 700,
-                  fontFamily: SANS_BOLD,
+                  fontFamily: fonts.sansBold,
                   animation: "pulse 1.6s infinite",
                 }}
               >
-                {stillNeeded <= 0 ? "Starting…" : `${stillNeeded} player(s) still to press ready`}
+                {stillNeeded <= 0 ? t("starting") : t("playersStillReady", stillNeeded)}
               </span>
             </div>
           </div>
         </div>
 
-        <span style={{ fontSize: "1.2cqw", color: "#9AA3BF" }}>Money20/20</span>
+        <span style={{ fontSize: "1.2cqw", color: "#9AA3BF" }}>{t("eventName")}</span>
       </div>
 
       <div
@@ -165,7 +159,7 @@ function IdleScreen({ state }) {
           width: "38%",
           padding: "4cqh 3cqw",
           background: TINT,
-          borderLeft: "1px solid #D8E3FF",
+          borderInlineStart: "1px solid #D8E3FF",
           display: "flex",
           flexDirection: "column",
           gap: "2cqh",
@@ -173,11 +167,11 @@ function IdleScreen({ state }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <h4 style={{ margin: 0, fontFamily: SERIF, fontSize: "1.8cqw", fontWeight: 400, color: NAVY }}>Leaderboard</h4>
-          <span onClick={openEmailPanel} style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>TOP 5</span>
+          <h4 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "1.8cqw", fontWeight: 400, color: NAVY }}>{t("leaderboard")}</h4>
+          <span onClick={openEmailPanel} style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("top5")}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.1cqh" }}>
-          {board.length === 0 && <span style={{ fontSize: "1.3cqw", color: MUTED }}>No games played yet — be the first!</span>}
+          {board.length === 0 && <span style={{ fontSize: "1.3cqw", color: MUTED }}>{t("noGamesYet")}</span>}
           {board.map((entry, i) =>
             i === 0 ? (
               <div
@@ -192,16 +186,16 @@ function IdleScreen({ state }) {
                 }}
               >
                 <div style={{ width: "5.2cqw", flex: "none", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontFamily: SERIF, fontSize: "3.4cqw", lineHeight: 1, color: "#fff" }}>1</span>
+                  <span style={{ fontFamily: fonts.serif, fontSize: "3.4cqw", lineHeight: 1, color: "#fff" }}>1</span>
                 </div>
                 <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "1.2cqw", padding: "2.2cqh 1.6cqw" }}>
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.3cqh", minWidth: 0 }}>
-                    <span style={{ fontSize: "0.95cqw", letterSpacing: ".2em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>
-                      TOP SCORE
+                    <span style={{ fontSize: "0.95cqw", letterSpacing: ".2em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
+                      {t("topScore")}
                     </span>
                     <span
                       style={{
-                        fontFamily: SERIF,
+                        fontFamily: fonts.serif,
                         fontSize: "2.2cqw",
                         color: NAVY,
                         whiteSpace: "nowrap",
@@ -212,7 +206,7 @@ function IdleScreen({ state }) {
                       {entry.name}
                     </span>
                   </div>
-                  <span style={{ fontFamily: SERIF, fontSize: "2.6cqw", color: BLUE }}>{entry.score.toLocaleString()}</span>
+                  <span style={{ fontFamily: fonts.serif, fontSize: "2.6cqw", color: BLUE }}>{entry.score.toLocaleString()}</span>
                 </div>
               </div>
             ) : (
@@ -220,9 +214,9 @@ function IdleScreen({ state }) {
                 key={i}
                 style={{ display: "flex", alignItems: "center", gap: 14, padding: "1.4cqh 1.6cqw", borderRadius: 14, background: "#fff", border: `1px solid ${LINE}` }}
               >
-                <span style={{ fontFamily: SERIF, fontSize: "1.8cqw", width: "2.8cqw", textAlign: "center", color: "#9AA3BF" }}>{i + 1}</span>
+                <span style={{ fontFamily: fonts.serif, fontSize: "1.8cqw", width: "2.8cqw", textAlign: "center", color: "#9AA3BF" }}>{i + 1}</span>
                 <span style={{ flex: 1, fontSize: "1.5cqw", fontWeight: 600, color: NAVY }}>{entry.name}</span>
-                <span style={{ fontFamily: SERIF, fontSize: "1.9cqw", color: NAVY }}>{entry.score.toLocaleString()}</span>
+                <span style={{ fontFamily: fonts.serif, fontSize: "1.9cqw", color: NAVY }}>{entry.score.toLocaleString()}</span>
               </div>
             )
           )}
@@ -238,19 +232,19 @@ function IdleScreen({ state }) {
             onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 16, padding: 28, minWidth: 420, maxWidth: "80vw", maxHeight: "80vh", overflow: "auto", display: "flex", flexDirection: "column", gap: 14 }}
           >
-            <h4 style={{ margin: 0, fontFamily: SERIF, fontWeight: 400, color: NAVY }}>Leaderboard emails</h4>
+            <h4 style={{ margin: 0, fontFamily: fonts.serif, fontWeight: 400, color: NAVY }}>{t("leaderboardEmails")}</h4>
             {emailPanel.error ? (
               <span style={{ color: "#C0392B" }}>{emailPanel.error}</span>
             ) : emailPanel.rows.length === 0 ? (
-              <span style={{ color: MUTED }}>No entries yet.</span>
+              <span style={{ color: MUTED }}>{t("noEntriesYet")}</span>
             ) : (
               <table style={{ borderCollapse: "collapse", fontSize: 14 }}>
                 <thead>
-                  <tr style={{ textAlign: "left", color: MUTED }}>
-                    <th style={{ padding: "4px 12px" }}>#</th>
-                    <th style={{ padding: "4px 12px" }}>Name</th>
-                    <th style={{ padding: "4px 12px" }}>Score</th>
-                    <th style={{ padding: "4px 12px" }}>Email</th>
+                  <tr style={{ textAlign: "start", color: MUTED }}>
+                    <th style={{ padding: "4px 12px" }}>{t("colHash")}</th>
+                    <th style={{ padding: "4px 12px" }}>{t("colName")}</th>
+                    <th style={{ padding: "4px 12px" }}>{t("colScore")}</th>
+                    <th style={{ padding: "4px 12px" }}>{t("colEmail")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -266,7 +260,7 @@ function IdleScreen({ state }) {
               </table>
             )}
             <div onClick={() => setEmailPanel(null)} style={{ alignSelf: "flex-end", padding: "8px 16px", borderRadius: 10, background: NAVY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-              Close
+              {t("close")}
             </div>
           </div>
         </div>
@@ -275,22 +269,20 @@ function IdleScreen({ state }) {
   );
 }
 
-function CountdownScreen({ state }) {
+function CountdownScreen({ state, t, fonts, roundLabels }) {
   const msLeft = useCountdown(state.countdownEndsAt);
   const seconds = Math.ceil(msLeft / 1000);
 
   return (
     <div style={{ flex: 1, background: TINT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1cqh" }}>
-      <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>
-        ROUND {state.currentRound?.slice(1)} OF 3
+      <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
+        {t("roundOf3", state.currentRound?.slice(1))}
       </span>
-      <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: "4.2cqw", lineHeight: 1.02, fontWeight: 400, color: NAVY }}>
-        {ROUND_LABELS[state.currentRound]}
+      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "4.2cqw", lineHeight: 1.02, fontWeight: 400, color: NAVY }}>
+        {roundLabels[state.currentRound]}
       </h3>
-      <div style={{ fontFamily: SERIF, fontSize: "9cqw", lineHeight: 0.9, color: BLUE }}>{seconds}</div>
-      <span style={{ fontSize: "1.5cqw", color: MUTED }}>
-        {playerName(state, 1)} vs {playerName(state, 2)}
-      </span>
+      <div style={{ fontFamily: fonts.serif, fontSize: "9cqw", lineHeight: 0.9, color: BLUE }}>{seconds}</div>
+      <span style={{ fontSize: "1.5cqw", color: MUTED }}>{t("vsBetween", playerName(state, 1, t), playerName(state, 2, t))}</span>
     </div>
   );
 }
@@ -300,7 +292,7 @@ function clock(ms) {
   return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
 }
 
-function PlayerColumn({ player, opponent, tinted }) {
+function PlayerColumn({ player, opponent, tinted, t, fonts }) {
   const leading = player && opponent && player.score > opponent.score;
   return (
     <div
@@ -308,8 +300,10 @@ function PlayerColumn({ player, opponent, tinted }) {
         width: "23%",
         padding: "3cqh 2cqw",
         background: tinted ? TINT : "#fff",
-        borderRight: tinted ? "1px solid #D8E3FF" : "none",
-        borderLeft: tinted ? "none" : `1px solid ${LINE}`,
+        // Logical (inline-start/end) so the seam touching the center column stays on the
+        // correct visual edge whether the row is LTR or mirrored for RTL.
+        borderInlineEnd: tinted ? "1px solid #D8E3FF" : "none",
+        borderInlineStart: tinted ? "none" : `1px solid ${LINE}`,
         display: "flex",
         flexDirection: "column",
         gap: "1.6cqh",
@@ -334,19 +328,19 @@ function PlayerColumn({ player, opponent, tinted }) {
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: NAVY }}>{player?.name}</span>
-          <span style={{ fontSize: "1cqw", fontWeight: 600, color: leading ? BLUE : MUTED }}>{leading ? "LEADING" : ""}</span>
+          <span style={{ fontSize: "1cqw", fontWeight: 600, color: leading ? BLUE : MUTED }}>{leading ? t("leading") : ""}</span>
         </div>
       </div>
-      <div style={{ fontFamily: SERIF, fontSize: "3.8cqw", lineHeight: 1, color: NAVY }}>{(player?.score ?? 0).toLocaleString()}</div>
-      <span style={{ fontSize: "1.2cqw", color: MUTED }}>{player?.answeredCount ?? 0} answered</span>
+      <div style={{ fontFamily: fonts.serif, fontSize: "3.8cqw", lineHeight: 1, color: NAVY }}>{(player?.score ?? 0).toLocaleString()}</div>
+      <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("answeredCount", player?.answeredCount ?? 0)}</span>
       <span style={{ fontSize: "1.2cqw", fontWeight: 600, color: player?.hasAnsweredCurrent ? BLUE : "#9AA3BF" }}>
-        {player?.hasAnsweredCurrent ? "Locked in" : "Choosing…"}
+        {player?.hasAnsweredCurrent ? t("lockedIn") : t("choosing")}
       </span>
     </div>
   );
 }
 
-function PlayingScreen({ state }) {
+function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
   const msLeft = useCountdown(state.sectionEndsAt);
   const q = state.currentQuestion;
   const revealing = state.revealUntil !== null;
@@ -357,12 +351,12 @@ function PlayingScreen({ state }) {
     <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "1.8cqh 2.5cqw", background: "#fff", borderBottom: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src="/tanami-logo.png" alt="Tanami" style={{ height: "1.7cqw", width: "auto" }} />
-        <span style={{ fontSize: "1.1cqw", letterSpacing: ".16em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>
-          ROUND {state.currentRound?.slice(1)} / 3 · {ROUND_LABELS[state.currentRound]?.toUpperCase()}
+        <span style={{ fontSize: "1.1cqw", letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>
+          {t("roundOf3", state.currentRound?.slice(1))} · {roundLabels[state.currentRound]?.toUpperCase()}
         </span>
       </div>
       <div style={{ flex: 1, display: "flex" }}>
-        <PlayerColumn player={playerA} opponent={playerB} tinted />
+        <PlayerColumn player={playerA} opponent={playerB} tinted t={t} fonts={fonts} />
         <div style={{ flex: 1, padding: "3cqh 2.6cqw", display: "flex", flexDirection: "column", gap: "4.5cqh", alignItems: "center" }}>
           {q && (
             <span
@@ -373,10 +367,10 @@ function PlayingScreen({ state }) {
                 color: "#fff",
                 fontSize: "1cqw",
                 fontWeight: 700,
-                fontFamily: SANS_BOLD,
+                fontFamily: fonts.sansBold,
               }}
             >
-              {q.difficulty?.toUpperCase()} · {q.points} PTS
+              {t("difficultyPoints", translateDifficulty(q.difficulty, lang), q.points)}
             </span>
           )}
           {q && (
@@ -384,7 +378,7 @@ function PlayingScreen({ state }) {
               style={{
                 margin: 0,
                 textAlign: "center",
-                fontFamily: SANS_BOLD,
+                fontFamily: fonts.sansBold,
                 fontSize: "2.4cqw",
                 lineHeight: 1.28,
                 fontWeight: 700,
@@ -401,7 +395,7 @@ function PlayingScreen({ state }) {
           {q && state.currentRound === "R2" && (q.optionAImage || q.optionBImage) && (
             <div style={{ display: "flex", alignItems: "center", gap: "1.2cqw" }}>
               <CompanyLogo name={q.optionA} imageUrl={q.optionAImage} size="8cqw" />
-              <span style={{ fontSize: "1.2cqw", fontWeight: 700, color: MUTED, fontFamily: SANS_BOLD }}>VS</span>
+              <span style={{ fontSize: "1.2cqw", fontWeight: 700, color: MUTED, fontFamily: fonts.sansBold }}>{t("vs")}</span>
               <CompanyLogo name={q.optionB} imageUrl={q.optionBImage} size="8cqw" />
             </div>
           )}
@@ -444,33 +438,33 @@ function PlayingScreen({ state }) {
                       </span>
                       <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: NAVY }}>{opt}</span>
                       {isCorrect && (
-                        <span style={{ marginLeft: "auto", fontSize: "1cqw", letterSpacing: ".12em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>
-                          CORRECT
+                        <span style={{ marginInlineStart: "auto", fontSize: "1cqw", letterSpacing: ".12em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
+                          {t("correct")}
                         </span>
                       )}
                     </div>
-                    {revealing && <span style={{ fontSize: "1.2cqw", color: BODY }}>{n} of 2 players picked</span>}
+                    {revealing && <span style={{ fontSize: "1.2cqw", color: BODY }}>{t("playersPicked", n)}</span>}
                   </div>
                 );
               })}
             </div>
           )}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.6cqh" }}>
-            <span style={{ fontFamily: SERIF, fontSize: "3.9cqw", lineHeight: 1, color: msLeft <= 10000 ? BLUE : NAVY }}>{clock(msLeft)}</span>
-            {revealing && <span style={{ fontSize: "1.2cqw", fontWeight: 600, color: BLUE }}>Next question loading</span>}
+            <span style={{ fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, color: msLeft <= 10000 ? BLUE : NAVY }}>{clock(msLeft)}</span>
+            {revealing && <span style={{ fontSize: "1.2cqw", fontWeight: 600, color: BLUE }}>{t("nextQuestionLoading")}</span>}
           </div>
         </div>
-        <PlayerColumn player={playerB} opponent={playerA} tinted={false} />
+        <PlayerColumn player={playerB} opponent={playerA} tinted={false} t={t} fonts={fonts} />
       </div>
     </div>
   );
 }
 
-function FinishedScreen({ state }) {
+function FinishedScreen({ state, t, fonts, lang }) {
   const { socket } = useGameSocket();
 
   function openNextMatch() {
-    if (!window.confirm("Go to the leaderboard and open the booth for the next pair?")) return;
+    if (!window.confirm(t("confirmNextMatch"))) return;
     socket.emit("openNextMatch");
   }
 
@@ -499,36 +493,32 @@ function FinishedScreen({ state }) {
       }}
     >
       <Confetti />
-      <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>GAME OVER · 3 ROUNDS</span>
-      <h3 style={{ margin: 0, fontFamily: SERIF, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
-        {winner ? `${winner.name} takes it` : "Dead heat"}
+      <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("gameOverThreeRounds")}</span>
+      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
+        {winner ? t("takesIt", winner.name) : t("deadHeat")}
       </h3>
       {winner && state.tieBroken && (
-        <span style={{ fontSize: "1.2cqw", color: MUTED }}>Tied on points — {winner.name} answered faster.</span>
+        <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("tiedOtherFaster", winner.name)}</span>
       )}
       <div style={{ display: "flex", gap: "1.6cqw" }}>
         <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: "#fff", border: `2px solid ${BLUE}`, display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: BLUE }}>WINNER</span>
-          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{winner?.name ?? "Both"}</span>
-          <span style={{ fontFamily: SERIF, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{hi.toLocaleString()}</span>
-          <span style={{ fontSize: "1.1cqw", color: MUTED }}>
-            {top.answeredCount} answers in {duration(top.timeSpentMs)}
-          </span>
+          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("winner")}</span>
+          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{winner?.name ?? t("bothPlaceholder")}</span>
+          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{hi.toLocaleString()}</span>
+          <span style={{ fontSize: "1.1cqw", color: MUTED }}>{t("answersInDuration", top.answeredCount, formatDuration(top.timeSpentMs, lang))}</span>
         </div>
         <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: "#fff", border: `1px solid ${LINE}`, display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: SANS_BOLD, color: MUTED }}>RUNNER-UP</span>
-          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{runnerUp?.name ?? "Both"}</span>
-          <span style={{ fontFamily: SERIF, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{lo.toLocaleString()}</span>
-          <span style={{ fontSize: "1.1cqw", color: MUTED }}>
-            {bottom.answeredCount} answers in {duration(bottom.timeSpentMs)}
-          </span>
+          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>{t("runnerUp")}</span>
+          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{runnerUp?.name ?? t("bothPlaceholder")}</span>
+          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{lo.toLocaleString()}</span>
+          <span style={{ fontSize: "1.1cqw", color: MUTED }}>{t("answersInDuration", bottom.answeredCount, formatDuration(bottom.timeSpentMs, lang))}</span>
         </div>
       </div>
       <div
         onClick={openNextMatch}
         style={{ padding: "1.4cqh 2cqw", borderRadius: 999, background: NAVY, color: "#fff", fontSize: "1.3cqw", fontWeight: 600, cursor: "pointer" }}
       >
-        Go to leaderboard
+        {t("goToLeaderboard")}
       </div>
     </div>
   );
@@ -546,25 +536,26 @@ export default function ScreenPage() {
 
 function ScreenPageBody() {
   const { state } = useGameSocket();
+  const { lang, dir, t, fonts, roundLabels } = useLanguage(state?.language);
 
   if (!state) {
     return (
-      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}>
-        Connecting…
+      <div dir={dir} style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, fontFamily: fonts.body }}>
+        {t("connecting")}
       </div>
     );
   }
 
   return (
-    <div style={{ height: "100vh", width: "100vw", containerType: "size", background: "#fff", display: "flex" }}>
+    <div dir={dir} style={{ height: "100vh", width: "100vw", containerType: "size", background: "#fff", display: "flex", fontFamily: fonts.body }}>
       {state.state === "lobby" ? (
-        <IdleScreen state={state} />
+        <IdleScreen state={state} t={t} fonts={fonts} />
       ) : state.state === "countdown" ? (
-        <CountdownScreen state={state} />
+        <CountdownScreen state={state} t={t} fonts={fonts} roundLabels={roundLabels} />
       ) : state.state === "playing" ? (
-        <PlayingScreen state={state} />
+        <PlayingScreen state={state} t={t} fonts={fonts} roundLabels={roundLabels} lang={lang} />
       ) : state.state === "finished" ? (
-        <FinishedScreen state={state} />
+        <FinishedScreen state={state} t={t} fonts={fonts} lang={lang} />
       ) : (
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}>
           {state.state} screen coming soon
