@@ -89,7 +89,7 @@ function IdleScreen({ state, t, fonts, lang }) {
       const res = await fetch("/api/leaderboard-emails");
       setEmailPanel({ rows: res.ok ? await res.json() : [] });
     } catch {
-      setEmailPanel({ error: "Couldn't load — check the connection." });
+      setEmailPanel({ error: "Couldn't load. Check the connection." });
     }
   }
 
@@ -109,7 +109,10 @@ function IdleScreen({ state, t, fonts, lang }) {
         <img src={logoSrc(lang)} alt="Tanami" style={{ height: "2.6cqw", width: "auto", alignSelf: "flex-start" }} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY }}>
+          {/* Noto Kufi Arabic's taller strokes/dots need more breathing room between lines
+              than Merriweather does — line-height: 1 makes the two lines look like they're
+              touching in Arabic, so only Arabic gets the looser value. */}
+          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: NAVY }}>
             {t("heroTitleLine1")}
             <br />
             <em style={{ color: BLUE }}>{t("heroTitleLine2")}</em>
@@ -494,7 +497,7 @@ function FinishedScreen({ state, t, fonts, lang }) {
     >
       <Confetti />
       <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("gameOverThreeRounds")}</span>
-      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
+      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
         {winner ? t("takesIt", winner.name) : t("deadHeat")}
       </h3>
       {winner && state.tieBroken && (

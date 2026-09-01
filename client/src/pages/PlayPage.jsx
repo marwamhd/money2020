@@ -63,7 +63,7 @@ function LanguagePickerScreen({ onPick, fonts }) {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "40px 30px 36px" }}>
         <img src="/tanami-logo.png" alt="Tanami" style={{ height: 28, width: "auto", alignSelf: "flex-start" }} />
 
-        <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 34, lineHeight: 1.15, fontWeight: 400, color: NAVY, textAlign: "center" }}>
+        <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 34, lineHeight: 1.4, fontWeight: 400, color: NAVY, textAlign: "center" }}>
           Choose your language
           <br />
           <span style={{ fontFamily: "'Noto Kufi Arabic', sans-serif" }}>اختر لغتك</span>
@@ -93,7 +93,7 @@ function LanguagePickerScreen({ onPick, fonts }) {
           >
             العربية
           </div>
-          <span style={{ textAlign: "center", fontSize: 12, color: "#9AA3BF" }}>This sets the language for both players — سيتم اعتماد هذه اللغة لكلا اللاعبين</span>
+          <span style={{ textAlign: "center", fontSize: 12, color: "#9AA3BF" }}>This sets the language for both players · سيتم اعتماد هذه اللغة لكلا اللاعبين</span>
         </div>
       </div>
     </div>
