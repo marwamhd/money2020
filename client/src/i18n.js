@@ -159,7 +159,6 @@ const STRINGS = {
     runnerUp: "RUNNER-UP",
     answersInDuration: (count, dur) => `${count} answers in ${dur}`,
     goToLeaderboard: "Go to leaderboard",
-    confirmNextMatch: "Go to the leaderboard and open the booth for the next pair?",
   },
   ar: {
     chooseLanguage: "اختر لغتك",
@@ -252,7 +251,6 @@ const STRINGS = {
     runnerUp: "المركز الثاني",
     answersInDuration: (count, dur) => `${arabicCountedNoun(count, AR_ANSWER_NOUN)} في ${dur}`,
     goToLeaderboard: "الانتقال إلى لوحة المتصدرين",
-    confirmNextMatch: "الانتقال إلى لوحة المتصدرين وفتح الجناح للزوج التالي؟",
   },
 };
 

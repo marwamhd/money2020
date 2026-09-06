@@ -618,8 +618,11 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
 function FinishedScreen({ state, t, fonts, lang }) {
   const { socket } = useGameSocket();
 
+  // No window.confirm() — many Android TV / kiosk browsers have no OS-level dialog to
+  // show on a screen with no pointer, so window.confirm() silently returns false (or
+  // throws) there, and the button looked completely dead on the actual TV box the game
+  // demoed on.
   function openNextMatch() {
-    if (!window.confirm(t("confirmNextMatch"))) return;
     socket.emit("openNextMatch");
   }
 

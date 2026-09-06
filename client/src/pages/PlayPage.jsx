@@ -150,11 +150,31 @@ export default function PlayPage({ code }) {
 
 function PlayPageBody({ code }) {
   const { state, socket } = useGameSocket();
-  const { lang, dir, t, fonts, roundLabels } = useLanguage(state?.language);
-  const [name, setName] = useState("");
   const [myToken, setMyToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
   const myTokenRef = useRef(myToken);
   myTokenRef.current = myToken;
+
+  // Freezes this player's own finished-match view the moment their match ends (declared
+  // here, ahead of everything else that reads it, including useLanguage below) — see the
+  // full explanation further down where the snapshot itself is populated.
+  const stickyKey = `m2020_sticky_result_${code}_${myToken}`;
+  const [stickyResult, setStickyResult] = useState(() => {
+    if (!myToken) return null;
+    try {
+      const raw = localStorage.getItem(stickyKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Once this player's result is sticky, the match's shared `language` has already served
+  // its purpose for them — the live value keeps changing after that (resets to English on
+  // the next match, or reads as English for the instant before this socket's first "state"
+  // event arrives on a refresh), so the finished screen must keep reading the language the
+  // match was actually PLAYED in, from the frozen snapshot, not the live value.
+  const { lang, dir, t, fonts, roundLabels } = useLanguage(stickyResult?.language ?? state?.language);
+  const [name, setName] = useState("");
   const [joinError, setJoinError] = useState(null);
   const [languagePicked, setLanguagePicked] = useState(false);
 
@@ -217,22 +237,13 @@ function PlayPageBody({ code }) {
     }
   }, [state, me]);
 
-  // Freezes this player's own finished-match view the moment their match ends. Every
-  // match has its own one-time QR code, so once it ends this player can never rejoin or
-  // take part in anything that comes next — there's no "live state" worth following
-  // afterward, just this terminal result screen. Scoped to `code` (this specific match's
-  // one-time URL) + myToken, NOT persisted forever: a fresh page load with a different
-  // `code` (a genuinely new match, even on a reused token) must not restore stale data.
-  const stickyKey = `m2020_sticky_result_${code}_${myToken}`;
-  const [stickyResult, setStickyResult] = useState(() => {
-    if (!myToken) return null;
-    try {
-      const raw = localStorage.getItem(stickyKey);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
+  // Every match has its own one-time QR code, so once it ends this player can never
+  // rejoin or take part in anything that comes next — there's no "live state" worth
+  // following afterward, just this terminal result screen (stickyKey/stickyResult
+  // themselves are declared above, ahead of useLanguage). Scoped to `code` (this
+  // specific match's one-time URL) + myToken, NOT persisted forever: a fresh page load
+  // with a different `code` (a genuinely new match, even on a reused token) must not
+  // restore stale data.
   useEffect(() => {
     if (state?.state === "finished" && me?.matchResultId && !stickyResult) {
       const snapshot = {
@@ -245,6 +256,7 @@ function PlayPageBody({ code }) {
         otherName,
         winnerId: state.winnerId,
         tieBroken: state.tieBroken,
+        language: state.language,
       };
       setStickyResult(snapshot);
       try {
