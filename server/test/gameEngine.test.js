@@ -82,6 +82,16 @@ test("a later join with the same id but no name keeps the existing name", () => 
   assert.equal(engine.players.find((p) => p.id === "p1").name, "Alice");
 });
 
+test("when slot 1 disconnects during lobby, the next joiner takes slot 1 (not a collision with slot 2)", () => {
+  const { engine } = makeEngine();
+  engine.addPlayer("p1", "Alice"); // slot 1
+  engine.addPlayer("p2", "Bob"); // slot 2
+  engine.disconnectPlayer("p1"); // removed entirely — still lobby, nothing at stake
+  const third = engine.addPlayer("p3", "Carl");
+  assert.equal(third.slot, 1);
+  assert.deepEqual(engine.players.map((p) => p.slot).sort(), [1, 2]);
+});
+
 test("stays in lobby until both players ready, then counts down and starts playing", async () => {
   const { engine } = makeEngine();
   engine.addPlayer("p1", "Alice");
@@ -477,4 +487,37 @@ test("a fresh match resets the language back to English, even if the previous on
 
   engine.openNextMatch();
   assert.equal(engine.language, "en");
+});
+
+test("a question with Arabic content is served in Arabic once the match language is set to ar", async () => {
+  const questions = [
+    { id: "R1-a", round: "R1", prompt: "q1 en", optionA: "X", optionB: "Y", correctOption: "A", points: 100, promptAr: "q1 ar", optionAAr: "X ar", optionBAr: "Y ar" },
+    { id: "R1-b", round: "R1", prompt: "q2 en", optionA: "X", optionB: "Y", correctOption: "B", points: 150, promptAr: "q2 ar", optionAAr: "X ar", optionBAr: "Y ar" },
+  ];
+  const engine = new GameEngine(questions, () => {}, FAST_CONFIG);
+  engine.addPlayer("p1", "Alice", engine.matchCode);
+  engine.setLanguage("p1", "ar");
+  engine.addPlayer("p2", "Bob", engine.matchCode);
+  engine.setReady("p1");
+  engine.setReady("p2");
+  await waitUntil(() => engine.state === "playing" && engine.currentQuestion !== null);
+
+  const snap = engine.getSnapshot();
+  assert.ok(["q1 ar", "q2 ar"].includes(snap.currentQuestion.prompt), "round order is shuffled, but whichever question came up must be in Arabic");
+  assert.equal(snap.currentQuestion.optionA, "X ar");
+  assert.equal(snap.currentQuestion.optionB, "Y ar");
+});
+
+test("a question missing Arabic content falls back to English even when the match language is ar", async () => {
+  const questions = [{ id: "R1-a", round: "R1", prompt: "q1 en", optionA: "X", optionB: "Y", correctOption: "A", points: 100 }];
+  const engine = new GameEngine(questions, () => {}, FAST_CONFIG);
+  engine.addPlayer("p1", "Alice", engine.matchCode);
+  engine.setLanguage("p1", "ar");
+  engine.addPlayer("p2", "Bob", engine.matchCode);
+  engine.setReady("p1");
+  engine.setReady("p2");
+  await waitUntil(() => engine.state === "playing" && engine.currentQuestion !== null);
+
+  const snap = engine.getSnapshot();
+  assert.equal(snap.currentQuestion.prompt, "q1 en", "no promptAr on this question, so English is the only honest thing to show");
 });

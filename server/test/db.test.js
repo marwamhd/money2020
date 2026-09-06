@@ -10,7 +10,7 @@ import os from "node:os";
 const tmpDir = mkdtempSync(path.join(os.tmpdir(), "m2020-db-test-"));
 process.env.M2020_DB_PATH = path.join(tmpDir, "test.db");
 
-const { getTopLeaderboard, recordLeaderboardEntryIfFirst, resetLeaderboard } = await import("../src/db.js");
+const { getTopLeaderboard, recordLeaderboardEntryIfFirst, resetLeaderboard, persistMatchResults, listMatchResults } = await import("../src/db.js");
 
 test.after(() => {
   rmSync(tmpDir, { recursive: true, force: true });
@@ -40,4 +40,19 @@ test("different emails each get their own leaderboard entry, ranked by score", (
     { name: "Bob", score: 300 },
     { name: "Alice", score: 150 },
   ]);
+});
+
+// Regression: a player's in-engine name can legitimately be null (a client that never
+// went through the real "type a name, then ready" UI flow — e.g. a raw socket connection,
+// or any future bypass of that rule). match_results.player_name is NOT NULL, and this
+// crashed the whole process with an uncaught SqliteError the first time it happened for
+// real, mid-session, on 2026-09-06.
+test("persisting a match result with a null player name does not throw, and falls back to a labeled placeholder", () => {
+  assert.doesNotThrow(() => {
+    persistMatchResults([{ id: "p1", name: null, score: 120, slot: 2 }], "TESTCODE");
+  });
+  const rows = listMatchResults();
+  const row = rows.find((r) => r.matchCode === "TESTCODE");
+  assert.equal(row.playerName, "Player 2");
+  assert.equal(row.score, 120);
 });

@@ -25,7 +25,11 @@ db.exec(`
     sort_order INTEGER NOT NULL DEFAULT 0,
     option_a_image TEXT,
     option_b_image TEXT,
-    question_image TEXT
+    question_image TEXT,
+    prompt_ar TEXT,
+    option_a_ar TEXT,
+    option_b_ar TEXT,
+    host_note_ar TEXT
   );
 
   CREATE TABLE IF NOT EXISTS leaderboard (
@@ -64,6 +68,22 @@ if (!questionColumns.includes("question_image")) {
   db.exec("ALTER TABLE questions ADD COLUMN question_image TEXT");
 }
 
+// Migration for DBs created before Arabic question content existed (TAN-2300). Nullable —
+// English-only rows (or a not-yet-translated question) just have no Arabic fields, and
+// the engine falls back to English for those regardless of the match's language.
+if (!questionColumns.includes("prompt_ar")) {
+  db.exec("ALTER TABLE questions ADD COLUMN prompt_ar TEXT");
+}
+if (!questionColumns.includes("option_a_ar")) {
+  db.exec("ALTER TABLE questions ADD COLUMN option_a_ar TEXT");
+}
+if (!questionColumns.includes("option_b_ar")) {
+  db.exec("ALTER TABLE questions ADD COLUMN option_b_ar TEXT");
+}
+if (!questionColumns.includes("host_note_ar")) {
+  db.exec("ALTER TABLE questions ADD COLUMN host_note_ar TEXT");
+}
+
 // Migration for DBs created before leaderboard entries were keyed by email.
 const leaderboardColumns = db.prepare("PRAGMA table_info(leaderboard)").all().map((c) => c.name);
 if (!leaderboardColumns.includes("email")) {
@@ -78,7 +98,8 @@ export function getActiveQuestions() {
     .prepare(
       `SELECT id, round, prompt, option_a AS optionA, option_b AS optionB,
               correct_option AS correctOption, difficulty, points, host_note AS hostNote,
-              option_a_image AS optionAImage, option_b_image AS optionBImage, question_image AS questionImage
+              option_a_image AS optionAImage, option_b_image AS optionBImage, question_image AS questionImage,
+              prompt_ar AS promptAr, option_a_ar AS optionAAr, option_b_ar AS optionBAr, host_note_ar AS hostNoteAr
        FROM questions WHERE active = 1 ORDER BY sort_order ASC`
     )
     .all();
@@ -188,8 +209,13 @@ const insertLeaderboardEntry = db.prepare(`
 export const persistMatchResults = db.transaction((players, matchCode = null) => {
   const now = new Date().toISOString();
   const resultIdsByPlayerId = {};
-  players.forEach(({ id, name, score }) => {
-    const { lastInsertRowid } = insertMatchResult.run({ matchCode, playerName: name, score, email: null, createdAt: now });
+  players.forEach(({ id, name, score, slot }) => {
+    // player.name can legitimately be null in-engine (a client bypassing the real UI's
+    // "ready requires a name" rule, e.g. a raw socket connection) — match_results.player_name
+    // is NOT NULL for readable admin exports, so this is the one place that must never let
+    // a null through, regardless of how it got here.
+    const playerName = name || `Player ${slot ?? "?"}`;
+    const { lastInsertRowid } = insertMatchResult.run({ matchCode, playerName, score, email: null, createdAt: now });
     resultIdsByPlayerId[id] = lastInsertRowid;
   });
   return resultIdsByPlayerId;
@@ -230,8 +256,8 @@ function seedQuestionsIfEmpty() {
 
   const questions = JSON.parse(readFileSync(QUESTIONS_SEED_PATH, "utf-8"));
   const insert = db.prepare(`
-    INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, sort_order, option_a_image, option_b_image, question_image)
-    VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @sortOrder, @optionAImage, @optionBImage, @questionImage)
+    INSERT INTO questions (id, round, prompt, option_a, option_b, correct_option, difficulty, points, host_note, sort_order, option_a_image, option_b_image, question_image, prompt_ar, option_a_ar, option_b_ar, host_note_ar)
+    VALUES (@id, @round, @prompt, @optionA, @optionB, @correctOption, @difficulty, @points, @hostNote, @sortOrder, @optionAImage, @optionBImage, @questionImage, @promptAr, @optionAAr, @optionBAr, @hostNoteAr)
   `);
 
   const insertAll = db.transaction((rows) => {
@@ -242,6 +268,10 @@ function seedQuestionsIfEmpty() {
         optionAImage: q.optionAImage ?? null,
         optionBImage: q.optionBImage ?? null,
         questionImage: q.questionImage ?? null,
+        promptAr: q.promptAr ?? null,
+        optionAAr: q.optionAAr ?? null,
+        optionBAr: q.optionBAr ?? null,
+        hostNoteAr: q.hostNoteAr ?? null,
       })
     );
   });

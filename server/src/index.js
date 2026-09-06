@@ -75,7 +75,7 @@ const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
     return;
   }
 
-  matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score }) => ({ id, name, score })));
+  matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score, slot }) => ({ id, name, score, slot })));
   io.emit(STATE_EVENT, withLeaderboard({
     ...snapshot,
     players: snapshot.players.map((p) => ({ ...p, matchResultId: matchResultIdsByPlayerId[p.id] ?? null })),

@@ -3,13 +3,17 @@ import { QRCodeSVG } from "qrcode.react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
 import { useLanguage, formatDuration, translateDifficulty, logoSrc } from "../i18n.js";
 
-const NAVY = "#020844";
+// Dark theme (redesign 2026-09) — page background is near-black navy, cards sit one
+// step lighter, text runs light-on-dark. BLUE/SKY are unchanged: they already matched
+// the reference mockups almost exactly, sampled directly from the provided PNGs.
+const BG = "#060b36";
+const CARD = "#12183f";
 const BLUE = "#4984fd";
 const SKY = "#8ec7f0";
-const TINT = "#edf3ff";
-const LINE = "#dce5f5";
-const MUTED = "#7b85a6";
-const BODY = "#4a5578";
+const WHITE = "#f0f5ff";
+const LINE = "rgba(255,255,255,.12)";
+const MUTED = "#8b93bf";
+const BODY = "#ccd2e0";
 
 // Falls back to a translated "Player N" only when that seat hasn't typed a name yet —
 // the server never invents one (see gameEngine#addPlayer).
@@ -27,7 +31,9 @@ function extractR1Subject(prompt) {
   return match ? match[1] : null;
 }
 
-// Shows the real logo once an admin sets one; renders nothing at all otherwise.
+// Shows the real logo once an admin sets one; renders nothing at all otherwise. Kept on
+// a white chip regardless of theme — most logo assets assume a light backdrop, same
+// reasoning as the QR code below.
 function CompanyLogo({ name, imageUrl, size = "2.6cqw" }) {
   if (!imageUrl) return null;
   return <img src={imageUrl} alt={name} style={{ width: size, height: size, borderRadius: 10, objectFit: "contain", background: "#fff" }} />;
@@ -60,7 +66,6 @@ function Confetti() {
             height: c.h,
             background: c.bg,
             borderRadius: 2,
-            boxShadow: c.bg === "#fff" ? "0 0 0 1px rgba(2,8,68,.08)" : "none",
             transform: `rotate(${c.rot}deg)`,
             animation: `confettiFall ${c.dur}s linear ${c.delay}s infinite`,
           }}
@@ -112,7 +117,7 @@ function IdleScreen({ state, t, fonts, lang }) {
           {/* Noto Kufi Arabic's taller strokes/dots need more breathing room between lines
               than Merriweather does — line-height: 1 makes the two lines look like they're
               touching in Arabic, so only Arabic gets the looser value. */}
-          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: NAVY }}>
+          <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: WHITE }}>
             {t("heroTitleLine1")}
             <br />
             <em style={{ color: BLUE }}>{t("heroTitleLine2")}</em>
@@ -132,15 +137,15 @@ function IdleScreen({ state, t, fonts, lang }) {
                 padding: "1cqw",
               }}
             >
-              <QRCodeSVG value={joinUrl} size={512} style={{ width: "100%", height: "100%" }} fgColor={NAVY} />
+              <QRCodeSVG value={joinUrl} size={512} style={{ width: "100%", height: "100%" }} fgColor="#020844" />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.2cqh", alignItems: "flex-start" }}>
-              <span style={{ fontSize: "1.8cqw", fontWeight: 600, color: NAVY }}>{t("scanToJoin")}</span>
+              <span style={{ fontSize: "1.8cqw", fontWeight: 600, color: WHITE }}>{t("scanToJoin")}</span>
               <span
                 style={{
                   padding: "0.9cqh 1.4cqw",
                   borderRadius: 999,
-                  background: "rgba(73,132,253,.12)",
+                  background: "rgba(73,132,253,.18)",
                   color: BLUE,
                   fontSize: "1.3cqw",
                   fontWeight: 700,
@@ -154,15 +159,15 @@ function IdleScreen({ state, t, fonts, lang }) {
           </div>
         </div>
 
-        <span style={{ fontSize: "1.2cqw", color: "#9AA3BF" }}>{t("eventName")}</span>
+        <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("eventName")}</span>
       </div>
 
       <div
         style={{
           width: "38%",
           padding: "4cqh 3cqw",
-          background: TINT,
-          borderInlineStart: "1px solid #D8E3FF",
+          background: CARD,
+          borderInlineStart: `1px solid ${LINE}`,
           display: "flex",
           flexDirection: "column",
           gap: "2cqh",
@@ -170,7 +175,7 @@ function IdleScreen({ state, t, fonts, lang }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <h4 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "1.8cqw", fontWeight: 400, color: NAVY }}>{t("leaderboard")}</h4>
+          <h4 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "1.8cqw", fontWeight: 400, color: WHITE }}>{t("leaderboard")}</h4>
           <span onClick={openEmailPanel} style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("top5")}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.1cqh" }}>
@@ -181,45 +186,62 @@ function IdleScreen({ state, t, fonts, lang }) {
                 key={i}
                 style={{
                   display: "flex",
-                  alignItems: "stretch",
+                  alignItems: "center",
+                  gap: "1cqw",
                   borderRadius: 16,
-                  overflow: "hidden",
-                  background: "#fff",
-                  border: `2px solid ${BLUE}`,
+                  background: BLUE,
+                  padding: "1.6cqh 1.6cqw",
                 }}
               >
-                <div style={{ width: "5.2cqw", flex: "none", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontFamily: fonts.serif, fontSize: "3.4cqw", lineHeight: 1, color: "#fff" }}>1</span>
+                <div
+                  style={{
+                    width: "3.6cqw",
+                    height: "3.6cqw",
+                    flex: "none",
+                    borderRadius: "50%",
+                    background: BG,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M7 4h10v4a5 5 0 0 1-5 5 5 5 0 0 1-5-5V4Z"
+                      stroke="#fff"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <path d="M7 5H4v1a4 4 0 0 0 3.5 4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    <path d="M17 5h3v1a4 4 0 0 1-3.5 4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    <path d="M12 13v3M9 20h6M10 17h4v3h-4z" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
                 </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "1.2cqw", padding: "2.2cqh 1.6cqw" }}>
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.3cqh", minWidth: 0 }}>
-                    <span style={{ fontSize: "0.95cqw", letterSpacing: ".2em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
-                      {t("topScore")}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: fonts.serif,
-                        fontSize: "2.2cqw",
-                        color: NAVY,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {entry.name}
-                    </span>
-                  </div>
-                  <span style={{ fontFamily: fonts.serif, fontSize: "2.6cqw", color: BLUE }}>{entry.score.toLocaleString()}</span>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.2cqh", minWidth: 0 }}>
+                  <span style={{ fontSize: "1.05cqw", fontWeight: 600, color: "#020844" }}>{t("topScore")}</span>
+                  <span
+                    style={{
+                      fontSize: "1.5cqw",
+                      fontWeight: 700,
+                      color: "#020844",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {entry.name}
+                  </span>
                 </div>
+                <span style={{ fontFamily: fonts.serif, fontSize: "2.4cqw", color: "#020844" }}>{entry.score.toLocaleString()}</span>
               </div>
             ) : (
               <div
                 key={i}
-                style={{ display: "flex", alignItems: "center", gap: 14, padding: "1.4cqh 1.6cqw", borderRadius: 14, background: "#fff", border: `1px solid ${LINE}` }}
+                style={{ display: "flex", alignItems: "center", gap: 14, padding: "1.4cqh 1.6cqw", borderRadius: 14, background: "rgba(255,255,255,.05)", border: `1px solid ${LINE}` }}
               >
-                <span style={{ fontFamily: fonts.serif, fontSize: "1.8cqw", width: "2.8cqw", textAlign: "center", color: "#9AA3BF" }}>{i + 1}</span>
-                <span style={{ flex: 1, fontSize: "1.5cqw", fontWeight: 600, color: NAVY }}>{entry.name}</span>
-                <span style={{ fontFamily: fonts.serif, fontSize: "1.9cqw", color: NAVY }}>{entry.score.toLocaleString()}</span>
+                <span style={{ fontFamily: fonts.serif, fontSize: "1.8cqw", width: "2.8cqw", textAlign: "center", color: MUTED }}>{i + 1}</span>
+                <span style={{ flex: 1, fontSize: "1.5cqw", fontWeight: 600, color: WHITE }}>{entry.name}</span>
+                <span style={{ fontFamily: fonts.serif, fontSize: "1.9cqw", color: WHITE }}>{entry.score.toLocaleString()}</span>
               </div>
             )
           )}
@@ -233,11 +255,11 @@ function IdleScreen({ state, t, fonts, lang }) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 16, padding: 28, minWidth: 420, maxWidth: "80vw", maxHeight: "80vh", overflow: "auto", display: "flex", flexDirection: "column", gap: 14 }}
+            style={{ background: CARD, borderRadius: 16, padding: 28, minWidth: 420, maxWidth: "80vw", maxHeight: "80vh", overflow: "auto", display: "flex", flexDirection: "column", gap: 14 }}
           >
-            <h4 style={{ margin: 0, fontFamily: fonts.serif, fontWeight: 400, color: NAVY }}>{t("leaderboardEmails")}</h4>
+            <h4 style={{ margin: 0, fontFamily: fonts.serif, fontWeight: 400, color: WHITE }}>{t("leaderboardEmails")}</h4>
             {emailPanel.error ? (
-              <span style={{ color: "#C0392B" }}>{emailPanel.error}</span>
+              <span style={{ color: "#ff7a6e" }}>{emailPanel.error}</span>
             ) : emailPanel.rows.length === 0 ? (
               <span style={{ color: MUTED }}>{t("noEntriesYet")}</span>
             ) : (
@@ -253,16 +275,16 @@ function IdleScreen({ state, t, fonts, lang }) {
                 <tbody>
                   {emailPanel.rows.map((r, i) => (
                     <tr key={i} style={{ borderTop: `1px solid ${LINE}` }}>
-                      <td style={{ padding: "6px 12px", color: NAVY }}>{i + 1}</td>
-                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.name}</td>
-                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.score}</td>
-                      <td style={{ padding: "6px 12px", color: NAVY }}>{r.email}</td>
+                      <td style={{ padding: "6px 12px", color: WHITE }}>{i + 1}</td>
+                      <td style={{ padding: "6px 12px", color: WHITE }}>{r.name}</td>
+                      <td style={{ padding: "6px 12px", color: WHITE }}>{r.score}</td>
+                      <td style={{ padding: "6px 12px", color: WHITE }}>{r.email}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             )}
-            <div onClick={() => setEmailPanel(null)} style={{ alignSelf: "flex-end", padding: "8px 16px", borderRadius: 10, background: NAVY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <div onClick={() => setEmailPanel(null)} style={{ alignSelf: "flex-end", padding: "8px 16px", borderRadius: 10, background: BLUE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
               {t("close")}
             </div>
           </div>
@@ -272,20 +294,116 @@ function IdleScreen({ state, t, fonts, lang }) {
   );
 }
 
+// The round label's "or"/"أم" connector gets its own oval-outline + italic treatment
+// (matching the reference design) — R2's label has no connector, so it just renders
+// plain in that case.
+function splitRoundLabel(label) {
+  for (const connector of [" or ", " أم "]) {
+    const idx = label.indexOf(connector);
+    if (idx !== -1) {
+      return { before: label.slice(0, idx), connector: connector.trim(), after: label.slice(idx + connector.length) };
+    }
+  }
+  return { before: label, connector: null, after: "" };
+}
+
+function DollarCoin({ color }) {
+  return (
+    <span
+      style={{
+        width: "1.7cqw",
+        height: "1.7cqw",
+        borderRadius: "50%",
+        border: `1.5px solid ${color}`,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "1cqw",
+        fontWeight: 700,
+        color,
+      }}
+    >
+      $
+    </span>
+  );
+}
+
 function CountdownScreen({ state, t, fonts, roundLabels }) {
   const msLeft = useCountdown(state.countdownEndsAt);
   const seconds = Math.ceil(msLeft / 1000);
+  const parts = splitRoundLabel(roundLabels[state.currentRound] ?? "");
 
   return (
-    <div style={{ flex: 1, background: TINT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1cqh" }}>
-      <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
-        {t("roundOf3", state.currentRound?.slice(1))}
-      </span>
-      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "4.2cqw", lineHeight: 1.02, fontWeight: 400, color: NAVY }}>
-        {roundLabels[state.currentRound]}
-      </h3>
-      <div style={{ fontFamily: fonts.serif, fontSize: "9cqw", lineHeight: 0.9, color: BLUE }}>{seconds}</div>
-      <span style={{ fontSize: "1.5cqw", color: MUTED }}>{t("vsBetween", playerName(state, 1, t), playerName(state, 2, t))}</span>
+    <div style={{ flex: 1, background: BG, display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "3cqh 3cqw 0", display: "flex", alignItems: "center", gap: "0.8cqw" }}>
+        <span style={{ width: "0.7cqw", height: "0.7cqw", borderRadius: "50%", background: BLUE, display: "inline-block" }} />
+        <span style={{ fontSize: "1.3cqw", fontWeight: 700, color: WHITE }}>Tanami</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.4cqh" }}>
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5cqw",
+            padding: "0.7cqh 1.2cqw",
+            borderRadius: 999,
+            background: "#dce5f5",
+            color: "#020844",
+            fontSize: "1.1cqw",
+            fontWeight: 700,
+            fontFamily: fonts.sansBold,
+          }}
+        >
+          <svg width="0.9cqw" height="0.9cqw" viewBox="0 0 16 16" fill="none" style={{ minWidth: 13, minHeight: 13 }}>
+            <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" stroke="#020844" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+            <path d="M13.8 2.5v2.2h-2.2" stroke="#020844" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+          {t("roundOf3", state.currentRound?.slice(1))}
+        </span>
+        <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "4.2cqw", lineHeight: 1.02, fontWeight: 400, color: WHITE, textAlign: "center" }}>
+          {parts.connector ? (
+            <>
+              {parts.before}{" "}
+              <span
+                style={{
+                  display: "inline-block",
+                  fontStyle: "italic",
+                  color: BLUE,
+                  border: `2px solid ${BLUE}`,
+                  borderRadius: 999,
+                  padding: "0 0.7cqw",
+                }}
+              >
+                {parts.connector}
+              </span>{" "}
+              {parts.after}
+            </>
+          ) : (
+            parts.before
+          )}
+        </h3>
+        <div
+          style={{
+            width: "10cqw",
+            height: "10cqw",
+            borderRadius: "50%",
+            background: BLUE,
+            border: "3px dashed #fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "1cqh 0",
+          }}
+        >
+          <span style={{ fontFamily: fonts.serif, fontSize: "4.4cqw", lineHeight: 1, color: BG }}>{seconds}</span>
+        </div>
+        <span style={{ fontSize: "1.5cqw", color: MUTED }}>{t("vsBetween", playerName(state, 1, t), playerName(state, 2, t))}</span>
+        <div style={{ display: "flex", gap: "1cqw", marginTop: "0.6cqh" }}>
+          <DollarCoin color={BLUE} />
+          <DollarCoin color="#fff" />
+          <DollarCoin color={BLUE} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -295,18 +413,13 @@ function clock(ms) {
   return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
 }
 
-function PlayerColumn({ player, opponent, tinted, t, fonts }) {
+function PlayerColumn({ player, opponent, t, fonts }) {
   const leading = player && opponent && player.score > opponent.score;
   return (
     <div
       style={{
         width: "23%",
         padding: "3cqh 2cqw",
-        background: tinted ? TINT : "#fff",
-        // Logical (inline-start/end) so the seam touching the center column stays on the
-        // correct visual edge whether the row is LTR or mirrored for RTL.
-        borderInlineEnd: tinted ? "1px solid #D8E3FF" : "none",
-        borderInlineStart: tinted ? "none" : `1px solid ${LINE}`,
         display: "flex",
         flexDirection: "column",
         gap: "1.6cqh",
@@ -318,7 +431,7 @@ function PlayerColumn({ player, opponent, tinted, t, fonts }) {
             width: "3.6cqw",
             height: "3.6cqw",
             borderRadius: 12,
-            background: tinted ? BLUE : NAVY,
+            background: BLUE,
             color: "#fff",
             display: "flex",
             alignItems: "center",
@@ -329,14 +442,38 @@ function PlayerColumn({ player, opponent, tinted, t, fonts }) {
         >
           {player?.name?.[0] ?? "?"}
         </div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: NAVY }}>{player?.name}</span>
-          <span style={{ fontSize: "1cqw", fontWeight: 600, color: leading ? BLUE : MUTED }}>{leading ? t("leading") : ""}</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.3cqh" }}>
+          <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: WHITE }}>{player?.name}</span>
+          {leading && (
+            <span
+              style={{
+                alignSelf: "flex-start",
+                padding: "1px 8px",
+                borderRadius: 999,
+                background: "rgba(73,132,253,.18)",
+                fontSize: "0.9cqw",
+                fontWeight: 700,
+                color: BLUE,
+              }}
+            >
+              ★ {t("leading")}
+            </span>
+          )}
         </div>
       </div>
-      <div style={{ fontFamily: fonts.serif, fontSize: "3.8cqw", lineHeight: 1, color: NAVY }}>{(player?.score ?? 0).toLocaleString()}</div>
+      <div style={{ fontFamily: fonts.serif, fontSize: "3.8cqw", lineHeight: 1, color: WHITE }}>{(player?.score ?? 0).toLocaleString()}</div>
       <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("answeredCount", player?.answeredCount ?? 0)}</span>
-      <span style={{ fontSize: "1.2cqw", fontWeight: 600, color: player?.hasAnsweredCurrent ? BLUE : "#9AA3BF" }}>
+      <span
+        style={{
+          alignSelf: "flex-start",
+          padding: "3px 10px",
+          borderRadius: 999,
+          border: `1px solid ${player?.hasAnsweredCurrent ? BLUE : LINE}`,
+          fontSize: "1.1cqw",
+          fontWeight: 600,
+          color: player?.hasAnsweredCurrent ? BLUE : MUTED,
+        }}
+      >
         {player?.hasAnsweredCurrent ? t("lockedIn") : t("choosing")}
       </span>
     </div>
@@ -351,23 +488,23 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
   const playerB = state.players.find((p) => p.slot === 2);
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "1.8cqh 2.5cqw", background: "#fff", borderBottom: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: BG }}>
+      <div style={{ padding: "1.8cqh 2.5cqw", borderBottom: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src={logoSrc(lang)} alt="Tanami" style={{ height: "1.7cqw", width: "auto" }} />
         <span style={{ fontSize: "1.1cqw", letterSpacing: ".16em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>
           {t("roundOf3", state.currentRound?.slice(1))} · {roundLabels[state.currentRound]?.toUpperCase()}
         </span>
       </div>
       <div style={{ flex: 1, display: "flex" }}>
-        <PlayerColumn player={playerA} opponent={playerB} tinted t={t} fonts={fonts} />
+        <PlayerColumn player={playerA} opponent={playerB} t={t} fonts={fonts} />
         <div style={{ flex: 1, padding: "3cqh 2.6cqw", display: "flex", flexDirection: "column", gap: "4.5cqh", alignItems: "center" }}>
           {q && (
             <span
               style={{
                 padding: "0.8cqh 1.1cqw",
                 borderRadius: 999,
-                background: NAVY,
-                color: "#fff",
+                background: "rgba(73,132,253,.18)",
+                color: BLUE,
                 fontSize: "1cqw",
                 fontWeight: 700,
                 fontFamily: fonts.sansBold,
@@ -385,7 +522,7 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
                 fontSize: "2.4cqw",
                 lineHeight: 1.28,
                 fontWeight: 700,
-                color: NAVY,
+                color: WHITE,
                 maxWidth: "44cqw",
               }}
             >
@@ -415,7 +552,7 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
                       flex: 1,
                       padding: "2cqh 1.6cqw",
                       borderRadius: 16,
-                      background: isCorrect ? TINT : "#fff",
+                      background: isCorrect ? "rgba(73,132,253,.14)" : CARD,
                       border: `2px solid ${isCorrect ? BLUE : LINE}`,
                       display: "flex",
                       flexDirection: "column",
@@ -428,8 +565,8 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
                           width: "2.6cqw",
                           height: "2.6cqw",
                           borderRadius: 10,
-                          background: isCorrect ? BLUE : "#EEF1F8",
-                          color: isCorrect ? "#fff" : NAVY,
+                          background: isCorrect ? BLUE : "rgba(255,255,255,.08)",
+                          color: isCorrect ? "#fff" : WHITE,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -439,7 +576,7 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
                       >
                         {letter}
                       </span>
-                      <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: NAVY }}>{opt}</span>
+                      <span style={{ fontSize: "1.6cqw", fontWeight: 600, color: WHITE }}>{opt}</span>
                       {isCorrect && (
                         <span style={{ marginInlineStart: "auto", fontSize: "1cqw", letterSpacing: ".12em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>
                           {t("correct")}
@@ -452,12 +589,27 @@ function PlayingScreen({ state, t, fonts, roundLabels, lang }) {
               })}
             </div>
           )}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.6cqh" }}>
-            <span style={{ fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: 1, color: msLeft <= 10000 ? BLUE : NAVY }}>{clock(msLeft)}</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8cqh" }}>
+            <div
+              style={{
+                width: "6cqw",
+                height: "6cqw",
+                borderRadius: "50%",
+                background: BLUE,
+                border: "3px dashed #fff",
+                boxShadow: "0 0 0 1.5px rgba(73,132,253,.5)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                animation: msLeft <= 10000 ? "pulse 1s infinite" : "none",
+              }}
+            >
+              <span style={{ fontFamily: fonts.serif, fontSize: "1.9cqw", lineHeight: 1, color: BG }}>{clock(msLeft)}</span>
+            </div>
             {revealing && <span style={{ fontSize: "1.2cqw", fontWeight: 600, color: BLUE }}>{t("nextQuestionLoading")}</span>}
           </div>
         </div>
-        <PlayerColumn player={playerB} opponent={playerA} tinted={false} t={t} fonts={fonts} />
+        <PlayerColumn player={playerB} opponent={playerA} t={t} fonts={fonts} />
       </div>
     </div>
   );
@@ -485,7 +637,7 @@ function FinishedScreen({ state, t, fonts, lang }) {
       style={{
         position: "relative",
         flex: 1,
-        background: TINT,
+        background: BG,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -497,29 +649,47 @@ function FinishedScreen({ state, t, fonts, lang }) {
     >
       <Confetti />
       <span style={{ fontSize: "1.2cqw", letterSpacing: ".26em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("gameOverThreeRounds")}</span>
-      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: NAVY, textAlign: "center" }}>
+      <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: "3.9cqw", lineHeight: lang === "ar" ? 1.5 : 1, fontWeight: 400, color: WHITE, textAlign: "center" }}>
         {winner ? t("takesIt", winner.name) : t("deadHeat")}
       </h3>
       {winner && state.tieBroken && (
         <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("tiedOtherFaster", winner.name)}</span>
       )}
       <div style={{ display: "flex", gap: "1.6cqw" }}>
-        <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: "#fff", border: `2px solid ${BLUE}`, display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("winner")}</span>
-          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{winner?.name ?? t("bothPlaceholder")}</span>
-          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{hi.toLocaleString()}</span>
+        <div style={{ position: "relative", width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: CARD, border: `2px dashed ${BLUE}`, display: "flex", flexDirection: "column", gap: 6 }}>
+          <span
+            style={{
+              position: "absolute",
+              top: "-1.3cqh",
+              insetInlineStart: "-0.6cqw",
+              transform: "rotate(-8deg)",
+              background: BLUE,
+              color: "#fff",
+              padding: "0.5cqh 1cqw",
+              borderRadius: "6px 6px 6px 0",
+              fontSize: "1cqw",
+              fontWeight: 700,
+              fontFamily: fonts.sansBold,
+              boxShadow: "0 3px 8px rgba(0,0,0,.35)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            ★ {t("winner")}
+          </span>
+          <span style={{ fontSize: "2cqw", fontWeight: 600, color: WHITE }}>{winner?.name ?? t("bothPlaceholder")}</span>
+          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: WHITE }}>{hi.toLocaleString()}</span>
           <span style={{ fontSize: "1.1cqw", color: MUTED }}>{t("answersInDuration", top.answeredCount, formatDuration(top.timeSpentMs, lang))}</span>
         </div>
-        <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: "#fff", border: `1px solid ${LINE}`, display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ width: "22cqw", padding: "2.6cqh 2cqw", borderRadius: 18, background: CARD, border: `1px solid ${LINE}`, display: "flex", flexDirection: "column", gap: 6 }}>
           <span style={{ fontSize: "1.1cqw", letterSpacing: ".14em", fontWeight: 700, fontFamily: fonts.sansBold, color: MUTED }}>{t("runnerUp")}</span>
-          <span style={{ fontSize: "2cqw", fontWeight: 600, color: NAVY }}>{runnerUp?.name ?? t("bothPlaceholder")}</span>
-          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: NAVY }}>{lo.toLocaleString()}</span>
+          <span style={{ fontSize: "2cqw", fontWeight: 600, color: WHITE }}>{runnerUp?.name ?? t("bothPlaceholder")}</span>
+          <span style={{ fontFamily: fonts.serif, fontSize: "3.2cqw", lineHeight: 1, color: WHITE }}>{lo.toLocaleString()}</span>
           <span style={{ fontSize: "1.1cqw", color: MUTED }}>{t("answersInDuration", bottom.answeredCount, formatDuration(bottom.timeSpentMs, lang))}</span>
         </div>
       </div>
       <div
         onClick={openNextMatch}
-        style={{ padding: "1.4cqh 2cqw", borderRadius: 999, background: NAVY, color: "#fff", fontSize: "1.3cqw", fontWeight: 600, cursor: "pointer" }}
+        style={{ padding: "1.4cqh 2cqw", borderRadius: 999, background: BLUE, color: "#fff", fontSize: "1.3cqw", fontWeight: 600, cursor: "pointer" }}
       >
         {t("goToLeaderboard")}
       </div>
@@ -543,14 +713,14 @@ function ScreenPageBody() {
 
   if (!state) {
     return (
-      <div dir={dir} style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, fontFamily: fonts.body }}>
+      <div dir={dir} style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: BG, color: MUTED, fontFamily: fonts.body }}>
         {t("connecting")}
       </div>
     );
   }
 
   return (
-    <div dir={dir} style={{ height: "100vh", width: "100vw", containerType: "size", background: "#fff", display: "flex", fontFamily: fonts.body }}>
+    <div dir={dir} style={{ height: "100vh", width: "100vw", containerType: "size", background: BG, display: "flex", fontFamily: fonts.body }}>
       {state.state === "lobby" ? (
         <IdleScreen state={state} t={t} fonts={fonts} lang={lang} />
       ) : state.state === "countdown" ? (

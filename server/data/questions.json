@@ -9,7 +9,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq since 1980.",
-    "questionImage": "/logos/apple.svg"
+    "questionImage": "/logos/apple.svg",
+    "promptAr": "هل Apple شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 1980."
   },
   {
     "id": "R1-2",
@@ -21,7 +25,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq since 1997.",
-    "questionImage": "/logos/amazon.svg"
+    "questionImage": "/logos/amazon.svg",
+    "promptAr": "هل Amazon شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 1997."
   },
   {
     "id": "R1-3",
@@ -33,7 +41,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq since 1986.",
-    "questionImage": "/logos/microsoft.svg"
+    "questionImage": "/logos/microsoft.svg",
+    "promptAr": "هل Microsoft شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 1986."
   },
   {
     "id": "R1-4",
@@ -45,7 +57,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE since 1980.",
-    "questionImage": "/logos/nike.svg"
+    "questionImage": "/logos/nike.svg",
+    "promptAr": "هل Nike شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 1980."
   },
   {
     "id": "R1-5",
@@ -57,7 +73,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE since 1919.",
-    "questionImage": "/logos/coca-cola.svg"
+    "questionImage": "/logos/coca-cola.svg",
+    "promptAr": "هل Coca-Cola شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 1919."
   },
   {
     "id": "R1-6",
@@ -69,7 +89,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq since 2010.",
-    "questionImage": "/logos/tesla.svg"
+    "questionImage": "/logos/tesla.svg",
+    "promptAr": "هل Tesla شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 2010."
   },
   {
     "id": "R1-7",
@@ -81,7 +105,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "One of the world's most valuable listed companies.",
-    "questionImage": "/logos/nvidia.svg"
+    "questionImage": "/logos/nvidia.svg",
+    "promptAr": "هل Nvidia شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحدة من أكثر الشركات المدرجة قيمة في العالم."
   },
   {
     "id": "R1-8",
@@ -93,7 +121,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq since 1992.",
-    "questionImage": "/logos/starbucks.svg"
+    "questionImage": "/logos/starbucks.svg",
+    "promptAr": "هل Starbucks شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 1992."
   },
   {
     "id": "R1-9",
@@ -105,7 +137,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE since 2008, one of the largest IPOs ever at the time.",
-    "questionImage": "/logos/visa.svg"
+    "questionImage": "/logos/visa.svg",
+    "promptAr": "هل Visa شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 2008، وكان طرحها من أكبر الطروحات العامة في التاريخ حينها."
   },
   {
     "id": "R1-10",
@@ -117,7 +153,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the NYSE since 1999, after decades as a private partnership.",
-    "questionImage": "/logos/goldman-sachs.svg"
+    "questionImage": "/logos/goldman-sachs.svg",
+    "promptAr": "هل Goldman Sachs شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 1999، بعد عقود كانت خلالها شراكة خاصة."
   },
   {
     "id": "R1-11",
@@ -129,7 +169,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "IPO'd on the NYSE in March 2024.",
-    "questionImage": "/logos/reddit.svg"
+    "questionImage": "/logos/reddit.svg",
+    "promptAr": "هل Reddit شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "طرحت أسهمها للاكتتاب العام في بورصة نيويورك في مارس 2024."
   },
   {
     "id": "R1-12",
@@ -141,7 +185,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on Nasdaq in December 2020.",
-    "questionImage": "/logos/airbnb.svg"
+    "questionImage": "/logos/airbnb.svg",
+    "promptAr": "هل Airbnb شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُدرجت في ناسداك في ديسمبر 2020."
   },
   {
     "id": "R1-13",
@@ -153,7 +201,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Re-listed on the NYSE in 2019 after decades as a family-controlled private company.",
-    "questionImage": "/logos/levis.svg"
+    "questionImage": "/logos/levis.svg",
+    "promptAr": "هل Levi's شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُعيد إدراجها في بورصة نيويورك عام 2019، بعد عقود كانت خلالها شركة خاصة تديرها العائلة."
   },
   {
     "id": "R1-14",
@@ -165,7 +217,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "IPO'd in June 2026 in one of the largest listings in history, ending years of speculation.",
-    "questionImage": "/logos/spacex.svg"
+    "questionImage": "/logos/spacex.svg",
+    "promptAr": "هل SpaceX شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "طرحت أسهمها للاكتتاب العام في يونيو 2026 في واحد من أكبر الطروحات في التاريخ، لتضع حدًا لسنوات من التكهنات."
   },
   {
     "id": "R1-15",
@@ -177,7 +233,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Owned by Dutch and Swedish foundations, never listed.",
-    "questionImage": "/logos/ikea.svg"
+    "questionImage": "/logos/ikea.svg",
+    "promptAr": "هل IKEA شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لمؤسستين هولندية وسويدية، ولم تُدرج في أي بورصة."
   },
   {
     "id": "R1-16",
@@ -189,7 +249,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Majority owned by the Kirk Kristiansen family.",
-    "questionImage": "/logos/lego.svg"
+    "questionImage": "/logos/lego.svg",
+    "promptAr": "هل LEGO شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تملك عائلة كيرك كريستيانسن غالبية أسهمها."
   },
   {
     "id": "R1-17",
@@ -201,7 +265,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Family-owned by the Wertheimer family.",
-    "questionImage": "/logos/chanel.svg"
+    "questionImage": "/logos/chanel.svg",
+    "promptAr": "هل Chanel شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لعائلة فيرتهايمر."
   },
   {
     "id": "R1-18",
@@ -213,7 +281,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "One of the largest family-owned businesses in the world, makers of M&M's and Snickers.",
-    "questionImage": "/logos/mars.svg"
+    "questionImage": "/logos/mars.svg",
+    "promptAr": "هل Mars Inc. شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحدة من أكبر الشركات العائلية في العالم، وصانعة حلوى M&M's وسنيكرز."
   },
   {
     "id": "R1-19",
@@ -225,7 +297,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "The largest privately held company in the United States by revenue.",
-    "questionImage": "/logos/cargill.svg"
+    "questionImage": "/logos/cargill.svg",
+    "promptAr": "هل Cargill شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أكبر شركة خاصة في الولايات المتحدة من حيث الإيرادات."
   },
   {
     "id": "R1-20",
@@ -237,7 +313,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Owned by a German family trust, not listed anywhere.",
-    "questionImage": "/logos/trader-joes.svg"
+    "questionImage": "/logos/trader-joes.svg",
+    "promptAr": "هل Trader Joe's شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لصندوق عائلي ألماني، وغير مدرجة في أي بورصة."
   },
   {
     "id": "R1-21",
@@ -249,7 +329,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Remains family-owned; deliberately closed on Sundays.",
-    "questionImage": "/logos/chick-fil-a.svg"
+    "questionImage": "/logos/chick-fil-a.svg",
+    "promptAr": "هل Chick-fil-A شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "لا تزال مملوكة للعائلة، وتُغلق أبوابها يوم الأحد عن قصد."
   },
   {
     "id": "R1-22",
@@ -261,7 +345,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Family-owned since 1948, has resisted franchising and never listed.",
-    "questionImage": "/logos/in-n-out.svg"
+    "questionImage": "/logos/in-n-out.svg",
+    "promptAr": "هل In-N-Out Burger شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة للعائلة منذ عام 1948، ورفضت نظام الامتياز التجاري ولم تُدرج قط."
   },
   {
     "id": "R1-23",
@@ -273,7 +361,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Majority owned by founder Michael Bloomberg.",
-    "questionImage": "/logos/bloomberg.svg"
+    "questionImage": "/logos/bloomberg.svg",
+    "promptAr": "هل Bloomberg LP شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "يملك مؤسسها مايكل بلومبرغ غالبية أسهمها."
   },
   {
     "id": "R1-24",
@@ -285,7 +377,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "One of the largest asset managers in the world, still family-controlled.",
-    "questionImage": "/logos/fidelity.svg"
+    "questionImage": "/logos/fidelity.svg",
+    "promptAr": "هل Fidelity Investments شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحدة من أكبر شركات إدارة الأصول في العالم، ولا تزال تحت سيطرة العائلة المؤسسة."
   },
   {
     "id": "R1-25",
@@ -297,7 +393,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Owned by the Ferrero family.",
-    "questionImage": "/logos/ferrero.svg"
+    "questionImage": "/logos/ferrero.svg",
+    "promptAr": "هل Ferrero (Nutella) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لعائلة فيريرو."
   },
   {
     "id": "R1-26",
@@ -309,7 +409,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Majority owned by a charitable foundation; shares are not publicly traded.",
-    "questionImage": "/logos/bosch.svg"
+    "questionImage": "/logos/bosch.svg",
+    "promptAr": "هل Bosch شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تملك مؤسسة خيرية غالبية أسهمها، وأسهمها غير متداولة في أي بورصة."
   },
   {
     "id": "R1-27",
@@ -321,7 +425,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Privately owned by the Albrecht family.",
-    "questionImage": "/logos/aldi.svg"
+    "questionImage": "/logos/aldi.svg",
+    "promptAr": "هل Aldi شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لعائلة ألبريخت."
   },
   {
     "id": "R1-28",
@@ -333,7 +441,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Owned by a private foundation; releases no public financial statements.",
-    "questionImage": "/logos/rolex.svg"
+    "questionImage": "/logos/rolex.svg",
+    "promptAr": "هل Rolex شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لمؤسسة خاصة، ولا تُصدر أي بيانات مالية علنية."
   },
   {
     "id": "R1-29",
@@ -345,7 +457,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Still private as of mid-2026 despite a $150bn+ valuation and years of IPO speculation.",
-    "questionImage": "/logos/stripe.svg"
+    "questionImage": "/logos/stripe.svg",
+    "promptAr": "هل Stripe شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "لا تزال خاصة حتى منتصف 2026 رغم تقييم يتجاوز 150 مليار دولار وسنوات من التكهنات حول طرحها."
   },
   {
     "id": "R1-30",
@@ -357,7 +473,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Valued well over $100bn privately, with no confirmed IPO date.",
-    "questionImage": "/logos/databricks.svg"
+    "questionImage": "/logos/databricks.svg",
+    "promptAr": "هل Databricks شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تُقدَّر قيمتها بأكثر من 100 مليار دولار كشركة خاصة، دون موعد مؤكد لطرحها."
   },
   {
     "id": "R1-31",
@@ -369,7 +489,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Taken private in 2022 after being publicly listed for nearly a decade.",
-    "questionImage": "/logos/x-twitter.svg"
+    "questionImage": "/logos/x-twitter.svg",
+    "promptAr": "هل X (formerly Twitter) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تحولت إلى شركة خاصة عام 2022 بعد نحو عقد من كونها مدرجة."
   },
   {
     "id": "R1-32",
@@ -381,7 +505,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Delisted from Nasdaq Dubai in 2020 and taken fully private.",
-    "questionImage": "/logos/dp-world.svg"
+    "questionImage": "/logos/dp-world.svg",
+    "promptAr": "هل DP World شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شُطبت من ناسداك دبي عام 2020 وأصبحت خاصة بالكامل."
   },
   {
     "id": "R1-33",
@@ -393,7 +521,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Tadawul since its landmark 2019 IPO.",
-    "questionImage": "/logos/saudi-aramco.jpg"
+    "questionImage": "/logos/saudi-aramco.jpg",
+    "promptAr": "هل أرامكو السعودية شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في تداول منذ طرحها التاريخي عام 2019."
   },
   {
     "id": "R1-34",
@@ -405,7 +537,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "One of the largest listed companies on Tadawul.",
-    "questionImage": "/logos/stc.svg"
+    "questionImage": "/logos/stc.svg",
+    "promptAr": "هل stc (الاتصالات السعودية) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحدة من أكبر الشركات المدرجة في تداول."
   },
   {
     "id": "R1-35",
@@ -417,7 +553,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the Saudi stock exchange since 2005.",
-    "questionImage": "/logos/almarai.svg"
+    "questionImage": "/logos/almarai.svg",
+    "promptAr": "هل المراعي شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في السوق المالية السعودية منذ عام 2005."
   },
   {
     "id": "R1-36",
@@ -429,7 +569,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the Dubai Financial Market.",
-    "questionImage": "/logos/emaar.svg"
+    "questionImage": "/logos/emaar.svg",
+    "promptAr": "هل إعمار العقارية شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في سوق دبي المالي."
   },
   {
     "id": "R1-37",
@@ -441,7 +585,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Abu Dhabi Securities Exchange.",
-    "questionImage": "/logos/e-and.svg"
+    "questionImage": "/logos/e-and.svg",
+    "promptAr": "هل e& (اتصالات) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في سوق أبوظبي للأوراق المالية."
   },
   {
     "id": "R1-38",
@@ -453,7 +601,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Dubai Financial Market in December 2024, the largest tech IPO globally that year.",
-    "questionImage": "/logos/talabat.svg"
+    "questionImage": "/logos/talabat.svg",
+    "promptAr": "هل طلبات شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُدرجت في سوق دبي المالي في ديسمبر 2024، في أكبر طرح عام أولي لشركة تقنية عالميًا ذلك العام."
   },
   {
     "id": "R1-39",
@@ -465,7 +617,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Abu Dhabi Securities Exchange in 2024 after decades as a private retailer.",
-    "questionImage": "/logos/lulu-group.webp"
+    "questionImage": "/logos/lulu-group.webp",
+    "promptAr": "هل مجموعة لولو (تجزئة) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُدرجت في سوق أبوظبي للأوراق المالية عام 2024، بعد عقود كانت خلالها شركة تجزئة خاصة."
   },
   {
     "id": "R1-40",
@@ -477,7 +633,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Dual-listed on Tadawul and the Abu Dhabi Securities Exchange.",
-    "questionImage": "/logos/americana.jpeg"
+    "questionImage": "/logos/americana.jpeg",
+    "promptAr": "هل أمريكانا للمطاعم شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في كل من تداول وسوق أبوظبي للأوراق المالية."
   },
   {
     "id": "R1-41",
@@ -489,7 +649,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on Tadawul's main market.",
-    "questionImage": "/logos/jahez.png"
+    "questionImage": "/logos/jahez.png",
+    "promptAr": "هل جاهز شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في السوق الرئيسية لتداول."
   },
   {
     "id": "R1-42",
@@ -501,7 +665,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on Bahrain Bourse, Dubai Financial Market, and Boursa Kuwait.",
-    "questionImage": "/logos/gfh.svg"
+    "questionImage": "/logos/gfh.svg",
+    "promptAr": "هل مجموعة جي إف إتش المالية شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة البحرين، وسوق دبي المالي، وبورصة الكويت."
   },
   {
     "id": "R1-43",
@@ -513,7 +681,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on Tadawul; chaired by Prince Alwaleed bin Talal.",
-    "questionImage": "/logos/kingdom-holding.svg"
+    "questionImage": "/logos/kingdom-holding.svg",
+    "promptAr": "هل شركة المملكة القابضة شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في تداول، ويرأسها الأمير الوليد بن طلال."
   },
   {
     "id": "R1-44",
@@ -525,7 +697,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Wholly owned by the Government of Dubai; not publicly traded.",
-    "questionImage": "/logos/emirates.svg"
+    "questionImage": "/logos/emirates.svg",
+    "promptAr": "هل طيران الإمارات شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة بالكامل لحكومة دبي، وغير مدرجة في أي بورصة."
   },
   {
     "id": "R1-45",
@@ -537,7 +713,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The parent stays wholly state-owned, even though several of its subsidiaries like ADNOC Distribution are separately listed.",
-    "questionImage": "/logos/adnoc.webp"
+    "questionImage": "/logos/adnoc.webp",
+    "promptAr": "هل أدنوك (الشركة الأم) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تبقى الشركة الأم مملوكة بالكامل للدولة، رغم أن عدة شركات تابعة لها مثل أدنوك ديستريبيوشن مدرجة بشكل مستقل."
   },
   {
     "id": "R1-46",
@@ -549,7 +729,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "One of the largest family conglomerates in the UAE, spanning autos, retail and real estate.",
-    "questionImage": "/logos/al-futtaim.png"
+    "questionImage": "/logos/al-futtaim.png",
+    "promptAr": "هل مجموعة الفطيم شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحدة من أكبر التكتلات العائلية في الإمارات، وتغطي أنشطتها السيارات والتجزئة والعقارات."
   },
   {
     "id": "R1-47",
@@ -561,7 +745,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Privately owned; operates malls and the regional Carrefour franchise.",
-    "questionImage": "/logos/majid-al-futtaim.jpg"
+    "questionImage": "/logos/majid-al-futtaim.jpg",
+    "promptAr": "هل ماجد الفطيم شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة ملكية خاصة، وتدير مراكز تسوق وامتياز كارفور في المنطقة."
   },
   {
     "id": "R1-48",
@@ -573,7 +761,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "A major regional luxury retail conglomerate, family-owned since 1955.",
-    "questionImage": "/logos/chalhoub.png"
+    "questionImage": "/logos/chalhoub.png",
+    "promptAr": "هل مجموعة شلهوب شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تكتل إقليمي كبير في تجزئة السلع الفاخرة، مملوك للعائلة منذ عام 1955."
   },
   {
     "id": "R1-49",
@@ -585,7 +777,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE.",
-    "questionImage": "/logos/boeing.svg"
+    "questionImage": "/logos/boeing.svg",
+    "promptAr": "هل Boeing شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك."
   },
   {
     "id": "R1-50",
@@ -597,7 +793,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE since 1956.",
-    "questionImage": "/logos/ford.svg"
+    "questionImage": "/logos/ford.svg",
+    "promptAr": "هل Ford شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 1956."
   },
   {
     "id": "R1-51",
@@ -609,7 +809,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE.",
-    "questionImage": "/logos/johnson-and-johnson.svg"
+    "questionImage": "/logos/johnson-and-johnson.svg",
+    "promptAr": "هل Johnson & Johnson شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك."
   },
   {
     "id": "R1-52",
@@ -621,7 +825,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE since 1972.",
-    "questionImage": "/logos/walmart.svg"
+    "questionImage": "/logos/walmart.svg",
+    "promptAr": "هل Walmart شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك منذ عام 1972."
   },
   {
     "id": "R1-53",
@@ -633,7 +841,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq.",
-    "questionImage": "/logos/costco.svg"
+    "questionImage": "/logos/costco.svg",
+    "promptAr": "هل Costco شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك."
   },
   {
     "id": "R1-54",
@@ -645,7 +857,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Warren Buffett's holding company, listed on the NYSE.",
-    "questionImage": "/logos/berkshire-hathaway.svg"
+    "questionImage": "/logos/berkshire-hathaway.svg",
+    "promptAr": "هل Berkshire Hathaway شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "الشركة القابضة لوارن بافيت، ومدرجة في بورصة نيويورك."
   },
   {
     "id": "R1-55",
@@ -657,7 +873,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "One of the largest listed banks in the world.",
-    "questionImage": "/logos/jpmorgan-chase.svg"
+    "questionImage": "/logos/jpmorgan-chase.svg",
+    "promptAr": "هل JPMorgan Chase شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحد من أكبر البنوك المدرجة في العالم."
   },
   {
     "id": "R1-56",
@@ -669,7 +889,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the NYSE.",
-    "questionImage": "/logos/american-express.svg"
+    "questionImage": "/logos/american-express.svg",
+    "promptAr": "هل American Express شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك."
   },
   {
     "id": "R1-57",
@@ -681,7 +905,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on Nasdaq.",
-    "questionImage": "/logos/adobe.svg"
+    "questionImage": "/logos/adobe.svg",
+    "promptAr": "هل Adobe شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك."
   },
   {
     "id": "R1-58",
@@ -693,7 +921,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the NYSE.",
-    "questionImage": "/logos/salesforce.svg"
+    "questionImage": "/logos/salesforce.svg",
+    "promptAr": "هل Salesforce شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة نيويورك."
   },
   {
     "id": "R1-59",
@@ -705,7 +937,11 @@
     "difficulty": "Easy",
     "points": 100,
     "hostNote": "Listed on the Tokyo Stock Exchange.",
-    "questionImage": "/logos/toyota.svg"
+    "questionImage": "/logos/toyota.svg",
+    "promptAr": "هل Toyota شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في بورصة طوكيو."
   },
   {
     "id": "R1-60",
@@ -717,7 +953,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Dual-listed in New York and Hong Kong.",
-    "questionImage": "/logos/alibaba.svg"
+    "questionImage": "/logos/alibaba.svg",
+    "promptAr": "هل Alibaba شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في كل من نيويورك وهونغ كونغ."
   },
   {
     "id": "R1-61",
@@ -729,7 +969,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on both the NYSE and TSX.",
-    "questionImage": "/logos/shopify.svg"
+    "questionImage": "/logos/shopify.svg",
+    "promptAr": "هل Shopify شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في كل من بورصة نيويورك وبورصة تورنتو."
   },
   {
     "id": "R1-62",
@@ -741,7 +985,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on Nasdaq since 2021.",
-    "questionImage": "/logos/coinbase.svg"
+    "questionImage": "/logos/coinbase.svg",
+    "promptAr": "هل Coinbase شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرجة في ناسداك منذ عام 2021."
   },
   {
     "id": "R1-63",
@@ -753,7 +1001,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The USDC stablecoin issuer, listed in 2025 in one of the year's standout debuts.",
-    "questionImage": "/logos/circle.svg"
+    "questionImage": "/logos/circle.svg",
+    "promptAr": "هل Circle شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "الجهة المصدرة للعملة المستقرة USDC، أُدرجت عام 2025 في واحد من أبرز طروحات ذلك العام."
   },
   {
     "id": "R1-64",
@@ -765,7 +1017,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The AI cloud-computing company, listed on Nasdaq in March 2025.",
-    "questionImage": "/logos/coreweave.svg"
+    "questionImage": "/logos/coreweave.svg",
+    "promptAr": "هل CoreWeave شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة الحوسبة السحابية للذكاء الاصطناعي، أُدرجت في ناسداك في مارس 2025."
   },
   {
     "id": "R1-65",
@@ -777,7 +1033,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The buy-now-pay-later company, listed on the NYSE in September 2025 after years of delay.",
-    "questionImage": "/logos/klarna.svg"
+    "questionImage": "/logos/klarna.svg",
+    "promptAr": "هل Klarna شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة الشراء الآن والدفع لاحقًا، أُدرجت في بورصة نيويورك في سبتمبر 2025 بعد سنوات من التأجيل."
   },
   {
     "id": "R1-66",
@@ -789,7 +1049,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The digital bank, listed on Nasdaq in June 2025.",
-    "questionImage": "/logos/chime.svg"
+    "questionImage": "/logos/chime.svg",
+    "promptAr": "هل Chime شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "البنك الرقمي، أُدرج في ناسداك في يونيو 2025."
   },
   {
     "id": "R1-67",
@@ -801,7 +1065,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Listed in 2025 after Adobe's attempted acquisition fell through in 2024.",
-    "questionImage": "/logos/figma.svg"
+    "questionImage": "/logos/figma.svg",
+    "promptAr": "هل Figma شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُدرجت عام 2025 بعد فشل محاولة استحواذ Adobe عليها عام 2024."
   },
   {
     "id": "R1-68",
@@ -813,7 +1081,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The AI chipmaker, listed in 2026 with a strong debut.",
-    "questionImage": "/logos/cerebras.svg"
+    "questionImage": "/logos/cerebras.svg",
+    "promptAr": "هل Cerebras Systems شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة تصنيع رقائق الذكاء الاصطناعي، أُدرجت عام 2026 بأداء قوي في أول يوم تداول."
   },
   {
     "id": "R1-69",
@@ -825,7 +1097,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Has filed confidentially for an IPO but remained private as of mid-2026.",
-    "questionImage": "/logos/discord.svg"
+    "questionImage": "/logos/discord.svg",
+    "promptAr": "هل Discord شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تقدمت بطلب سري للطرح العام، لكنها بقيت خاصة حتى منتصف 2026."
   },
   {
     "id": "R1-70",
@@ -837,7 +1113,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "One of the largest privately held conglomerates in the United States.",
-    "questionImage": "/logos/koch.svg"
+    "questionImage": "/logos/koch.svg",
+    "promptAr": "هل Koch Industries شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحد من أكبر التكتلات الخاصة في الولايات المتحدة."
   },
   {
     "id": "R1-71",
@@ -849,7 +1129,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "Employee-owned; shares are not traded on a public exchange.",
-    "questionImage": "/logos/publix.png"
+    "questionImage": "/logos/publix.png",
+    "promptAr": "هل Publix شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مملوكة لموظفيها، وأسهمها غير متداولة في أي بورصة عامة."
   },
   {
     "id": "R1-72",
@@ -861,7 +1145,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Family-owned arts and crafts retail chain.",
-    "questionImage": "/logos/hobby-lobby.svg"
+    "questionImage": "/logos/hobby-lobby.svg",
+    "promptAr": "هل Hobby Lobby شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "سلسلة متاجر عائلية لبيع مستلزمات الفنون والحرف اليدوية."
   },
   {
     "id": "R1-73",
@@ -873,7 +1161,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Family-owned maker of household products like Glade and Ziploc.",
-    "questionImage": "/logos/sc-johnson.svg"
+    "questionImage": "/logos/sc-johnson.svg",
+    "promptAr": "هل SC Johnson شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة عائلية مصنّعة لمنتجات منزلية مثل Glade وZiploc."
   },
   {
     "id": "R1-74",
@@ -885,7 +1177,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "A partnership, like the other 'Big Four' accounting firms.",
-    "questionImage": "/logos/deloitte.svg"
+    "questionImage": "/logos/deloitte.svg",
+    "promptAr": "هل Deloitte شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة شراكة، مثل باقي شركات المحاسبة الأربع الكبرى."
   },
   {
     "id": "R1-75",
@@ -897,7 +1193,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "The German parent of Lidl and Kaufland, privately held.",
-    "questionImage": "/logos/lidl.svg"
+    "questionImage": "/logos/lidl.svg",
+    "promptAr": "هل Schwarz Group (Lidl) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "الشركة الألمانية الأم لـ Lidl وKaufland، وهي شركة خاصة."
   },
   {
     "id": "R1-76",
@@ -909,7 +1209,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "The largest bank in Saudi Arabia by assets, listed on Tadawul.",
-    "questionImage": "/logos/saudi-national-bank.svg"
+    "questionImage": "/logos/saudi-national-bank.svg",
+    "promptAr": "هل البنك الأهلي السعودي شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أكبر بنك في السعودية من حيث الأصول، ومدرج في تداول."
   },
   {
     "id": "R1-77",
@@ -921,7 +1225,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Dubai Financial Market.",
-    "questionImage": "/logos/emirates-nbd.jpg"
+    "questionImage": "/logos/emirates-nbd.jpg",
+    "promptAr": "هل بنك الإمارات دبي الوطني شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرج في سوق دبي المالي."
   },
   {
     "id": "R1-78",
@@ -933,7 +1241,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Abu Dhabi Securities Exchange.",
-    "questionImage": "/logos/fab.svg"
+    "questionImage": "/logos/fab.svg",
+    "promptAr": "هل بنك أبوظبي الأول شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرج في سوق أبوظبي للأوراق المالية."
   },
   {
     "id": "R1-79",
@@ -945,7 +1257,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Dubai Financial Market; one of the world's oldest Islamic banks.",
-    "questionImage": "/logos/dib.jpeg"
+    "questionImage": "/logos/dib.jpeg",
+    "promptAr": "هل بنك دبي الإسلامي شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "مدرج في سوق دبي المالي، وهو من أقدم البنوك الإسلامية في العالم."
   },
   {
     "id": "R1-80",
@@ -957,7 +1273,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "Listed on the Dubai Financial Market after its 2022 IPO.",
-    "questionImage": "/logos/salik.jpg"
+    "questionImage": "/logos/salik.jpg",
+    "promptAr": "هل سالك (رسوم الطرق في دبي) شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "أُدرجت في سوق دبي المالي بعد طرحها العام عام 2022."
   },
   {
     "id": "R1-81",
@@ -969,7 +1289,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "An Abu Dhabi-based AI company listed on ADX in 2023.",
-    "questionImage": "/logos/presight.jpeg"
+    "questionImage": "/logos/presight.jpeg",
+    "promptAr": "هل بريسايت للذكاء الاصطناعي شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة ذكاء اصطناعي مقرها أبوظبي، أُدرجت في سوق أبوظبي للأوراق المالية عام 2023."
   },
   {
     "id": "R1-82",
@@ -981,7 +1305,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "A UAE edtech company listed on ADX in 2024.",
-    "questionImage": "/logos/alef-education.jpg"
+    "questionImage": "/logos/alef-education.jpg",
+    "promptAr": "هل ألف التعليمية شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة تقنية تعليمية إماراتية، أُدرجت في سوق أبوظبي للأوراق المالية عام 2024."
   },
   {
     "id": "R1-83",
@@ -993,7 +1321,11 @@
     "difficulty": "Medium",
     "points": 150,
     "hostNote": "The Kuwaiti family business behind the region's Starbucks, H&M and many other retail franchises.",
-    "questionImage": "/logos/alshaya.png"
+    "questionImage": "/logos/alshaya.png",
+    "promptAr": "هل مجموعة الشايع شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "الشركة العائلية الكويتية التي تدير امتياز Starbucks وH&M والعديد من العلامات التجارية الأخرى في المنطقة."
   },
   {
     "id": "R1-84",
@@ -1005,7 +1337,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "A long-established Bahrain-founded alternative investment firm, privately held.",
-    "questionImage": "/logos/investcorp.png"
+    "questionImage": "/logos/investcorp.png",
+    "promptAr": "هل إنفستكورب شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "شركة استثمار بديل عريقة تأسست في البحرين، وهي مملوكة ملكية خاصة."
   },
   {
     "id": "R1-85",
@@ -1017,7 +1353,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "One of Saudi Arabia's oldest and largest family conglomerates.",
-    "questionImage": "/logos/olayan.jpg"
+    "questionImage": "/logos/olayan.jpg",
+    "promptAr": "هل مجموعة العليان شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحد من أقدم وأكبر التكتلات العائلية في السعودية."
   },
   {
     "id": "R1-86",
@@ -1029,7 +1369,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "One of Kuwait's largest privately held family conglomerates.",
-    "questionImage": "/logos/alghanim.jpeg"
+    "questionImage": "/logos/alghanim.jpeg",
+    "promptAr": "هل مجموعة الغانم للصناعات شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "واحد من أكبر التكتلات العائلية الخاصة في الكويت."
   },
   {
     "id": "R1-87",
@@ -1041,7 +1385,11 @@
     "difficulty": "Hard",
     "points": 200,
     "hostNote": "A long-established, family-owned Bahraini conglomerate.",
-    "questionImage": "/logos/kanoo.png"
+    "questionImage": "/logos/kanoo.png",
+    "promptAr": "هل مجموعة كانو شركة عامة أم خاصة؟",
+    "optionAAr": "عامة",
+    "optionBAr": "خاصة",
+    "hostNoteAr": "تكتل بحريني عريق مملوك للعائلة."
   },
   {
     "id": "R2-1",
@@ -1054,7 +1402,11 @@
     "points": 100,
     "hostNote": "Apple's market cap has run well ahead of Aramco's since 2020. (as of Mid-2026)",
     "optionAImage": "/logos/apple.svg",
-    "optionBImage": "/logos/saudi-aramco.jpg"
+    "optionBImage": "/logos/saudi-aramco.jpg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Apple أم أرامكو السعودية؟",
+    "optionAAr": "Apple",
+    "optionBAr": "أرامكو السعودية",
+    "hostNoteAr": "تفوقت القيمة السوقية لشركة Apple على أرامكو منذ عام 2020. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-2",
@@ -1067,7 +1419,11 @@
     "points": 150,
     "hostNote": "Nvidia has traded as one of the two largest companies in the world by market cap. (as of Mid-2026)",
     "optionAImage": "/logos/nvidia.svg",
-    "optionBImage": "/logos/saudi-aramco.jpg"
+    "optionBImage": "/logos/saudi-aramco.jpg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Nvidia أم أرامكو السعودية؟",
+    "optionAAr": "Nvidia",
+    "optionBAr": "أرامكو السعودية",
+    "hostNoteAr": "تداولت Nvidia كواحدة من أكبر شركتين في العالم من حيث القيمة السوقية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-3",
@@ -1080,7 +1436,11 @@
     "points": 150,
     "hostNote": "SpaceX listed in June 2026 at a valuation in the trillions; Stripe remains private at roughly $150-160bn. (as of Mid-2026)",
     "optionAImage": "/logos/spacex.svg",
-    "optionBImage": "/logos/stripe.svg"
+    "optionBImage": "/logos/stripe.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: SpaceX أم Stripe؟",
+    "optionAAr": "SpaceX",
+    "optionBAr": "Stripe",
+    "hostNoteAr": "طرحت SpaceX للاكتتاب العام في يونيو 2026 بتقييم بلغ تريليونات الدولارات. بينما لا تزال Stripe خاصة بتقييم يقارب 150-160 مليار دولار. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-4",
@@ -1093,7 +1453,11 @@
     "points": 200,
     "hostNote": "Stripe ~$150-160bn vs Databricks ~$130-170bn; close, but Stripe has generally led. (as of Mid-2026)",
     "optionAImage": "/logos/stripe.svg",
-    "optionBImage": "/logos/databricks.svg"
+    "optionBImage": "/logos/databricks.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Stripe أم Databricks؟",
+    "optionAAr": "Stripe",
+    "optionBAr": "Databricks",
+    "hostNoteAr": "تقييم Stripe نحو 150-160 مليار دولار مقابل Databricks بنحو 130-170 مليار دولار. الفارق ضئيل، لكن Stripe كانت متقدمة غالبًا. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-5",
@@ -1106,7 +1470,11 @@
     "points": 150,
     "hostNote": "OpenAI's private valuation (~$850bn) has pulled well ahead of ByteDance's (~$480bn). (as of Mid-2026)",
     "optionAImage": "/logos/openai.svg",
-    "optionBImage": "/logos/bytedance.svg"
+    "optionBImage": "/logos/bytedance.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: OpenAI أم ByteDance؟",
+    "optionAAr": "OpenAI",
+    "optionBAr": "ByteDance",
+    "hostNoteAr": "تجاوز تقييم OpenAI الخاص (نحو 850 مليار دولار) تقييم ByteDance (نحو 480 مليار دولار) بفارق كبير. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-6",
@@ -1119,7 +1487,11 @@
     "points": 150,
     "hostNote": "xAI's valuation (~$230bn) has run ahead of Databricks' (~$130-170bn). (as of Mid-2026)",
     "optionBImage": "/logos/databricks.svg",
-    "optionAImage": "/logos/xai.jpg"
+    "optionAImage": "/logos/xai.jpg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: xAI أم Databricks؟",
+    "optionAAr": "xAI",
+    "optionBAr": "Databricks",
+    "hostNoteAr": "تقدّم تقييم xAI (نحو 230 مليار دولار) على تقييم Databricks (نحو 130-170 مليار دولار). (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-7",
@@ -1132,7 +1504,11 @@
     "points": 150,
     "hostNote": "Talabat's 2024 IPO valued it near $10bn, well above Jahez's market cap on Tadawul. (as of Mid-2026)",
     "optionAImage": "/logos/talabat.svg",
-    "optionBImage": "/logos/jahez.png"
+    "optionBImage": "/logos/jahez.png",
+    "promptAr": "أيهما يملك تقييمًا أعلى: طلبات أم جاهز؟",
+    "optionAAr": "طلبات",
+    "optionBAr": "جاهز",
+    "hostNoteAr": "قيّم الاكتتاب العام لطلبات في 2024 الشركة بنحو 10 مليارات دولار، وهو أعلى بكثير من القيمة السوقية لجاهز في تداول. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-8",
@@ -1145,7 +1521,11 @@
     "points": 150,
     "hostNote": "Saudi Telecom (stc) is substantially larger by market cap than Kuwait's Zain. (as of Mid-2026)",
     "optionAImage": "/logos/stc.svg",
-    "optionBImage": "/logos/zain.svg"
+    "optionBImage": "/logos/zain.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: stc أم Zain؟",
+    "optionAAr": "stc",
+    "optionBAr": "Zain",
+    "hostNoteAr": "الاتصالات السعودية (stc) أكبر بكثير من حيث القيمة السوقية مقارنة بشركة Zain الكويتية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-9",
@@ -1158,7 +1538,11 @@
     "points": 150,
     "hostNote": "Aramco has consistently ranked as the larger of the two oil majors by market cap. (as of Mid-2026)",
     "optionBImage": "/logos/exxonmobil.svg",
-    "optionAImage": "/logos/saudi-aramco.jpg"
+    "optionAImage": "/logos/saudi-aramco.jpg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: أرامكو السعودية أم ExxonMobil؟",
+    "optionAAr": "أرامكو السعودية",
+    "optionBAr": "ExxonMobil",
+    "hostNoteAr": "احتلت أرامكو باستمرار مرتبة أكبر شركتي نفط من حيث القيمة السوقية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-10",
@@ -1171,7 +1555,11 @@
     "points": 200,
     "hostNote": "Visa has generally held a larger market cap than Mastercard. (as of Mid-2026)",
     "optionAImage": "/logos/visa.svg",
-    "optionBImage": "/logos/mastercard.svg"
+    "optionBImage": "/logos/mastercard.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Visa أم Mastercard؟",
+    "optionAAr": "Visa",
+    "optionBAr": "Mastercard",
+    "hostNoteAr": "حافظت Visa عمومًا على قيمة سوقية أكبر من Mastercard. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-11",
@@ -1184,7 +1572,11 @@
     "points": 200,
     "hostNote": "LVMH is publicly listed with a market cap far above most private-market estimates of Chanel's value. (as of Mid-2026)",
     "optionAImage": "/logos/lvmh.svg",
-    "optionBImage": "/logos/chanel.svg"
+    "optionBImage": "/logos/chanel.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: LVMH أم Chanel (estimated)؟",
+    "optionAAr": "LVMH",
+    "optionBAr": "Chanel (estimated)",
+    "hostNoteAr": "LVMH مدرجة في البورصة بقيمة سوقية تفوق بكثير معظم التقديرات الخاصة لقيمة Chanel. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-12",
@@ -1197,7 +1589,11 @@
     "points": 200,
     "hostNote": "Emaar's market cap on DFM has generally run ahead of Almarai's on Tadawul. (as of Mid-2026)",
     "optionAImage": "/logos/emaar.svg",
-    "optionBImage": "/logos/almarai.svg"
+    "optionBImage": "/logos/almarai.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: إعمار العقارية أم المراعي؟",
+    "optionAAr": "إعمار العقارية",
+    "optionBAr": "المراعي",
+    "hostNoteAr": "تفوقت القيمة السوقية لإعمار في سوق دبي المالي عمومًا على قيمة المراعي في تداول. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-13",
@@ -1210,7 +1606,11 @@
     "points": 200,
     "hostNote": "Cargill is typically ranked as the larger of the two by revenue and estimated value, though both are private and don't disclose figures. (as of Mid-2026)",
     "optionAImage": "/logos/cargill.svg",
-    "optionBImage": "/logos/mars.svg"
+    "optionBImage": "/logos/mars.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Cargill (estimated) أم Mars Inc. (estimated)؟",
+    "optionAAr": "Cargill (estimated)",
+    "optionBAr": "Mars Inc. (estimated)",
+    "hostNoteAr": "تُصنّف Cargill عادةً كالأكبر بين الشركتين من حيث الإيرادات والقيمة التقديرية، رغم أن كلتيهما خاصة ولا تفصح عن أرقامها. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-14",
@@ -1223,7 +1623,11 @@
     "points": 150,
     "hostNote": "Coca-Cola has generally carried a higher market cap than PepsiCo despite PepsiCo's larger revenue base. (as of Mid-2026)",
     "optionAImage": "/logos/coca-cola.svg",
-    "optionBImage": "/logos/pepsico.svg"
+    "optionBImage": "/logos/pepsico.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Coca-Cola أم PepsiCo؟",
+    "optionAAr": "Coca-Cola",
+    "optionBAr": "PepsiCo",
+    "hostNoteAr": "حملت Coca-Cola عمومًا قيمة سوقية أعلى من PepsiCo رغم أن قاعدة إيرادات PepsiCo أكبر. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-15",
@@ -1236,7 +1640,11 @@
     "points": 200,
     "hostNote": "Netflix's market cap overtook Disney's in recent years. (as of Mid-2026)",
     "optionAImage": "/logos/netflix.svg",
-    "optionBImage": "/logos/disney.svg"
+    "optionBImage": "/logos/disney.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Netflix أم Disney؟",
+    "optionAAr": "Netflix",
+    "optionBAr": "Disney",
+    "hostNoteAr": "تجاوزت القيمة السوقية لـ Netflix قيمة Disney في السنوات الأخيرة. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-16",
@@ -1249,7 +1657,11 @@
     "points": 100,
     "hostNote": "Amazon's market cap has run many multiples ahead of Coca-Cola's for years. (as of Mid-2026)",
     "optionAImage": "/logos/amazon.svg",
-    "optionBImage": "/logos/coca-cola.svg"
+    "optionBImage": "/logos/coca-cola.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Amazon أم Coca-Cola؟",
+    "optionAAr": "Amazon",
+    "optionBAr": "Coca-Cola",
+    "hostNoteAr": "ظلت القيمة السوقية لـ Amazon تفوق قيمة Coca-Cola بأضعاف مضاعفة لسنوات. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-17",
@@ -1262,7 +1674,11 @@
     "points": 100,
     "hostNote": "Microsoft is one of the largest listed companies in the world by a wide margin. (as of Mid-2026)",
     "optionAImage": "/logos/microsoft.svg",
-    "optionBImage": "/logos/mcdonalds.svg"
+    "optionBImage": "/logos/mcdonalds.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Microsoft أم McDonald's؟",
+    "optionAAr": "Microsoft",
+    "optionBAr": "McDonald's",
+    "hostNoteAr": "تُعد Microsoft واحدة من أكبر الشركات المدرجة في العالم بفارق كبير. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-18",
@@ -1275,7 +1691,11 @@
     "points": 100,
     "hostNote": "Apple's market cap dwarfs that of legacy automakers. (as of Mid-2026)",
     "optionAImage": "/logos/apple.svg",
-    "optionBImage": "/logos/ford.svg"
+    "optionBImage": "/logos/ford.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Apple أم Ford؟",
+    "optionAAr": "Apple",
+    "optionBAr": "Ford",
+    "hostNoteAr": "تتفوق القيمة السوقية لـ Apple بشكل كبير على شركات صناعة السيارات التقليدية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-19",
@@ -1288,7 +1708,11 @@
     "points": 100,
     "hostNote": "Nvidia's AI-driven rise has left Intel far behind by market cap. (as of Mid-2026)",
     "optionAImage": "/logos/nvidia.svg",
-    "optionBImage": "/logos/intel.svg"
+    "optionBImage": "/logos/intel.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Nvidia أم Intel؟",
+    "optionAAr": "Nvidia",
+    "optionBAr": "Intel",
+    "hostNoteAr": "تركت صعود Nvidia المدفوع بالذكاء الاصطناعي شركة Intel بعيدة من حيث القيمة السوقية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-20",
@@ -1301,7 +1725,11 @@
     "points": 150,
     "hostNote": "JPMorgan has generally carried a larger market cap than Goldman Sachs. (as of Mid-2026)",
     "optionAImage": "/logos/jpmorgan-chase.svg",
-    "optionBImage": "/logos/goldman-sachs.svg"
+    "optionBImage": "/logos/goldman-sachs.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: JPMorgan Chase أم Goldman Sachs؟",
+    "optionAAr": "JPMorgan Chase",
+    "optionBAr": "Goldman Sachs",
+    "hostNoteAr": "حملت JPMorgan عمومًا قيمة سوقية أكبر من Goldman Sachs. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-21",
@@ -1314,7 +1742,11 @@
     "points": 150,
     "hostNote": "Visa's payments network scale has kept it ahead of Amex by market cap. (as of Mid-2026)",
     "optionAImage": "/logos/visa.svg",
-    "optionBImage": "/logos/american-express.svg"
+    "optionBImage": "/logos/american-express.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Visa أم American Express؟",
+    "optionAAr": "Visa",
+    "optionBAr": "American Express",
+    "hostNoteAr": "أبقى حجم شبكة مدفوعات Visa الشركة متقدمة على Amex من حيث القيمة السوقية. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-22",
@@ -1327,7 +1759,11 @@
     "points": 100,
     "hostNote": "Buffett's holding company has run far ahead of Boeing in recent years. (as of Mid-2026)",
     "optionBImage": "/logos/boeing.svg",
-    "optionAImage": "/logos/berkshire-hathaway.svg"
+    "optionAImage": "/logos/berkshire-hathaway.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Berkshire Hathaway أم Boeing؟",
+    "optionAAr": "Berkshire Hathaway",
+    "optionBAr": "Boeing",
+    "hostNoteAr": "تفوقت شركة بافيت القابضة بفارق كبير على Boeing في السنوات الأخيرة. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-23",
@@ -1340,7 +1776,11 @@
     "points": 200,
     "hostNote": "Chime's ~$18bn IPO valuation in June 2025 outsized Talabat's roughly $10bn debut. (as of Mid-2026)",
     "optionBImage": "/logos/talabat.svg",
-    "optionAImage": "/logos/chime.svg"
+    "optionAImage": "/logos/chime.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Chime أم طلبات؟",
+    "optionAAr": "Chime",
+    "optionBAr": "طلبات",
+    "hostNoteAr": "فاق تقييم اكتتاب Chime البالغ نحو 18 مليار دولار في يونيو 2025 حجم طرح طلبات البالغ نحو 10 مليارات دولار. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-24",
@@ -1353,7 +1793,11 @@
     "points": 200,
     "hostNote": "Chime's IPO valued it near $18bn, ahead of Klarna's roughly $15bn listing a few months later. (as of Mid-2026)",
     "optionBImage": "/logos/klarna.svg",
-    "optionAImage": "/logos/chime.svg"
+    "optionAImage": "/logos/chime.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Chime أم Klarna؟",
+    "optionAAr": "Chime",
+    "optionBAr": "Klarna",
+    "hostNoteAr": "قيّم اكتتاب Chime الشركة بنحو 18 مليار دولار، متقدمة على إدراج Klarna بنحو 15 مليار دولار بعد أشهر قليلة. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-25",
@@ -1366,7 +1810,11 @@
     "points": 200,
     "hostNote": "Tether (~$500bn) and ByteDance (~$480bn) are close, but Tether has generally edged ahead. (as of Mid-2026)",
     "optionAImage": "/logos/tether.svg",
-    "optionBImage": "/logos/bytedance.svg"
+    "optionBImage": "/logos/bytedance.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Tether أم ByteDance؟",
+    "optionAAr": "Tether",
+    "optionBAr": "ByteDance",
+    "hostNoteAr": "تقييما Tether (نحو 500 مليار دولار) و ByteDance (نحو 480 مليار دولار) متقاربان، لكن Tether كانت متقدمة عمومًا بفارق طفيف. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-26",
@@ -1379,7 +1827,11 @@
     "points": 150,
     "hostNote": "Databricks' valuation of well over $100bn dwarfs Discord's roughly $15bn. (as of Mid-2026)",
     "optionAImage": "/logos/databricks.svg",
-    "optionBImage": "/logos/discord.svg"
+    "optionBImage": "/logos/discord.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Databricks أم Discord؟",
+    "optionAAr": "Databricks",
+    "optionBAr": "Discord",
+    "hostNoteAr": "يتجاوز تقييم Databricks الذي يفوق 100 مليار دولار بكثير تقييم Discord البالغ نحو 15 مليار دولار. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-27",
@@ -1392,7 +1844,11 @@
     "points": 150,
     "hostNote": "Even after a strong 2026 debut, Cerebras still trails Databricks' much larger valuation. (as of Mid-2026)",
     "optionAImage": "/logos/cerebras.svg",
-    "optionBImage": "/logos/databricks.svg"
+    "optionBImage": "/logos/databricks.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: Cerebras Systems أم Databricks؟",
+    "optionAAr": "Cerebras Systems",
+    "optionBAr": "Databricks",
+    "hostNoteAr": "حتى بعد طرح قوي في 2026، ما زالت Cerebras متأخرة عن تقييم Databricks الأكبر بكثير. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R2-28",
@@ -1405,7 +1861,11 @@
     "points": 200,
     "hostNote": "Even after SpaceX's record-breaking 2026 listing, Apple's market cap has stayed larger. (as of Mid-2026)",
     "optionAImage": "/logos/spacex.svg",
-    "optionBImage": "/logos/apple.svg"
+    "optionBImage": "/logos/apple.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: SpaceX أم Apple؟",
+    "optionAAr": "SpaceX",
+    "optionBAr": "Apple",
+    "hostNoteAr": "حتى بعد إدراج SpaceX القياسي في 2026، ظلت القيمة السوقية لـ Apple أكبر. (اعتبارًا من منتصف 2026)"
   },
   {
     "id": "R3-1",
@@ -1416,7 +1876,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "This is exactly the barrier that platforms built for mass affluent investors are chipping away at."
+    "hostNote": "This is exactly the barrier that platforms built for mass affluent investors are chipping away at.",
+    "promptAr": "صح أم خطأ: تاريخيًا، كان الحد الأدنى للاستثمار في الأسواق الخاصة مليون دولار على الأقل.",
+    "hostNoteAr": "وهذا بالضبط هو الحاجز الذي تعمل منصات الاستثمار الموجهة لأصحاب الثروات المتوسطة والعالية على كسره.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-2",
@@ -1427,7 +1891,11 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Private markets trade liquidity for potentially higher long-term returns; that's the core trade-off."
+    "hostNote": "Private markets trade liquidity for potentially higher long-term returns; that's the core trade-off.",
+    "promptAr": "صح أم خطأ: بمجرد الاستثمار في صندوق أسهم خاصة، يمكنك عادة بيع حصتك في اليوم التالي مثل الأسهم العامة.",
+    "hostNoteAr": "الأسواق الخاصة تضحي بالسيولة مقابل عوائد محتملة أعلى على المدى الطويل. وهذه هي المعادلة الأساسية.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-3",
@@ -1438,7 +1906,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Tadawul is the largest exchange in the GCC by market capitalisation."
+    "hostNote": "Tadawul is the largest exchange in the GCC by market capitalisation.",
+    "promptAr": "صح أم خطأ: 'تداول' هو اسم السوق الرئيسية للأسهم في السعودية.",
+    "hostNoteAr": "تداول هي أكبر سوق في دول الخليج من حيث القيمة السوقية.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-4",
@@ -1449,7 +1921,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Bahrain Bourse is also home to some of the region's Islamic finance infrastructure."
+    "hostNote": "Bahrain Bourse is also home to some of the region's Islamic finance infrastructure.",
+    "promptAr": "صح أم خطأ: تُسمى السوق الرئيسية للأسهم في البحرين ببورصة البحرين.",
+    "hostNoteAr": "بورصة البحرين تحتضن أيضًا جزءًا من البنية التحتية للتمويل الإسلامي في المنطقة.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-5",
@@ -1460,7 +1936,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Private markets are large and growing fast, but public markets remain far bigger in total size."
+    "hostNote": "Private markets are large and growing fast, but public markets remain far bigger in total size.",
+    "promptAr": "هذا أم ذاك: أيهما أكبر عمومًا؟",
+    "hostNoteAr": "الأسواق الخاصة كبيرة وتنمو بسرعة، لكن الأسواق العامة لا تزال أكبر بكثير من حيث الحجم الإجمالي.",
+    "optionAAr": "سوق الأسهم الخاصة العالمي",
+    "optionBAr": "سوق الأسهم العامة العالمي"
   },
   {
     "id": "R3-6",
@@ -1471,7 +1951,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Infrastructure is one of Tanami's three core asset classes alongside private equity and private credit."
+    "hostNote": "Infrastructure is one of Tanami's three core asset classes alongside private equity and private credit.",
+    "promptAr": "صح أم خطأ: أصول البنية التحتية مثل الطرق ذات الرسوم والموانئ تُعد شكلاً من أشكال الاستثمار في الأسواق الخاصة.",
+    "hostNoteAr": "البنية التحتية هي إحدى فئات الأصول الثلاث الأساسية لدى تنامي، إلى جانب الأسهم الخاصة والائتمان الخاص.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-7",
@@ -1482,7 +1966,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Private credit has grown rapidly as banks have pulled back from some types of corporate lending."
+    "hostNote": "Private credit has grown rapidly as banks have pulled back from some types of corporate lending.",
+    "promptAr": "صح أم خطأ: الائتمان الخاص يعني الإقراض المباشر للشركات، بدلاً من الإقراض عبر بنك.",
+    "hostNoteAr": "نما الائتمان الخاص بسرعة مع تراجع البنوك عن بعض أنواع إقراض الشركات.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-8",
@@ -1493,7 +1981,11 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Private equity funds often run 7-10 years before investors see full liquidity."
+    "hostNote": "Private equity funds often run 7-10 years before investors see full liquidity.",
+    "promptAr": "هذا أم ذاك: أيهما تكون فترة الاحتفاظ به أطول عادةً؟",
+    "hostNoteAr": "غالبًا ما تستمر صناديق الأسهم الخاصة من 7 إلى 10 سنوات قبل أن يحصل المستثمرون على سيولة كاملة.",
+    "optionAAr": "سهم عام",
+    "optionBAr": "استثمار في صندوق أسهم خاصة"
   },
   {
     "id": "R3-9",
@@ -1504,7 +1996,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "This is core to why structuring matters so much for GCC investors."
+    "hostNote": "This is core to why structuring matters so much for GCC investors.",
+    "promptAr": "صح أم خطأ: الاستثمار المتوافق مع الشريعة يتجنب هياكل الإقراض القائمة على الفائدة.",
+    "hostNoteAr": "وهذا هو جوهر أهمية هيكلة الاستثمار بالنسبة لمستثمري دول الخليج.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-10",
@@ -1515,7 +2011,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "A sukuk represents partial ownership in an asset or venture rather than a pure debt obligation."
+    "hostNote": "A sukuk represents partial ownership in an asset or venture rather than a pure debt obligation.",
+    "promptAr": "صح أم خطأ: الصكوك هي نفسها السندات التقليدية.",
+    "hostNoteAr": "يمثل الصك ملكية جزئية في أصل أو مشروع، وليس مجرد التزام دين بحت.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-11",
@@ -1526,29 +2026,11 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "That was Talabat's listing on the Dubai Financial Market."
-  },
-  {
-    "id": "R3-12",
-    "round": "R3",
-    "prompt": "True or false: 'HNW' stands for 'high net worth'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "Common shorthand you'll hear all day on the show floor."
-  },
-  {
-    "id": "R3-13",
-    "round": "R3",
-    "prompt": "True or false: 'AUM' stands for 'assets under management'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "Another one you'll hear constantly at Money20/20."
+    "hostNote": "That was Talabat's listing on the Dubai Financial Market.",
+    "promptAr": "هذا أم ذاك: أي دولة أطلقت أول اكتتاب عام في قطاع التقنية بدول الخليج عام 2024؟",
+    "hostNoteAr": "كان ذلك عند إدراج طلبات في سوق دبي المالي.",
+    "optionAAr": "الإمارات",
+    "optionBAr": "السعودية"
   },
   {
     "id": "R3-14",
@@ -1559,7 +2041,11 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Private credit has been one of the fastest-growing corners of finance since the 2008 financial crisis."
+    "hostNote": "Private credit has been one of the fastest-growing corners of finance since the 2008 financial crisis.",
+    "promptAr": "هذا أم ذاك: أيهما نما بشكل أسرع خلال العقد الماضي؟",
+    "hostNoteAr": "كان الائتمان الخاص من أسرع قطاعات التمويل نموًا منذ الأزمة المالية عام 2008.",
+    "optionAAr": "الائتمان الخاص",
+    "optionBAr": "الإقراض المصرفي التقليدي للشركات المتوسطة"
   },
   {
     "id": "R3-15",
@@ -1570,7 +2056,11 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "That's exactly why access and due diligence work differently in private markets."
+    "hostNote": "That's exactly why access and due diligence work differently in private markets.",
+    "promptAr": "صح أم خطأ: تقدم جميع الشركات الخاصة نفس الإفصاحات المالية العامة التي تقدمها الشركات المدرجة.",
+    "hostNoteAr": "ولهذا بالضبط يختلف الوصول إلى المعلومات وإجراء العناية الواجبة في الأسواق الخاصة.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-16",
@@ -1581,7 +2071,11 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Family offices often invest directly, much like a private bank managing a single family's capital."
+    "hostNote": "Family offices often invest directly, much like a private bank managing a single family's capital.",
+    "promptAr": "هذا أم ذاك: هل يقترب المكتب العائلي في أسلوب استثماره أكثر من بنك خاص أم صندوق استثمار عام؟",
+    "hostNoteAr": "غالبًا ما تستثمر المكاتب العائلية بشكل مباشر، تمامًا كبنك خاص يدير أموال عائلة واحدة.",
+    "optionAAr": "بنك خاص",
+    "optionBAr": "صندوق استثمار عام"
   },
   {
     "id": "R3-17",
@@ -1592,7 +2086,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Some IPOs are mainly about giving early investors and employees liquidity, not raising fresh growth capital."
+    "hostNote": "Some IPOs are mainly about giving early investors and employees liquidity, not raising fresh growth capital.",
+    "promptAr": "صح أم خطأ: الاكتتاب العام يعني دائمًا أن الشركة تجمع رأس مال جديد للنمو.",
+    "hostNoteAr": "بعض الاكتتابات العامة تهدف بشكل أساسي إلى منح المستثمرين الأوائل والموظفين سيولة، وليس جمع رأس مال جديد للنمو.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-18",
@@ -1603,7 +2101,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Diversification matters just as much in private markets as it does in public ones."
+    "hostNote": "Diversification matters just as much in private markets as it does in public ones.",
+    "promptAr": "هذا أم ذاك: أيهما أكثر خطورة في المتوسط؟",
+    "hostNoteAr": "التنويع مهم في الأسواق الخاصة تمامًا كأهميته في الأسواق العامة.",
+    "optionAAr": "الاستثمار في شركة خاصة واحدة",
+    "optionBAr": "محفظة متنوعة في الأسواق الخاصة"
   },
   {
     "id": "R3-19",
@@ -1614,7 +2116,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Good filler if the crowd needs a laugh, since the honest answer is 'it depends on the year'."
+    "hostNote": "Good filler if the crowd needs a laugh, since the honest answer is 'it depends on the year'.",
+    "promptAr": "صح أم خطأ: التقنية المالية هي القطاع الأسرع نموًا في Money20/20 كل عام دون استثناء.",
+    "hostNoteAr": "سؤال جيد لكسر الجمود إذا احتاج الجمهور لضحكة، فالإجابة الصادقة هي 'الأمر يختلف حسب العام'.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-20",
@@ -1625,29 +2131,11 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Gold trades on public commodity markets, unlike private equity, credit, or infrastructure."
-  },
-  {
-    "id": "R3-21",
-    "round": "R3",
-    "prompt": "True or false: 'DFM' stands for Dubai Financial Market.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "One of the three main listing venues in the GCC alongside Tadawul and ADX."
-  },
-  {
-    "id": "R3-22",
-    "round": "R3",
-    "prompt": "True or false: 'ADX' stands for Abu Dhabi Securities Exchange.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "Home to major listings like ADNOC Distribution and Presight AI."
+    "hostNote": "Gold trades on public commodity markets, unlike private equity, credit, or infrastructure.",
+    "promptAr": "صح أم خطأ: يُصنَّف الذهب كأصل من أصول الأسواق الخاصة.",
+    "hostNoteAr": "يتداول الذهب في أسواق السلع العامة، على عكس الأسهم الخاصة أو الائتمان الخاص أو البنية التحتية.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-23",
@@ -1658,7 +2146,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Rebranded from the Kuwait Stock Exchange in 2016."
+    "hostNote": "Rebranded from the Kuwait Stock Exchange in 2016.",
+    "promptAr": "صح أم خطأ: بورصة الكويت هي السوق الرئيسية للأسهم في الكويت.",
+    "hostNoteAr": "أُعيدت تسميتها من سوق الكويت للأوراق المالية عام 2016.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-24",
@@ -1669,29 +2161,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Often structured as '2 and 20': a 2% management fee plus 20% of profits."
-  },
-  {
-    "id": "R3-25",
-    "round": "R3",
-    "prompt": "True or false: 'GP' in private equity stands for 'general partner'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "The GP manages the fund; the investors are the limited partners."
-  },
-  {
-    "id": "R3-26",
-    "round": "R3",
-    "prompt": "True or false: 'LP' in private equity stands for 'limited partner'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "LPs commit the capital but don't run day-to-day operations."
+    "hostNote": "Often structured as '2 and 20': a 2% management fee plus 20% of profits.",
+    "promptAr": "هذا أم ذاك: أيهما يفرض رسومًا أعلى عادةً؟",
+    "hostNoteAr": "غالبًا ما تُهيكل الرسوم بنظام '2 و20': رسوم إدارة 2% بالإضافة إلى 20% من الأرباح.",
+    "optionAAr": "صندوق استثمار عام",
+    "optionBAr": "صندوق أسهم خاصة"
   },
   {
     "id": "R3-27",
@@ -1702,7 +2176,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "The GP typically commits a smaller amount alongside a much larger pool from LPs."
+    "hostNote": "The GP typically commits a smaller amount alongside a much larger pool from LPs.",
+    "promptAr": "هذا أم ذاك: من يلتزم برأس المال في صندوق الأسهم الخاصة؟",
+    "hostNoteAr": "عادةً ما يلتزم الشريك العام بمبلغ أصغر إلى جانب مبلغ أكبر بكثير من الشركاء المحدودين.",
+    "optionAAr": "الشريك العام",
+    "optionBAr": "الشركاء المحدودون"
   },
   {
     "id": "R3-28",
@@ -1713,18 +2191,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "A term coined in 2013 that's since become industry shorthand worldwide."
-  },
-  {
-    "id": "R3-29",
-    "round": "R3",
-    "prompt": "True or false: 'CBB' stands for the Central Bank of Bahrain.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "Bahrain's financial regulator, licensing everything from banks to digital asset managers."
+    "hostNote": "A term coined in 2013 that's since become industry shorthand worldwide.",
+    "promptAr": "صح أم خطأ: 'اليونيكورن' هي شركة خاصة تُقدَّر قيمتها بمليار دولار أو أكثر.",
+    "hostNoteAr": "مصطلح صيغ عام 2013 وأصبح منذ ذلك الحين تعبيرًا شائعًا في القطاع حول العالم.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-30",
@@ -1735,18 +2206,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Private real estate funds exist alongside public REITs and aren't traded on an exchange."
-  },
-  {
-    "id": "R3-31",
-    "round": "R3",
-    "prompt": "True or false: 'DPI' in private equity measures how much cash has actually been returned to investors.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Hard",
-    "points": 200,
-    "hostNote": "Short for 'Distributions to Paid-In capital', a key real-returns metric."
+    "hostNote": "Private real estate funds exist alongside public REITs and aren't traded on an exchange.",
+    "promptAr": "صح أم خطأ: لا يمكن الوصول إلى العقارات الخاصة إلا من خلال صناديق الاستثمار العقاري المُدرجة (REITs).",
+    "hostNoteAr": "توجد صناديق العقارات الخاصة إلى جانب صناديق الريت العامة، ولا تُتداول في أي بورصة.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-32",
@@ -1757,7 +2221,11 @@
     "correctOption": "B",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Venture capital backs early-stage companies; buyout private equity typically acquires mature ones."
+    "hostNote": "Venture capital backs early-stage companies; buyout private equity typically acquires mature ones.",
+    "promptAr": "صح أم خطأ: رأس المال الجريء والأسهم الخاصة من نوع الاستحواذ هما الشيء نفسه تمامًا.",
+    "hostNoteAr": "رأس المال الجريء يدعم الشركات الناشئة في مراحلها المبكرة، بينما تستحوذ صناديق الاستحواذ عادةً على شركات ناضجة.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-33",
@@ -1768,29 +2236,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Buyout funds usually target established, cash-generative businesses instead."
-  },
-  {
-    "id": "R3-34",
-    "round": "R3",
-    "prompt": "True or false: 'KYC' stands for 'know your customer'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "A core compliance requirement across every licensed financial institution."
-  },
-  {
-    "id": "R3-35",
-    "round": "R3",
-    "prompt": "True or false: 'AML' stands for 'anti-money laundering'.",
-    "optionA": "True",
-    "optionB": "False",
-    "correctOption": "A",
-    "difficulty": "Easy",
-    "points": 100,
-    "hostNote": "Another compliance term you'll hear constantly on the show floor."
+    "hostNote": "Buyout funds usually target established, cash-generative businesses instead.",
+    "promptAr": "هذا أم ذاك: أيهما يستثمر عادةً في الشركات في مراحلها المبكرة؟",
+    "hostNoteAr": "غالبًا ما تستهدف صناديق الاستحواذ شركات راسخة ومُدرّة للنقد بدلاً من ذلك.",
+    "optionAAr": "رأس المال الجريء",
+    "optionBAr": "الأسهم الخاصة من نوع الاستحواذ"
   },
   {
     "id": "R3-36",
@@ -1801,7 +2251,11 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Bahrain Bourse traces back to 1987; DFM was established in 2000."
+    "hostNote": "Bahrain Bourse traces back to 1987; DFM was established in 2000.",
+    "promptAr": "هذا أم ذاك: أيهما تأسست أولاً؟",
+    "hostNoteAr": "يعود تاريخ بورصة البحرين إلى عام 1987، بينما تأسس سوق دبي المالي عام 2000.",
+    "optionAAr": "بورصة البحرين",
+    "optionBAr": "سوق دبي المالي"
   },
   {
     "id": "R3-37",
@@ -1812,7 +2266,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "PIF has become one of the most active global investors of the last decade."
+    "hostNote": "PIF has become one of the most active global investors of the last decade.",
+    "promptAr": "صح أم خطأ: صندوق الاستثمارات العامة السعودي (PIF) هو أحد أكبر صناديق الثروة السيادية في العالم.",
+    "hostNoteAr": "أصبح صندوق الاستثمارات العامة أحد أكثر المستثمرين العالميين نشاطًا خلال العقد الماضي.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-38",
@@ -1823,7 +2281,11 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Some structures offer secondary sales or interval liquidity; terms vary widely by fund."
+    "hostNote": "Some structures offer secondary sales or interval liquidity; terms vary widely by fund.",
+    "promptAr": "صح أم خطأ: يُقفل كل صندوق في الأسواق الخاصة رأس مال المستثمرين طوال عمر الصندوق دون أي إمكانية للخروج المبكر.",
+    "hostNoteAr": "توفر بعض الهياكل بيوعًا ثانوية أو سيولة دورية، وتختلف الشروط بشكل كبير من صندوق لآخر.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   },
   {
     "id": "R3-39",
@@ -1834,7 +2296,11 @@
     "correctOption": "A",
     "difficulty": "Easy",
     "points": 100,
-    "hostNote": "Public prices update by the second; private valuations are typically updated quarterly."
+    "hostNote": "Public prices update by the second; private valuations are typically updated quarterly.",
+    "promptAr": "هذا أم ذاك: أيهما تُقيَّم قيمته السوقية بشكل أكثر تكرارًا؟",
+    "hostNoteAr": "تُحدَّث أسعار الأسهم العامة كل ثانية، بينما تُحدَّث تقييمات الأصول الخاصة عادةً كل ربع سنة.",
+    "optionAAr": "سهم عام",
+    "optionBAr": "حصة في صندوق خاص"
   },
   {
     "id": "R3-40",
@@ -1845,6 +2311,10 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "A fund of funds invests in other funds, adding a layer of diversification and fees."
+    "hostNote": "A fund of funds invests in other funds, adding a layer of diversification and fees.",
+    "promptAr": "صح أم خطأ: 'صندوق الصناديق' يستثمر بشكل مباشر في الشركات التشغيلية بدلاً من الاستثمار في صناديق أخرى.",
+    "hostNoteAr": "يستثمر صندوق الصناديق في صناديق أخرى، ما يضيف طبقة إضافية من التنويع والرسوم.",
+    "optionAAr": "صحيح",
+    "optionBAr": "خطأ"
   }
 ]

@@ -1,14 +1,17 @@
 * , *::before, *::after { box-sizing: border-box; }
 
+/* Dark theme (redesign 2026-09) — see PlayPage.jsx/ScreenPage.jsx for the same tokens
+   used inline; kept here too so any screen relying on the body's default background
+   (rather than setting its own) still gets the right color. */
 :root {
-  --navy: #020844;
+  --bg: #060b36;
+  --card: #12183f;
   --blue: #4984fd;
   --sky: #8ec7f0;
-  --tint: #edf3ff;
-  --tint2: #eef1f8;
-  --line: #dce5f5;
-  --muted: #7b85a6;
-  --body: #4a5578;
+  --white: #f0f5ff;
+  --line: rgba(255,255,255,.12);
+  --muted: #8b93bf;
+  --body: #ccd2e0;
 }
 
 html, body, #root {
@@ -17,10 +20,10 @@ html, body, #root {
 }
 
 body {
-  background: #e7ecf7;
+  background: var(--bg);
   font-family: "Manrope", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  color: var(--navy);
+  color: var(--white);
 }
 
 @keyframes pulse {

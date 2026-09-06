@@ -35,10 +35,13 @@ export function translateDifficulty(difficulty, lang) {
   return DIFFICULTY_LABELS[lang]?.[difficulty] ?? difficulty?.toUpperCase() ?? "";
 }
 
-// The Arabic wordmark from the brand guide (p.5, "Full Color") — separate asset, not a
-// CSS-mirrored version of the English one, since Arabic calligraphy doesn't mirror.
+// White "Color on Navy" wordmarks (brand guide p.4/p.5) — the app went fully dark-theme
+// in the Sep 2026 redesign, so the navy "Full Color" variants (tanami-logo.png /
+// tanami-logo-ar.png) are no longer used anywhere; kept on disk only in case a
+// light-background context ever comes back. The Arabic version is a separate asset, not
+// a CSS-mirrored version of the English one, since Arabic calligraphy doesn't mirror.
 export function logoSrc(lang) {
-  return lang === "ar" ? "/tanami-logo-ar.png" : "/tanami-logo.png";
+  return lang === "ar" ? "/tanami-logo-ar-white.png" : "/tanami-logo-white.png";
 }
 
 // Arabic numeral-noun agreement (1 singular, 2 dual, 3-10 plural, 0/11+ singular-with-
@@ -172,7 +175,7 @@ const STRINGS = {
     namePlaceholder: "اكتب اسمك",
     readyWaitingFor: (name) => `جاهز. بانتظار ${name}`,
     imReady: "أنا جاهز",
-    otherIsReady: (name) => `${name} جاهز`,
+    otherIsReady: (name) => `اكتمل استعداد ${name}`,
     addNamePrompt: "أضف اسمك، ثم اضغط جاهز",
     seatOf2: (n) => `المقعد ${n} من أصل 2`,
 
@@ -182,11 +185,11 @@ const STRINGS = {
     roundCleared: "انتهت الجولة",
     waitingForClock: "بانتظار انتهاء الجولة",
     correct: "إجابة صحيحة",
-    notThisTime: "ليست هذه المرة",
-    runnerUpNote: (name, gain, points) => `${name} أجاب أولاً، لذا حصلت على ${gain} بدلاً من ${points}`,
+    notThisTime: "ليس هذه المرة",
+    runnerUpNote: (name, gain, points) => `وصلت إجابة ${name} أولاً، لذا حصلت على ${gain} بدلاً من ${points}`,
     timesUp: "انتهى الوقت",
     difficultyPoints: (difficulty, points) => `${difficulty} · ${points} نقطة`,
-    otherAnswered: (name) => `${name} أجاب. حان دورك.`,
+    otherAnswered: (name) => `وصلت إجابة ${name}. حان دورك.`,
     waitingForOther: (name) => `بانتظار ${name}…`,
     vs: "ضد",
 
@@ -195,7 +198,7 @@ const STRINGS = {
     youLost: "لقد خسرت",
     deadHeat: "تعادل",
     tiedFaster: "تعادل بالنقاط. أنت أجبت أسرع.",
-    tiedOtherFaster: (name) => `تعادل بالنقاط. ${name} أجاب أسرع.`,
+    tiedOtherFaster: (name) => `تعادل بالنقاط. كانت إجابة ${name} أسرع.`,
     you: "أنت",
     goodRun: "أداء جيد.",
     soClose: "كانت النتيجة قريبة جدًا.",
@@ -237,16 +240,16 @@ const STRINGS = {
     close: "إغلاق",
     eventName: "Money20/20",
     vsBetween: (a, b) => `${a} ضد ${b}`,
-    leading: "متقدم",
-    answeredCount: (n) => `أجاب على ${arabicCountedNoun(n, AR_QUESTION_NOUN)}`,
-    lockedIn: "أجاب",
-    choosing: "يختار…",
+    leading: "في المقدمة",
+    answeredCount: (n) => arabicCountedNoun(n, AR_ANSWER_NOUN),
+    lockedIn: "تمت الإجابة",
+    choosing: "قيد الاختيار…",
     playersPicked: (n) => `اختاره ${n} من 2`,
     nextQuestionLoading: "جارٍ تحميل السؤال التالي…",
     gameOverThreeRounds: "انتهت اللعبة · 3 جولات",
-    takesIt: (name) => `${name} يفوز!`,
-    winner: "الفائز",
-    runnerUp: "الوصيف",
+    takesIt: (name) => `مبروك ${name}!`,
+    winner: "المركز الأول",
+    runnerUp: "المركز الثاني",
     answersInDuration: (count, dur) => `${arabicCountedNoun(count, AR_ANSWER_NOUN)} في ${dur}`,
     goToLeaderboard: "الانتقال إلى لوحة المتصدرين",
     confirmNextMatch: "الانتقال إلى لوحة المتصدرين وفتح الجناح للزوج التالي؟",

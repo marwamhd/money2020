@@ -18,9 +18,17 @@ function shuffle(array) {
 
 // correctOption is only ever included once both players have answered (or the question
 // timed out) — that's the "reveal" window, when it's no longer possible to cheat with it.
-function publicQuestion(question, { reveal = false } = {}) {
+//
+// Arabic content lives in separate promptAr/optionAAr/optionBAr columns rather than
+// replacing the English ones (see gameContract's LANGUAGES) — falls back to English for
+// any question that doesn't (yet) have a translation, rather than showing a blank prompt.
+function publicQuestion(question, { reveal = false, language = "en" } = {}) {
   if (!question) return null;
-  const { id, prompt, optionA, optionB, difficulty, points, correctOption, optionAImage, optionBImage, questionImage } = question;
+  const { id, difficulty, points, correctOption, optionAImage, optionBImage, questionImage } = question;
+  const useAr = language === "ar" && question.promptAr && question.optionAAr && question.optionBAr;
+  const prompt = useAr ? question.promptAr : question.prompt;
+  const optionA = useAr ? question.optionAAr : question.optionA;
+  const optionB = useAr ? question.optionBAr : question.optionB;
   return {
     id, prompt, optionA, optionB, difficulty, points, optionAImage, optionBImage, questionImage,
     ...(reveal ? { correctOption } : {}),
@@ -95,7 +103,7 @@ export class GameEngine {
       currentRound: this.currentRound,
       sectionEndsAt: this.sectionEndsAt,
       sectionDurationMs: this.config.SECTION_DURATION_MS, // so clients can render an accurate round-progress bar
-      currentQuestion: publicQuestion(this.currentQuestion, { reveal: revealing }),
+      currentQuestion: publicQuestion(this.currentQuestion, { reveal: revealing, language: this.language }),
       revealUntil: this.revealUntil,
       answerCounts: counts,
     };
@@ -134,7 +142,16 @@ export class GameEngine {
     // name stays null (not a hardcoded English "Player N") until a real one is submitted —
     // clients render their own translated placeholder for an unnamed opponent, since the
     // engine itself has no notion of a display language.
-    const slot = this.players.length + 1;
+    //
+    // Slot must be the lowest one NOT already taken, not just players.length + 1 — a
+    // player who disconnects during LOBBY is removed from `players` entirely (below),
+    // which shrinks the array without freeing up the slot number the remaining player
+    // already holds. Using players.length + 1 there would hand out that same slot again
+    // to the next joiner, producing two players who are both "slot 2" and nobody in
+    // slot 1 — which is exactly what happened live on 2026-09-06, and it froze the booth
+    // display permanently (FinishedScreen has no null-guard for a missing slot-1 player).
+    const takenSlots = new Set(this.players.map((p) => p.slot));
+    const slot = takenSlots.has(1) ? 2 : 1;
     this.players.push({ id, name: name || null, slot, ready: false, score: 0, connected: true, answeredCount: 0, timeSpentMs: 0 });
     this._emit();
     return { ok: true, slot };
