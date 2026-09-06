@@ -191,12 +191,22 @@ function PlayPageBody({ code }) {
   // this same localStorage on every refresh after that), so it would otherwise never
   // re-check "already sent" and would show the blank form again, inviting a second,
   // different email for an already-recorded result.
+  //
+  // The "sent" flag lives INSIDE the stickyResult snapshot itself (keyed by matchCode +
+  // player token — see stickyKey above), not in a separate key keyed by the raw numeric
+  // matchResultId. That numeric id is a bare SQLite auto-increment PK, and the database
+  // file isn't committed to the repo (gitignored) — on a host with an ephemeral disk
+  // (e.g. Render without a persistent Disk attached), every redeploy wipes it and the
+  // counter restarts from 1. A phone that had ever submitted an email for id 1 would
+  // then falsely see a brand-new, never-submitted match (also assigned id 1 after the
+  // reset) as "already sent" and silently skip the real submission — which is exactly
+  // what happened live on 2026-09-06: two players never got onto the leaderboard despite
+  // never having entered an email at all.
   const [emailStatus, setEmailStatus] = useState(() => { // idle | sending | sent | error
     if (!myToken) return "idle";
     try {
       const raw = localStorage.getItem(`m2020_sticky_result_${code}_${myToken}`);
-      const matchResultId = raw ? JSON.parse(raw)?.matchResultId : null;
-      return matchResultId && localStorage.getItem(`m2020_email_sent_${matchResultId}`) ? "sent" : "idle";
+      return raw && JSON.parse(raw)?.emailSent ? "sent" : "idle";
     } catch {
       return "idle";
     }
@@ -263,11 +273,6 @@ function PlayPageBody({ code }) {
         localStorage.setItem(stickyKey, JSON.stringify(snapshot));
       } catch {
         // ignore — worst case this player just can't resume after a refresh
-      }
-      // A submission already recorded for this exact match (e.g. before a page refresh)
-      // must stay final — never re-show the form and risk a second, different email.
-      if (localStorage.getItem(`m2020_email_sent_${me.matchResultId}`)) {
-        setEmailStatus("sent");
       }
     }
   }, [state, me, other, otherName, stickyResult, stickyKey]);
@@ -410,7 +415,15 @@ function PlayPageBody({ code }) {
     if (!email.trim() || !matchResultId || emailStatus === "sent" || !socket) return;
     setEmailStatus("sending");
     socket.emit("submitEmail", { email: email.trim(), matchResultId }, (ack) => {
-      if (ack?.ok) localStorage.setItem(`m2020_email_sent_${matchResultId}`, "1");
+      if (ack?.ok) {
+        try {
+          const updated = { ...(stickyResult ?? {}), emailSent: true };
+          localStorage.setItem(stickyKey, JSON.stringify(updated));
+          setStickyResult(updated);
+        } catch {
+          // ignore — worst case a refresh re-shows the form; resubmitting is harmless
+        }
+      }
       setEmailStatus(ack?.ok ? "sent" : "error");
     });
   }
