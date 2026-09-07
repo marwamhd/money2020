@@ -19,6 +19,7 @@ import {
 import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
+import { appendPlayerRow, PLAYERS_XLSX_PATH } from "./playersExport.js";
 
 // Last-resort safety net: at a live booth, staying up (even degraded) beats a hard
 // crash nobody notices until players complain. Handler bugs should still be fixed —
@@ -96,6 +97,15 @@ app.get("/api/leaderboard-emails", (req, res) => {
   res.json(listFullLeaderboard());
 });
 
+// Same reasoning/sensitivity level as leaderboard-emails above, and deliberately a plain
+// GET (not under /api/admin) so the booth screen's hidden panel can link straight to it
+// as a real download, without needing the admin token in client code.
+app.get("/api/players-export", (req, res) => {
+  res.download(PLAYERS_XLSX_PATH, "players.xlsx", (err) => {
+    if (err && !res.headersSent) res.status(404).json({ error: "No players have submitted an email yet" });
+  });
+});
+
 // SPA fallback — must be registered LAST so static assets and /api/admin above take
 // priority. Matches bare /screen, /play, /admin AND their variants with a trailing
 // segment (/play/:code, /screen/:code); the client's own router (main.jsx) decides
@@ -171,6 +181,10 @@ io.on("connection", (socket) => {
     const result = getMatchResultById(matchResultId);
     if (result) {
       recordLeaderboardEntryIfFirst({ name: result.playerName, score: result.score, email: trimmedEmail });
+      // Separate from the leaderboard on purpose: every player who played and gave an
+      // email gets a row here, in order, even a repeat player whose new score doesn't
+      // become their leaderboard entry — this is a full participation log, not a ranking.
+      appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score });
     }
     ack?.({ ok: true });
   });

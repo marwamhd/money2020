@@ -3,6 +3,7 @@ client/dist/
 server/data/game.db
 server/data/game.db-shm
 server/data/game.db-wal
+server/data/players.xlsx
 .DS_Store
 *.log
 HANDOFF.md

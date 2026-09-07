@@ -284,8 +284,17 @@ function IdleScreen({ state, t, fonts, lang }) {
                 </tbody>
               </table>
             )}
-            <div onClick={() => setEmailPanel(null)} style={{ alignSelf: "flex-end", padding: "8px 16px", borderRadius: 10, background: BLUE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-              {t("close")}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <a
+                href="/api/players-export"
+                download="players.xlsx"
+                style={{ padding: "8px 16px", borderRadius: 10, background: "rgba(255,255,255,.08)", color: WHITE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+              >
+                {t("exportAllPlayers")}
+              </a>
+              <div onClick={() => setEmailPanel(null)} style={{ padding: "8px 16px", borderRadius: 10, background: BLUE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                {t("close")}
+              </div>
             </div>
           </div>
         </div>
