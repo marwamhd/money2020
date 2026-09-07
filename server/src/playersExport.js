@@ -9,7 +9,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // wipes it just like the database does.
 export const PLAYERS_XLSX_PATH = process.env.M2020_PLAYERS_XLSX_PATH || path.join(__dirname, "..", "data", "players.xlsx");
 
-const HEADERS = ["Name", "Email", "Score"];
+const HEADERS = ["Name", "Email", "Score", "Time Played", "Submitted At"];
+
+// "Time Played" is how long the player took to answer, not a timestamp — same value
+// shown on the finished screen ("answered in 1m 30s"), English only since this export
+// is admin-facing, not translated player-facing content (see formatDuration in
+// client/src/i18n.js for the equivalent the player actually sees).
+function formatDuration(ms) {
+  if (ms == null) return "";
+  const t = Math.round(ms / 1000);
+  return t >= 60 ? `${Math.floor(t / 60)}m ${t % 60}s` : `${t}s`;
+}
 
 // Every submitEmail success appends a row here — unlike the `leaderboard` DB table
 // (one row per unique email, first score wins, for prize ranking), this is a plain
@@ -22,8 +32,8 @@ const HEADERS = ["Name", "Email", "Score"];
 // one of the two appends.
 let queue = Promise.resolve();
 
-export function appendPlayerRow({ name, email, score }) {
-  queue = queue.then(() => reallyAppend({ name, email, score })).catch((err) => {
+export function appendPlayerRow({ name, email, score, timeSpentMs }) {
+  queue = queue.then(() => reallyAppend({ name, email, score, timeSpentMs })).catch((err) => {
     console.error("[playersExport] failed to append row:", err);
   });
   return queue;
@@ -61,8 +71,8 @@ async function loadOrCreateWorkbook() {
   return workbook;
 }
 
-async function reallyAppend({ name, email, score }) {
+async function reallyAppend({ name, email, score, timeSpentMs }) {
   const workbook = await loadOrCreateWorkbook();
-  workbook.getWorksheet("Players").addRow([name || "", email, score]);
+  workbook.getWorksheet("Players").addRow([name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString()]);
   await workbook.xlsx.writeFile(PLAYERS_XLSX_PATH);
 }

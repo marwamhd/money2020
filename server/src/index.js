@@ -76,7 +76,9 @@ const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
     return;
   }
 
-  matchResultIdsByPlayerId = persistMatchResults(snapshot.players.map(({ id, name, score, slot }) => ({ id, name, score, slot })));
+  matchResultIdsByPlayerId = persistMatchResults(
+    snapshot.players.map(({ id, name, score, slot, answeredCount, timeSpentMs }) => ({ id, name, score, slot, answeredCount, timeSpentMs }))
+  );
   io.emit(STATE_EVENT, withLeaderboard({
     ...snapshot,
     players: snapshot.players.map((p) => ({ ...p, matchResultId: matchResultIdsByPlayerId[p.id] ?? null })),
@@ -183,7 +185,7 @@ io.on("connection", (socket) => {
       // Separate from the leaderboard on purpose: every player who played and gave an
       // email gets a row here, in order, even a repeat player whose new score doesn't
       // become their leaderboard entry — this is a full participation log, not a ranking.
-      appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score });
+      appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs });
     }
     ack?.({ ok: true });
   });

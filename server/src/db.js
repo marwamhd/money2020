@@ -46,7 +46,9 @@ db.exec(`
     player_name TEXT NOT NULL,
     score INTEGER NOT NULL,
     email TEXT,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    answered_count INTEGER,
+    time_spent_ms INTEGER
   );
 
   CREATE TABLE IF NOT EXISTS config (
@@ -82,6 +84,16 @@ if (!questionColumns.includes("option_b_ar")) {
 }
 if (!questionColumns.includes("host_note_ar")) {
   db.exec("ALTER TABLE questions ADD COLUMN host_note_ar TEXT");
+}
+
+// Migration for DBs created before match_results tracked how the player performed
+// (only score existed) — needed to show "answered in Xm Ys" on the players export.
+const matchResultColumns = db.prepare("PRAGMA table_info(match_results)").all().map((c) => c.name);
+if (!matchResultColumns.includes("answered_count")) {
+  db.exec("ALTER TABLE match_results ADD COLUMN answered_count INTEGER");
+}
+if (!matchResultColumns.includes("time_spent_ms")) {
+  db.exec("ALTER TABLE match_results ADD COLUMN time_spent_ms INTEGER");
 }
 
 // Migration for DBs created before leaderboard entries were keyed by email.
@@ -192,8 +204,8 @@ export function setConfigValue(key, value) {
 }
 
 const insertMatchResult = db.prepare(`
-  INSERT INTO match_results (match_code, player_name, score, email, created_at)
-  VALUES (@matchCode, @playerName, @score, @email, @createdAt)
+  INSERT INTO match_results (match_code, player_name, score, email, created_at, answered_count, time_spent_ms)
+  VALUES (@matchCode, @playerName, @score, @email, @createdAt, @answeredCount, @timeSpentMs)
 `);
 
 // Only inserted once a player submits an email (see recordLeaderboardEntryIfFirst below) —
@@ -209,13 +221,16 @@ const insertLeaderboardEntry = db.prepare(`
 export const persistMatchResults = db.transaction((players, matchCode = null) => {
   const now = new Date().toISOString();
   const resultIdsByPlayerId = {};
-  players.forEach(({ id, name, score, slot }) => {
+  players.forEach(({ id, name, score, slot, answeredCount, timeSpentMs }) => {
     // player.name can legitimately be null in-engine (a client bypassing the real UI's
     // "ready requires a name" rule, e.g. a raw socket connection) — match_results.player_name
     // is NOT NULL for readable admin exports, so this is the one place that must never let
     // a null through, regardless of how it got here.
     const playerName = name || `Player ${slot ?? "?"}`;
-    const { lastInsertRowid } = insertMatchResult.run({ matchCode, playerName, score, email: null, createdAt: now });
+    const { lastInsertRowid } = insertMatchResult.run({
+      matchCode, playerName, score, email: null, createdAt: now,
+      answeredCount: answeredCount ?? null, timeSpentMs: timeSpentMs ?? null,
+    });
     resultIdsByPlayerId[id] = lastInsertRowid;
   });
   return resultIdsByPlayerId;
@@ -228,7 +243,8 @@ export function setMatchResultEmail(matchResultId, email) {
 export function getMatchResultById(id) {
   return db
     .prepare(
-      `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt
+      `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt,
+              answered_count AS answeredCount, time_spent_ms AS timeSpentMs
        FROM match_results WHERE id = ?`
     )
     .get(id);
