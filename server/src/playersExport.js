@@ -29,21 +29,40 @@ export function appendPlayerRow({ name, email, score }) {
   return queue;
 }
 
-async function reallyAppend({ name, email, score }) {
+// Called before serving a download — with nobody having submitted an email yet, there's
+// no file on disk at all. Downloading must still hand back a real, valid .xlsx (just an
+// empty one with the header row) rather than a 404: the client link always names the
+// saved file "players.xlsx" regardless of what the response actually contains, so an
+// error body would get saved under that name and fail to open as "invalid format".
+export function ensureWorkbookExists() {
+  queue = queue.then(async () => {
+    const workbook = await loadOrCreateWorkbook();
+    await workbook.xlsx.writeFile(PLAYERS_XLSX_PATH);
+  }).catch((err) => {
+    console.error("[playersExport] failed to create empty workbook:", err);
+  });
+  return queue;
+}
+
+async function loadOrCreateWorkbook() {
   const workbook = new ExcelJS.Workbook();
   let sheet;
   try {
     await workbook.xlsx.readFile(PLAYERS_XLSX_PATH);
     sheet = workbook.getWorksheet("Players");
   } catch {
-    // File doesn't exist yet (first ever submission) — start a fresh workbook.
+    // File doesn't exist yet — start a fresh workbook.
   }
   if (!sheet) {
     sheet = workbook.addWorksheet("Players");
     sheet.addRow(HEADERS);
     sheet.getRow(1).font = { bold: true };
   }
+  return workbook;
+}
 
-  sheet.addRow([name || "", email, score]);
+async function reallyAppend({ name, email, score }) {
+  const workbook = await loadOrCreateWorkbook();
+  workbook.getWorksheet("Players").addRow([name || "", email, score]);
   await workbook.xlsx.writeFile(PLAYERS_XLSX_PATH);
 }
