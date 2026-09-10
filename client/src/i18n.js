@@ -112,7 +112,7 @@ const STRINGS = {
     submit: "Submit",
     sending: "Sending…",
     emailError: "Couldn't submit that. Check the email and try again.",
-    prizeNote: "Top 5 on the leaderboard get $200 credited on their first investment.",
+    prizeNote: "You'll be entered into the leaderboard!",
 
     connecting: "Connecting…",
     cantJoin: "Can't join this match",
@@ -209,7 +209,7 @@ const STRINGS = {
     submit: "إرسال",
     sending: "جارٍ الإرسال…",
     emailError: "تعذر الإرسال. تحقق من البريد الإلكتروني وحاول مرة أخرى.",
-    prizeNote: "أفضل 5 لاعبين في لوحة المتصدرين يحصلون على 200 دولار تُضاف إلى استثمارهم الأول.",
+    prizeNote: "سيتم إدخالك في لوحة المتصدرين!",
 
     connecting: "جارٍ الاتصال…",
     cantJoin: "لا يمكن الانضمام إلى هذه المباراة",
