@@ -10,6 +10,31 @@ const QUESTIONS_SEED_PATH = path.join(__dirname, "..", "data", "questions.json")
 export const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
 
+// The server runs on Render (UTC), but the event itself is in Riyadh — a fixed offset
+// is enough since GCC countries don't observe DST, so no timezone library is needed.
+// All `achieved_at`/`created_at` timestamps are stored as UTC ISO strings; this is only
+// used to translate "today" (event-local) into the UTC boundary those columns compare
+// against, so the live leaderboard resets at local midnight rather than UTC midnight.
+const EVENT_TZ_OFFSET_HOURS = Number(process.env.M2020_EVENT_TZ_OFFSET_HOURS ?? 3);
+
+// The UTC instant at which event-local midnight starts for `referenceDate` (defaults to
+// now) — e.g. at 2026-09-15 21:00 UTC, event-local time is already 2026-09-16 00:00, so
+// this returns the UTC timestamp for that same local midnight, not the UTC one.
+function startOfEventDayUTC(referenceDate = new Date()) {
+  const offsetMs = EVENT_TZ_OFFSET_HOURS * 3600_000;
+  const local = new Date(referenceDate.getTime() + offsetMs);
+  const localMidnightUTC = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate());
+  return new Date(localMidnightUTC - offsetMs).toISOString();
+}
+
+// [start, end) UTC boundaries for one event-local calendar day, given as "YYYY-MM-DD".
+function eventDayRangeUTC(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const offsetMs = EVENT_TZ_OFFSET_HOURS * 3600_000;
+  const startUTCms = Date.UTC(y, m - 1, d) - offsetMs;
+  return { start: new Date(startUTCms).toISOString(), end: new Date(startUTCms + 24 * 3600_000).toISOString() };
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS questions (
     id TEXT PRIMARY KEY,
@@ -48,7 +73,8 @@ db.exec(`
     email TEXT,
     created_at TEXT NOT NULL,
     answered_count INTEGER,
-    time_spent_ms INTEGER
+    time_spent_ms INTEGER,
+    player_token TEXT
   );
 
   CREATE TABLE IF NOT EXISTS config (
@@ -96,6 +122,16 @@ if (!matchResultColumns.includes("time_spent_ms")) {
   db.exec("ALTER TABLE match_results ADD COLUMN time_spent_ms INTEGER");
 }
 
+// Migration for DBs created before ownership of a result was checked durably. Without
+// this, "can this player submit an email for this matchResultId" was only checked
+// against an in-memory map that resets on every server restart — Render's free tier
+// idles down and cold-restarts on the next request, so any player who took a bit longer
+// than usual between finishing and hitting Submit could lose that in-memory mapping and
+// get a false "couldn't submit" even though their result was safely in the database.
+if (!matchResultColumns.includes("player_token")) {
+  db.exec("ALTER TABLE match_results ADD COLUMN player_token TEXT");
+}
+
 // Migration for DBs created before leaderboard entries were keyed by email.
 const leaderboardColumns = db.prepare("PRAGMA table_info(leaderboard)").all().map((c) => c.name);
 if (!leaderboardColumns.includes("email")) {
@@ -118,15 +154,28 @@ export function getActiveQuestions() {
   return rows;
 }
 
+// Scoped to today (event-local) so the booth's live leaderboard naturally resets itself
+// every day at local midnight — no admin action needed, and nothing is ever deleted, so
+// every prior day's entries stay queryable via getTopLeaderboardForDate below.
 export function getTopLeaderboard(limit = 5) {
   return db
-    .prepare(`SELECT name, score FROM leaderboard WHERE email IS NOT NULL ORDER BY score DESC, achieved_at ASC LIMIT ?`)
-    .all(limit);
+    .prepare(`SELECT name, score FROM leaderboard WHERE email IS NOT NULL AND achieved_at >= ? ORDER BY score DESC, achieved_at ASC LIMIT ?`)
+    .all(startOfEventDayUTC(), limit);
+}
+
+// The durable per-day record — "YYYY-MM-DD" is an event-local calendar date. Since
+// getTopLeaderboard only ever shows today, this is how a past day's top scorers are
+// pulled during a multi-day event.
+export function getTopLeaderboardForDate(dateStr, limit = 5) {
+  const { start, end } = eventDayRangeUTC(dateStr);
+  return db
+    .prepare(`SELECT name, score, email, achieved_at AS achievedAt FROM leaderboard WHERE email IS NOT NULL AND achieved_at >= ? AND achieved_at < ? ORDER BY score DESC, achieved_at ASC LIMIT ?`)
+    .all(start, end, limit);
 }
 
 // Admin-only — includes email, unlike getTopLeaderboard(), which is what's broadcast
 // to every player and must never leak it. This is how the organizer actually contacts
-// whoever ranks in the prize-eligible top N after the event.
+// whoever ranks in the top N after the event.
 export function listFullLeaderboard() {
   return db
     .prepare(
@@ -204,8 +253,8 @@ export function setConfigValue(key, value) {
 }
 
 const insertMatchResult = db.prepare(`
-  INSERT INTO match_results (match_code, player_name, score, email, created_at, answered_count, time_spent_ms)
-  VALUES (@matchCode, @playerName, @score, @email, @createdAt, @answeredCount, @timeSpentMs)
+  INSERT INTO match_results (match_code, player_name, score, email, created_at, answered_count, time_spent_ms, player_token)
+  VALUES (@matchCode, @playerName, @score, @email, @createdAt, @answeredCount, @timeSpentMs, @playerToken)
 `);
 
 // Only inserted once a player submits an email (see recordLeaderboardEntryIfFirst below) —
@@ -229,7 +278,7 @@ export const persistMatchResults = db.transaction((players, matchCode = null) =>
     const playerName = name || `Player ${slot ?? "?"}`;
     const { lastInsertRowid } = insertMatchResult.run({
       matchCode, playerName, score, email: null, createdAt: now,
-      answeredCount: answeredCount ?? null, timeSpentMs: timeSpentMs ?? null,
+      answeredCount: answeredCount ?? null, timeSpentMs: timeSpentMs ?? null, playerToken: id,
     });
     resultIdsByPlayerId[id] = lastInsertRowid;
   });
@@ -244,7 +293,7 @@ export function getMatchResultById(id) {
   return db
     .prepare(
       `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt,
-              answered_count AS answeredCount, time_spent_ms AS timeSpentMs
+              answered_count AS answeredCount, time_spent_ms AS timeSpentMs, player_token AS playerToken
        FROM match_results WHERE id = ?`
     )
     .get(id);

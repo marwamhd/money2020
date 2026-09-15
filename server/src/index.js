@@ -166,11 +166,14 @@ io.on("connection", (socket) => {
     if (!playerId) return ack?.({ ok: false, error: "Not in a match" });
     if (!isValidEmail(email)) return ack?.({ ok: false, error: "Invalid email" });
 
-    // matchResultId must be the exact id the client was handed in the finished-state
-    // snapshot for its own player entry — if a newer match has since finished for this
-    // same playerId, the canonical map has moved on and a stale id is correctly rejected
-    // instead of silently attaching this email to the wrong (newer) match's result.
-    if (!matchResultId || matchResultId !== matchResultIdsByPlayerId[playerId]) {
+    // Ownership is checked against the database (player_token), not the in-memory
+    // matchResultIdsByPlayerId map — that map resets to empty on every server restart
+    // (Render's free tier idles down and cold-restarts on the next request), so a
+    // player who took a bit longer than usual between finishing and hitting Submit
+    // could lose that in-memory mapping and get falsely rejected even though their
+    // result was safely sitting in the database the whole time.
+    const result = matchResultId ? getMatchResultById(matchResultId) : null;
+    if (!result || result.playerToken !== playerId) {
       return ack?.({ ok: false, error: "No completed result to attach an email to" });
     }
 
@@ -179,14 +182,11 @@ io.on("connection", (socket) => {
 
     // Submitting an email is what enters a player into the persistent leaderboard —
     // if this email already has an entry (a repeat player), their first score stands.
-    const result = getMatchResultById(matchResultId);
-    if (result) {
-      recordLeaderboardEntryIfFirst({ name: result.playerName, score: result.score, email: trimmedEmail });
-      // Separate from the leaderboard on purpose: every player who played and gave an
-      // email gets a row here, in order, even a repeat player whose new score doesn't
-      // become their leaderboard entry — this is a full participation log, not a ranking.
-      appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs });
-    }
+    recordLeaderboardEntryIfFirst({ name: result.playerName, score: result.score, email: trimmedEmail });
+    // Separate from the leaderboard on purpose: every player who played and gave an
+    // email gets a row here, in order, even a repeat player whose new score doesn't
+    // become their leaderboard entry — this is a full participation log, not a ranking.
+    appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs });
     ack?.({ ok: true });
   });
 

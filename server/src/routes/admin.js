@@ -12,6 +12,7 @@ import {
   setConfigValue,
   listMatchResults,
   listFullLeaderboard,
+  getTopLeaderboardForDate,
 } from "../db.js";
 
 const CONFIG_KEYS = ["COUNTDOWN_MS", "SECTION_DURATION_MS", "QUESTION_TIMEOUT_MS", "RUNNER_UP_POINTS", "REVEAL_MS"];
@@ -158,9 +159,21 @@ export function buildAdminRouter(engine) {
   });
 
   // Admin-only — includes email, unlike the live game state broadcast to players
-  // (getTopLeaderboard), which never does. This is for contacting prize winners.
+  // (getTopLeaderboard), which never does. This is for contacting top scorers.
   router.get("/leaderboard", (req, res) => {
     res.json(listFullLeaderboard());
+  });
+
+  // Nothing in `leaderboard` is ever deleted, and getTopLeaderboard (the live booth
+  // display) only ever shows today — this is how a past day's top 5 gets pulled during
+  // a multi-day event. `date` is an event-local calendar date, e.g. ?date=2026-09-14;
+  // defaults to today.
+  router.get("/leaderboard/daily", (req, res) => {
+    const date = req.query.date || new Date().toISOString().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "date must be YYYY-MM-DD" });
+    }
+    res.json(getTopLeaderboardForDate(date, Number(req.query.limit) || 5));
   });
 
   router.get("/leaderboard/export", (req, res) => {
