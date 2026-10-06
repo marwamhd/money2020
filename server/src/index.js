@@ -20,6 +20,8 @@ import { GameEngine } from "./gameEngine.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
 import { appendPlayerRow, ensureWorkbookExists, PLAYERS_XLSX_PATH } from "./playersExport.js";
+import { appendPlayerRowToSheet } from "./googleSheets.js";
+import { appendPlayerRowToGit } from "./playersGitLog.js";
 
 // Last-resort safety net: at a live booth, staying up (even degraded) beats a hard
 // crash nobody notices until players complain. Handler bugs should still be fixed —
@@ -186,7 +188,18 @@ io.on("connection", (socket) => {
     // Separate from the leaderboard on purpose: every player who played and gave an
     // email gets a row here, in order, even a repeat player whose new score doesn't
     // become their leaderboard entry — this is a full participation log, not a ranking.
-    appendPlayerRow({ name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs });
+    //
+    // Logged to three places on purpose, none of which depend on the other two: the
+    // local players.xlsx (same disk as the app — fast, but wiped along with everything
+    // else if Render's disk ever resets), a live Google Sheet (independent of Render
+    // entirely — open it anytime, no exports needed), and a commit straight into this
+    // repo's git history (independent of Render AND of any Google account — survives
+    // even if the Render service is deleted outright). None of these can throw and
+    // break the actual email submission — each is isolated and logs its own failures.
+    const rowData = { name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs };
+    appendPlayerRow(rowData);
+    appendPlayerRowToSheet(rowData);
+    appendPlayerRowToGit(rowData);
     ack?.({ ok: true });
   });
 
