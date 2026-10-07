@@ -15,6 +15,10 @@ const LINE = "rgba(255,255,255,.12)";
 const MUTED = "#8b93bf";
 const BODY = "#ccd2e0";
 
+// A single smart-link (OneLink) that detects iOS vs Android on the scanning phone and
+// redirects to the right store itself — no need for two separate QR codes.
+const APP_DOWNLOAD_URL = "https://tanami.onelink.me/igMv/shfvzega";
+
 // Falls back to a translated "Player N" only when that seat hasn't typed a name yet —
 // the server never invents one (see gameEngine#addPlayer).
 function playerName(state, slot, t) {
@@ -159,7 +163,15 @@ function IdleScreen({ state, t, fonts, lang }) {
           </div>
         </div>
 
-        <span style={{ fontSize: "1.2cqw", color: MUTED }}>{t("eventName")}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.2cqw" }}>
+          <div style={{ width: "6cqw", aspectRatio: "1 / 1", background: "#fff", borderRadius: "0.8cqw", padding: "0.3cqw", flex: "none" }}>
+            <QRCodeSVG value={APP_DOWNLOAD_URL} size={128} style={{ width: "100%", height: "100%" }} fgColor="#020844" />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4cqh" }}>
+            <span style={{ fontSize: "1.3cqw", color: MUTED }}>{t("downloadApp")}</span>
+            <span style={{ fontSize: "1.1cqw", color: MUTED, opacity: 0.7 }}>{t("eventName")}</span>
+          </div>
+        </div>
       </div>
 
       <div
