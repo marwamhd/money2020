@@ -47,6 +47,17 @@ function getSocket() {
       sharedSocket.on("state", (state) => {
         if (!state?.stationId) return;
         sharedSocket.io.opts.query = { role: "screen", station: String(state.stationId) };
+        // Show the assignment in the address bar (/screen/1, /screen/2). replaceState swaps the
+        // URL without a reload or a history entry, and a later reload of this exact URL then
+        // asks for that station explicitly, so a restored TV browser can't swap stations either.
+        const assignedPath = `/screen/${state.stationId}`;
+        if (window.location.pathname !== assignedPath) {
+          try {
+            window.history.replaceState(null, "", assignedPath + window.location.search + window.location.hash);
+          } catch {
+            /* some kiosk browsers block history changes; the screen works the same without it */
+          }
+        }
         try {
           sessionStorage.setItem(STATION_KEY, String(state.stationId));
         } catch {
