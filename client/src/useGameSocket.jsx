@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
+// Which match this page belongs to is decided by its URL, and tells the server which
+// station's updates to send:
+//   /screen/2        -> a booth TV for station 2 (/screen alone means station 1)
+//   /play/<code>     -> a phone; the match code from the QR picks the station
+// socket.io reuses this query on every automatic reconnect, so a screen or phone that drops
+// off wifi comes back to the same station without any extra handling.
+function stationQueryFromUrl() {
+  const [, page, segment] = window.location.pathname.split("/");
+  if (page === "play" && segment) return { code: segment };
+  if (page === "screen" && /^\d+$/.test(segment || "")) return { station: segment };
+  return {};
+}
+
 let sharedSocket = null;
 function getSocket() {
-  if (!sharedSocket) sharedSocket = io({ transports: ["websocket"] });
+  if (!sharedSocket) sharedSocket = io({ transports: ["websocket"], query: stationQueryFromUrl() });
   return sharedSocket;
 }
 

@@ -16,7 +16,7 @@ import {
   getTopLeaderboard,
   listFullLeaderboard,
 } from "./db.js";
-import { GameEngine } from "./gameEngine.js";
+import { MatchManager } from "./matchManager.js";
 import { COMMANDS, STATE_EVENT, isValidEmail } from "./gameContract.js";
 import { buildAdminRouter } from "./routes/admin.js";
 import { appendPlayerRow, ensureWorkbookExists, PLAYERS_XLSX_PATH } from "./playersExport.js";
@@ -56,14 +56,18 @@ const envConfig = {
 // the organizer's most recent, intentional choice and survives a server restart.
 const config = { ...envConfig, ...getConfigOverrides() };
 
-// Populated on every finish with { [playerId]: matchResultRowId }. This is the sole
-// source of truth for "which result can this playerId currently email" — see submitEmail
-// below, which requires the client to echo back the exact id it was handed on finish,
-// not just trust whatever this map currently holds for their id. That guards against a
-// slow player submitting an email for match A after the organizer has already reset and
-// completed match B on the same device/token in the meantime (the map would have moved on
-// to B's id by then, so A's stale echoed id correctly fails to match).
-let matchResultIdsByPlayerId = {};
+// Two (or more) matches run at once, one per booth station (one physical TV each). Every
+// socket.io broadcast for a station goes only to that station's room, so a phone or screen
+// never sees another station's match.
+const stationRoom = (stationId) => `station:${stationId}`;
+
+// A finished match must be saved exactly once, no matter how many times the engine emits
+// while in the "finished" state (e.g. a phone reconnecting onto its results screen emits
+// again). Keyed per station by matchCode, which regenerates for every new match. Holds
+// { [playerId]: matchResultRowId } for that match, which the finished snapshot hands to the
+// clients; submitEmail requires the client to echo its exact id back (see below), so a slow
+// player's stale id from an earlier match can never attach an email to a later one.
+const savedResultsByStation = new Map(); // stationId -> { matchCode, idsByPlayerId }
 
 // The booth display (idle screen) needs the persistent top-5, so every broadcast
 // carries a fresh read of it — cheap query, and it only actually changes right
@@ -72,27 +76,55 @@ function withLeaderboard(snapshot) {
   return { ...snapshot, leaderboard: getTopLeaderboard(5) };
 }
 
-const engine = new GameEngine(getActiveQuestions(), (snapshot) => {
+function broadcastStation(stationId, snapshot) {
+  io.to(stationRoom(stationId)).emit(STATE_EVENT, withLeaderboard({ ...snapshot, stationId }));
+}
+
+function handleStationChange(stationId, snapshot) {
   if (snapshot.state !== "finished") {
-    io.emit(STATE_EVENT, withLeaderboard(snapshot));
+    broadcastStation(stationId, snapshot);
     return;
   }
 
-  matchResultIdsByPlayerId = persistMatchResults(
-    snapshot.players.map(({ id, name, score, slot, answeredCount, timeSpentMs }) => ({ id, name, score, slot, answeredCount, timeSpentMs }))
-  );
-  io.emit(STATE_EVENT, withLeaderboard({
+  let saved = savedResultsByStation.get(stationId);
+  const isFirstFinishEmit = !saved || saved.matchCode !== snapshot.matchCode;
+  if (isFirstFinishEmit) {
+    saved = {
+      matchCode: snapshot.matchCode,
+      idsByPlayerId: persistMatchResults(
+        snapshot.players.map(({ id, name, score, slot, answeredCount, timeSpentMs }) => ({ id, name, score, slot, answeredCount, timeSpentMs })),
+        snapshot.matchCode
+      ),
+    };
+    savedResultsByStation.set(stationId, saved);
+  }
+
+  broadcastStation(stationId, {
     ...snapshot,
-    players: snapshot.players.map((p) => ({ ...p, matchResultId: matchResultIdsByPlayerId[p.id] ?? null })),
-  }));
-}, config);
+    players: snapshot.players.map((p) => ({ ...p, matchResultId: saved.idsByPlayerId[p.id] ?? null })),
+  });
+
+  // A finished match can change the shared top-5, so the other stations' screens (e.g. one
+  // sitting on its idle leaderboard) get a fresh copy right away instead of staying stale
+  // until their own next state change.
+  if (isFirstFinishEmit) {
+    manager.stationIds
+      .filter((otherId) => otherId !== stationId)
+      .forEach((otherId) => {
+        const otherSnapshot = manager.getSnapshot(otherId);
+        if (otherSnapshot && otherSnapshot.state !== "finished") broadcastStation(otherId, otherSnapshot);
+      });
+  }
+}
+
+const manager = new MatchManager(getActiveQuestions(), handleStationChange, config);
 
 app.use("/api/admin", (req, res, next) => {
   if (req.headers["x-admin-token"] !== ADMIN_TOKEN) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   next();
-}, buildAdminRouter(engine));
+}, buildAdminRouter(manager));
 
 // Deliberately NOT behind the admin-token gate above — this is the hidden booth-screen
 // panel's data source. An email address isn't sensitive the way match/config controls
@@ -122,44 +154,89 @@ app.get("*", (req, res) => {
 // the client sends back the token it was given on first join, or gets a fresh one.
 const socketToPlayerId = new Map();
 
+// Which station each connection belongs to. A booth screen picks its station at connect
+// time (/screen/1 -> station 1); a phone picks it by the match code in the QR it scanned.
+// With neither (an older client), it falls back to station 1 so nothing breaks.
+const socketToStationId = new Map();
+
+function pickStationForHandshake(handshakeQuery) {
+  const { station, code } = handshakeQuery || {};
+  const byCode = manager.findByCode(typeof code === "string" ? code : "");
+  if (byCode) return byCode.stationId;
+  return manager.getEngine(station) ? Number(station) : 1;
+}
+
+function moveSocketToStation(socket, stationId) {
+  const previous = socketToStationId.get(socket.id);
+  if (previous === stationId) return;
+  if (previous !== undefined) socket.leave(stationRoom(previous));
+  socketToStationId.set(socket.id, stationId);
+  socket.join(stationRoom(stationId));
+}
+
+function engineFor(socket) {
+  return manager.getEngine(socketToStationId.get(socket.id));
+}
+
 io.on("connection", (socket) => {
-  socket.emit(STATE_EVENT, withLeaderboard(engine.getSnapshot()));
+  const initialStationId = pickStationForHandshake(socket.handshake.query);
+  moveSocketToStation(socket, initialStationId);
+  socket.emit(STATE_EVENT, withLeaderboard({ ...manager.getSnapshot(initialStationId), stationId: initialStationId }));
 
   // Payloads are untrusted client input — a bare emit with no/null/malformed data must
   // never throw here, since an uncaught exception in a socket handler crashes the whole
-  // process (both players' match, for everyone at the booth), not just this connection.
+  // process (every match at the booth), not just this connection.
   socket.on(COMMANDS.JOIN, (payload, ack) => {
     const { name, token, code } = payload || {};
+
+    // The QR's match code decides which station this phone joins. A code no station is
+    // currently issuing is a stale/expired QR — same answer the engine itself gives.
+    const target = manager.findByCode(typeof code === "string" ? code : "");
+    if (!target) {
+      return ack?.({ ok: false, errorCode: "qr_expired", error: "This QR code has expired — scan the current one on the booth screen." });
+    }
+
     // Reuse this connection's own id for a repeated join without a token (e.g. a client
     // retry before it received its token back) — otherwise each such call would mint a
     // fresh id and silently consume a second slot on the very same connection.
     const playerId = token || socketToPlayerId.get(socket.id) || randomUUID();
+
+    // A connection that was in a different station (e.g. a phone that scanned the other TV's
+    // QR first) must be removed from that station's lobby, or it would hold a phantom slot.
+    const previousStationId = socketToStationId.get(socket.id);
+    if (socketToPlayerId.has(socket.id) && previousStationId !== undefined && previousStationId !== target.stationId) {
+      manager.getEngine(previousStationId)?.disconnectPlayer(socketToPlayerId.get(socket.id));
+    }
+
     socketToPlayerId.set(socket.id, playerId);
+    moveSocketToStation(socket, target.stationId);
     // null (not "Player") when no name was sent at all — e.g. the client's automatic
     // re-join on every socket reconnect only sends a token, never a name. addPlayer()
     // only overwrites an existing player's name when one is actually provided, so this
     // null must stay falsy — coercing it to the string "Player" here would make that
     // guard always true and stomp a real typed name back to "Player" on every reconnect.
     const safeName = typeof name === "string" && name.trim() ? name.trim().slice(0, 40) : null;
-    const result = engine.addPlayer(playerId, safeName, code);
-    ack?.({ ...result, token: playerId });
+    const result = target.engine.addPlayer(playerId, safeName, code);
+    // The joiner may have just switched rooms, so hand them their station's state directly.
+    socket.emit(STATE_EVENT, withLeaderboard({ ...target.engine.getSnapshot(), stationId: target.stationId }));
+    ack?.({ ...result, token: playerId, stationId: target.stationId });
   });
 
   socket.on(COMMANDS.SET_LANGUAGE, (payload) => {
     const { language } = payload || {};
     const playerId = socketToPlayerId.get(socket.id);
-    if (playerId) engine.setLanguage(playerId, language);
+    if (playerId) engineFor(socket)?.setLanguage(playerId, language);
   });
 
   socket.on(COMMANDS.READY, () => {
     const playerId = socketToPlayerId.get(socket.id);
-    if (playerId) engine.setReady(playerId);
+    if (playerId) engineFor(socket)?.setReady(playerId);
   });
 
   socket.on(COMMANDS.ANSWER, (payload) => {
     const { questionId, choice } = payload || {};
     const playerId = socketToPlayerId.get(socket.id);
-    if (playerId) engine.submitAnswer(playerId, questionId, choice);
+    if (playerId) engineFor(socket)?.submitAnswer(playerId, questionId, choice);
   });
 
   socket.on(COMMANDS.SUBMIT_EMAIL, (payload, ack) => {
@@ -168,12 +245,12 @@ io.on("connection", (socket) => {
     if (!playerId) return ack?.({ ok: false, error: "Not in a match" });
     if (!isValidEmail(email)) return ack?.({ ok: false, error: "Invalid email" });
 
-    // Ownership is checked against the database (player_token), not the in-memory
-    // matchResultIdsByPlayerId map — that map resets to empty on every server restart
-    // (Render's free tier idles down and cold-restarts on the next request), so a
-    // player who took a bit longer than usual between finishing and hitting Submit
-    // could lose that in-memory mapping and get falsely rejected even though their
-    // result was safely sitting in the database the whole time.
+    // Ownership is checked against the database (player_token), not in-memory state —
+    // that resets to empty on every server restart (Render's free tier idles down and
+    // cold-restarts on the next request), so a player who took a bit longer than usual
+    // between finishing and hitting Submit could be falsely rejected even though their
+    // result was safely sitting in the database the whole time. It also keeps this
+    // independent of which station the player was in.
     const result = matchResultId ? getMatchResultById(matchResultId) : null;
     if (!result || result.playerToken !== playerId) {
       return ack?.({ ok: false, error: "No completed result to attach an email to" });
@@ -204,13 +281,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on(COMMANDS.OPEN_NEXT_MATCH, () => {
-    engine.openNextMatch();
+    engineFor(socket)?.openNextMatch();
   });
 
   socket.on("disconnect", () => {
     const playerId = socketToPlayerId.get(socket.id);
-    if (playerId) engine.disconnectPlayer(playerId);
+    if (playerId) engineFor(socket)?.disconnectPlayer(playerId);
     socketToPlayerId.delete(socket.id);
+    socketToStationId.delete(socket.id);
   });
 });
 

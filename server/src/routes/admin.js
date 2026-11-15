@@ -38,13 +38,23 @@ function validateQuestion(input) {
   return { errors, points };
 }
 
-function refreshEngineQuestions(engine) {
-  engine.setQuestions(getActiveQuestions());
+function refreshEngineQuestions(manager) {
+  manager.setQuestions(getActiveQuestions());
 }
 
-export function buildAdminRouter(engine) {
+export function buildAdminRouter(manager) {
   const router = express.Router();
   router.use(express.json());
+
+  // Match controls act on ONE station (one TV's match). The station comes from ?station=N
+  // or the body; omitted means station 1, so a caller that predates multiple stations
+  // keeps working. An unknown station is a 404, never silently another station's match.
+  function stationEngine(req, res) {
+    const stationId = req.query.station ?? req.body?.station ?? 1;
+    const engine = manager.getEngine(stationId);
+    if (!engine) res.status(404).json({ error: `Unknown station: ${stationId}` });
+    return engine;
+  }
 
   router.get("/questions", (req, res) => {
     res.json(listQuestions());
@@ -57,7 +67,7 @@ export function buildAdminRouter(engine) {
     if (errors.length > 0) return res.status(400).json({ errors });
 
     upsertQuestion({ ...input, id, points, active: input.active !== false });
-    refreshEngineQuestions(engine);
+    refreshEngineQuestions(manager);
     res.status(201).json({ id });
   });
 
@@ -67,19 +77,19 @@ export function buildAdminRouter(engine) {
     if (errors.length > 0) return res.status(400).json({ errors });
 
     upsertQuestion({ ...input, points });
-    refreshEngineQuestions(engine);
+    refreshEngineQuestions(manager);
     res.json({ ok: true });
   });
 
   router.delete("/questions/:id", (req, res) => {
     deleteQuestion(req.params.id);
-    refreshEngineQuestions(engine);
+    refreshEngineQuestions(manager);
     res.json({ ok: true });
   });
 
   router.post("/questions/:id/active", (req, res) => {
     setQuestionActive(req.params.id, Boolean(req.body?.active));
-    refreshEngineQuestions(engine);
+    refreshEngineQuestions(manager);
     res.json({ ok: true });
   });
 
@@ -89,12 +99,12 @@ export function buildAdminRouter(engine) {
       return res.status(400).json({ error: "orderedIds must be a non-empty array" });
     }
     reorderQuestions(orderedIds);
-    refreshEngineQuestions(engine);
+    refreshEngineQuestions(manager);
     res.json({ ok: true });
   });
 
   router.get("/config", (req, res) => {
-    res.json(engine.config);
+    res.json(manager.config);
   });
 
   router.put("/config", (req, res) => {
@@ -112,15 +122,18 @@ export function buildAdminRouter(engine) {
     }
 
     Object.entries(updates).forEach(([key, value]) => setConfigValue(key, value));
-    engine.updateConfig(updates);
-    res.json({ ok: true, config: engine.config });
+    manager.updateConfig(updates);
+    res.json({ ok: true, config: manager.config });
   });
 
   router.get("/match", (req, res) => {
-    res.json(engine.getSnapshot());
+    const engine = stationEngine(req, res);
+    if (engine) res.json(engine.getSnapshot());
   });
 
   router.post("/match/force-end", (req, res) => {
+    const engine = stationEngine(req, res);
+    if (!engine) return;
     engine.forceEnd();
     res.json({ ok: true });
   });
@@ -129,6 +142,8 @@ export function buildAdminRouter(engine) {
     if (req.body?.confirm !== true) {
       return res.status(400).json({ error: "reset requires { confirm: true }" });
     }
+    const engine = stationEngine(req, res);
+    if (!engine) return;
     engine.resetMatch();
     res.json({ ok: true });
   });
