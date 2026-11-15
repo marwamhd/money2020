@@ -247,3 +247,48 @@ test("a phone that scanned one TV's QR then the other's holds a slot in only one
   assert.equal(second.stationId, 2);
   await waitFor(() => screen1.state.players.length === 0 && screen2.state.players.length === 1);
 });
+
+// A TV opened with no station number (the plain site URL) announces itself as a screen.
+test("screens opened with no number get station 1, then 2, and a third mirrors station 1", async () => {
+  const tvA = await client({ role: "screen" });
+  const tvB = await client({ role: "screen" });
+  const tvC = await client({ role: "screen" });
+  assert.equal(tvA.state.stationId, 1);
+  assert.equal(tvB.state.stationId, 2);
+  assert.equal(tvC.state.stationId, 1); // both stations already have a TV
+  [tvA, tvB, tvC].forEach((tv) => tv.socket.close());
+});
+
+test("a freed station is handed to the next TV that opens", async () => {
+  const tvA = await client({ role: "screen" });
+  const tvB = await client({ role: "screen" });
+  assert.deepEqual([tvA.state.stationId, tvB.state.stationId], [1, 2]);
+
+  tvA.socket.close(); // the TV on station 1 goes away
+  await new Promise((r) => setTimeout(r, 200));
+  const tvC = await client({ role: "screen" });
+  assert.equal(tvC.state.stationId, 1);
+  [tvB, tvC].forEach((tv) => tv.socket.close());
+});
+
+test("a TV that asks for its remembered station keeps it, even if another TV took it meanwhile", async () => {
+  const tvA = await client({ role: "screen" }); // station 1
+  const other = await client({ role: "screen" }); // station 2
+  assert.equal(other.state.stationId, 2);
+  // Simulates a reload/reconnect of the station-2 TV while the other TV is still connected.
+  other.socket.close();
+  const reloaded = await client({ role: "screen", station: "2" });
+  assert.equal(reloaded.state.stationId, 2);
+  // And the station it holds is counted as taken: the next unnumbered TV mirrors station 1.
+  const next = await client({ role: "screen" });
+  assert.equal(next.state.stationId, 1);
+  [tvA, reloaded, next].forEach((tv) => tv.socket.close());
+});
+
+test("a screen with a typed station number gets exactly that station, and an invalid one is auto-assigned", async () => {
+  const typed = await client({ role: "screen", station: "2" });
+  assert.equal(typed.state.stationId, 2);
+  const bogus = await client({ role: "screen", station: "99" });
+  assert.equal(bogus.state.stationId, 1); // 2 is taken by the typed screen, so the first free one
+  [typed, bogus].forEach((tv) => tv.socket.close());
+});

@@ -3,20 +3,58 @@ import { io } from "socket.io-client";
 
 // Which match this page belongs to is decided by its URL, and tells the server which
 // station's updates to send:
-//   /screen/2        -> a booth TV for station 2 (/screen alone means station 1)
 //   /play/<code>     -> a phone; the match code from the QR picks the station
-// socket.io reuses this query on every automatic reconnect, so a screen or phone that drops
-// off wifi comes back to the same station without any extra handling.
+//   /screen/2        -> a booth TV for station 2 (typed in the URL, always wins)
+//   /, /screen       -> a booth TV with no number: the server gives it the first station
+//                       that has no TV yet, and this tab remembers it (see below)
+// /admin never shows a match, so it just takes the default.
+const STATION_KEY = "m2020_screen_station";
+
+function isScreenPath() {
+  const [, page] = window.location.pathname.split("/");
+  return page !== "play" && page !== "admin";
+}
+
+function readRememberedStation() {
+  try {
+    return sessionStorage.getItem(STATION_KEY) || null;
+  } catch {
+    return null; // storage can be blocked (kiosk/private modes); just get a fresh assignment
+  }
+}
+
 function stationQueryFromUrl() {
   const [, page, segment] = window.location.pathname.split("/");
-  if (page === "play" && segment) return { code: segment };
-  if (page === "screen" && /^\d+$/.test(segment || "")) return { station: segment };
-  return {};
+  if (page === "play") return segment ? { code: segment } : {};
+  if (!isScreenPath()) return {};
+  if (page === "screen" && /^\d+$/.test(segment || "")) return { role: "screen", station: segment };
+  // sessionStorage (not localStorage): it survives a reload of this tab but is NOT shared with
+  // other tabs, so two tabs in one browser can still be two different screens.
+  const remembered = readRememberedStation();
+  return remembered ? { role: "screen", station: remembered } : { role: "screen" };
 }
 
 let sharedSocket = null;
 function getSocket() {
-  if (!sharedSocket) sharedSocket = io({ transports: ["websocket"], query: stationQueryFromUrl() });
+  if (!sharedSocket) {
+    sharedSocket = io({ transports: ["websocket"], query: stationQueryFromUrl() });
+
+    // A screen with no number in its URL learns its station from the first state it gets.
+    // Remember it, and make socket.io's own automatic reconnects ask for that exact station
+    // (its query is otherwise reused as-is, which would request a fresh assignment each time
+    // and could swap two TVs after a wifi blip).
+    if (isScreenPath()) {
+      sharedSocket.on("state", (state) => {
+        if (!state?.stationId) return;
+        sharedSocket.io.opts.query = { role: "screen", station: String(state.stationId) };
+        try {
+          sessionStorage.setItem(STATION_KEY, String(state.stationId));
+        } catch {
+          /* private/kiosk mode: reconnects still work from the in-memory query above */
+        }
+      });
+    }
+  }
   return sharedSocket;
 }
 

@@ -159,11 +159,26 @@ const socketToPlayerId = new Map();
 // With neither (an older client), it falls back to station 1 so nothing breaks.
 const socketToStationId = new Map();
 
+// Booth screens (TVs) currently connected, by socket -> the station they show. This is what
+// lets a screen opened with no station number take the first station nobody is showing yet.
+const screenSocketToStationId = new Map();
+
+function firstStationWithoutScreen() {
+  const taken = new Set(screenSocketToStationId.values());
+  return manager.stationIds.find((id) => !taken.has(id)) ?? null;
+}
+
+// A screen says role=screen. If it names a valid station (typed in the URL, or remembered from
+// its own earlier assignment, e.g. after a reload or a wifi blip), it gets exactly that one.
+// Otherwise it takes the first station with no screen yet; when every station already has a
+// screen, an extra one mirrors station 1 rather than being refused.
+// A phone is routed by the match code in its QR. Anything else (an older client) gets station 1.
 function pickStationForHandshake(handshakeQuery) {
-  const { station, code } = handshakeQuery || {};
+  const { station, code, role } = handshakeQuery || {};
+  if (manager.getEngine(station)) return { stationId: Number(station), isScreen: role === "screen" };
+  if (role === "screen") return { stationId: firstStationWithoutScreen() ?? 1, isScreen: true };
   const byCode = manager.findByCode(typeof code === "string" ? code : "");
-  if (byCode) return byCode.stationId;
-  return manager.getEngine(station) ? Number(station) : 1;
+  return { stationId: byCode ? byCode.stationId : 1, isScreen: false };
 }
 
 function moveSocketToStation(socket, stationId) {
@@ -179,7 +194,8 @@ function engineFor(socket) {
 }
 
 io.on("connection", (socket) => {
-  const initialStationId = pickStationForHandshake(socket.handshake.query);
+  const { stationId: initialStationId, isScreen } = pickStationForHandshake(socket.handshake.query);
+  if (isScreen) screenSocketToStationId.set(socket.id, initialStationId);
   moveSocketToStation(socket, initialStationId);
   socket.emit(STATE_EVENT, withLeaderboard({ ...manager.getSnapshot(initialStationId), stationId: initialStationId }));
 
@@ -289,6 +305,7 @@ io.on("connection", (socket) => {
     if (playerId) engineFor(socket)?.disconnectPlayer(playerId);
     socketToPlayerId.delete(socket.id);
     socketToStationId.delete(socket.id);
+    screenSocketToStationId.delete(socket.id);
   });
 });
 
