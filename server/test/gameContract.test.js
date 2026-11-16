@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { scoreAnswers } from "../src/gameContract.js";
+import { scoreAnswers, DEFAULTS } from "../src/gameContract.js";
 
 const q = { correctOption: "A", points: 100 };
 
@@ -62,4 +62,9 @@ test("both wrong: zero for both", () => {
 test("no answers: empty result, nobody scores", () => {
   const result = scoreAnswers(q, []);
   assert.deepEqual(result, {});
+});
+
+test("default timing: 30-second rounds, 15 seconds max per question (ENG-592)", () => {
+  assert.equal(DEFAULTS.SECTION_DURATION_MS, 30000);
+  assert.equal(DEFAULTS.QUESTION_TIMEOUT_MS, 15000);
 });

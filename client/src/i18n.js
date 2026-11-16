@@ -130,7 +130,7 @@ const STRINGS = {
     // Booth screen (ScreenPage)
     heroTitleLine1: "How well do you",
     heroTitleLine2: "really know money?",
-    idleSubtitle: "Two players, three 60-second rounds. Scan, add your name, press ready.",
+    idleSubtitle: "Two players, three 30-second rounds. Scan, add your name, press ready.",
     scanToJoin: "Scan to join",
     starting: "Starting…",
     playersStillReady: (n) => `${n} player(s) still to press ready`,
@@ -224,7 +224,7 @@ const STRINGS = {
 
     heroTitleLine1: "إلى أي مدى تعرف",
     heroTitleLine2: "عالم المال؟",
-    idleSubtitle: "لاعبان، ثلاث جولات مدة كل منها 60 ثانية. امسح الرمز، أضف اسمك، واضغط جاهز.",
+    idleSubtitle: "لاعبان، ثلاث جولات مدة كل منها 30 ثانية. امسح الرمز، أضف اسمك، واضغط جاهز.",
     scanToJoin: "امسح للانضمام",
     starting: "جارٍ البدء…",
     playersStillReady: (n) => (n <= 1 ? "لاعب واحد لم يضغط جاهز بعد" : "لاعبين لم يضغطوا جاهز بعد"),

@@ -30,8 +30,8 @@ export const DEFAULT_LANGUAGE = "en";
 
 export const DEFAULTS = Object.freeze({
   COUNTDOWN_MS: 3000,
-  SECTION_DURATION_MS: 60000,
-  QUESTION_TIMEOUT_MS: 25000,
+  SECTION_DURATION_MS: 30000,
+  QUESTION_TIMEOUT_MS: 15000,
   RUNNER_UP_POINTS: 30,
   REVEAL_MS: 1800, // how long the correct answer + pick counts stay visible before the next question
 });
