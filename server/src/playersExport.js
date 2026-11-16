@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ExcelJS from "exceljs";
+import { PLAYER_LOG_HEADERS, matchCells } from "./playerLogColumns.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -9,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // wipes it just like the database does.
 export const PLAYERS_XLSX_PATH = process.env.M2020_PLAYERS_XLSX_PATH || path.join(__dirname, "..", "data", "players.xlsx");
 
-const HEADERS = ["Name", "Email", "Score", "Time Played", "Submitted At"];
+const HEADERS = PLAYER_LOG_HEADERS;
 
 // "Time Played" is how long the player took to answer, not a timestamp — same value
 // shown on the finished screen ("answered in 1m 30s"), English only since this export
@@ -32,8 +33,8 @@ function formatDuration(ms) {
 // one of the two appends.
 let queue = Promise.resolve();
 
-export function appendPlayerRow({ name, email, score, timeSpentMs }) {
-  queue = queue.then(() => reallyAppend({ name, email, score, timeSpentMs })).catch((err) => {
+export function appendPlayerRow(row) {
+  queue = queue.then(() => reallyAppend(row)).catch((err) => {
     console.error("[playersExport] failed to append row:", err);
   });
   return queue;
@@ -67,12 +68,21 @@ async function loadOrCreateWorkbook() {
     sheet = workbook.addWorksheet("Players");
     sheet.addRow(HEADERS);
     sheet.getRow(1).font = { bold: true };
+  } else {
+    // A workbook created before the match columns existed only has the first five headers.
+    HEADERS.forEach((header, i) => {
+      const cell = sheet.getRow(1).getCell(i + 1);
+      if (cell.value !== header) {
+        cell.value = header;
+        cell.font = { bold: true };
+      }
+    });
   }
   return workbook;
 }
 
-async function reallyAppend({ name, email, score, timeSpentMs }) {
+async function reallyAppend({ name, email, score, timeSpentMs, ...match }) {
   const workbook = await loadOrCreateWorkbook();
-  workbook.getWorksheet("Players").addRow([name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString()]);
+  workbook.getWorksheet("Players").addRow([name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString(), ...matchCells(match)]);
   await workbook.xlsx.writeFile(PLAYERS_XLSX_PATH);
 }

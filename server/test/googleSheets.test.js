@@ -28,17 +28,21 @@ test("appendPlayerRowToSheet POSTs the right row to the right sheet/tab with the
     return { ok: true, status: 200, text: async () => "{}" };
   };
   try {
-    await appendPlayerRowToSheet({ name: "Alice", email: "alice@example.com", score: 500, timeSpentMs: 65000 });
+    await appendPlayerRowToSheet({
+      name: "Alice", email: "alice@example.com", score: 500, timeSpentMs: 65000,
+      result: "Winner", opponentName: "Bob", opponentScore: 350, matchId: "a1b2c3d4",
+    });
   } finally {
     global.fetch = originalFetch;
   }
 
-  assert.match(captured.url, /\/spreadsheets\/fake-sheet-id\/values\/Players!A%3AE:append/);
+  assert.match(captured.url, /\/spreadsheets\/fake-sheet-id\/values\/Players!A%3AI:append/);
   assert.match(captured.url, /valueInputOption=USER_ENTERED/);
   assert.equal(captured.opts.headers.Authorization, "Bearer fake-access-token");
   const body = JSON.parse(captured.opts.body);
   assert.deepEqual(body.values[0].slice(0, 3), ["Alice", "alice@example.com", 500]);
   assert.equal(body.values[0][3], "1m 5s");
+  assert.deepEqual(body.values[0].slice(5), ["Winner", "Bob", 350, "a1b2c3d4"]);
 });
 
 test("appendPlayerRowToSheet does not throw even if the Sheets API call fails", async () => {

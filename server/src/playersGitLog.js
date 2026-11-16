@@ -14,12 +14,17 @@
 // If GITHUB_TOKEN or GITHUB_REPO aren't set, this silently no-ops (logged once) rather
 // than breaking email submission for an organizer who hasn't set this up (e.g. local dev).
 
+import { PLAYER_LOG_HEADERS, matchCells } from "./playerLogColumns.js";
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 const GITHUB_PLAYERS_LOG_PATH = process.env.GITHUB_PLAYERS_LOG_PATH || "server/data/players-log.csv";
 
-const CSV_HEADER = "Name,Email,Score,Time Played,Submitted At";
+const CSV_HEADER = PLAYER_LOG_HEADERS.join(",");
+// The header the file had before the match columns (ENG-576) were added. An existing file with
+// exactly this first line gets it upgraded on the next append; old rows keep their five cells.
+const LEGACY_CSV_HEADER = "Name,Email,Score,Time Played,Submitted At";
 
 let warnedNotConfigured = false;
 
@@ -80,7 +85,7 @@ async function putFile(newContent, sha, commitMessage) {
 // file in between, so one retry re-fetches the latest sha and tries again once.
 let queue = Promise.resolve();
 
-export function appendPlayerRowToGit({ name, email, score, timeSpentMs }) {
+export function appendPlayerRowToGit({ name, email, score, timeSpentMs, ...match }) {
   if (!isGitLogConfigured()) {
     if (!warnedNotConfigured) {
       console.warn("[playersGitLog] GITHUB_TOKEN/GITHUB_REPO not set — skipping the in-codebase players log.");
@@ -89,7 +94,7 @@ export function appendPlayerRowToGit({ name, email, score, timeSpentMs }) {
     return Promise.resolve();
   }
 
-  const row = [name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString()].map(csvCell).join(",");
+  const row = [name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString(), ...matchCells(match)].map(csvCell).join(",");
 
   queue = queue.then(() => appendWithRetry(row)).catch((err) => {
     console.error("[playersGitLog] failed to commit player row:", err);
@@ -97,8 +102,16 @@ export function appendPlayerRowToGit({ name, email, score, timeSpentMs }) {
   return queue;
 }
 
+function upgradeLegacyHeader(content) {
+  const newlineAt = content.indexOf("\n");
+  const firstLine = (newlineAt === -1 ? content : content.slice(0, newlineAt)).replace(/\r$/, "");
+  if (firstLine !== LEGACY_CSV_HEADER) return content;
+  return CSV_HEADER + (newlineAt === -1 ? "\n" : content.slice(newlineAt));
+}
+
 async function appendWithRetry(row, attempt = 0) {
-  const { content, sha } = await getCurrentFile();
+  const { content: rawContent, sha } = await getCurrentFile();
+  const content = upgradeLegacyHeader(rawContent);
   const newContent = content.endsWith("\n") ? content + row + "\n" : content + "\n" + row + "\n";
   try {
     await putFile(newContent, sha, `Add player submission (${row.split(",")[0]})`);

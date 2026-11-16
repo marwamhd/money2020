@@ -6,6 +6,7 @@ import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { io as connect } from "socket.io-client";
+import ExcelJS from "exceljs";
 
 // Boots the REAL server (src/index.js) in a child process against a throwaway database and
 // spreadsheet, with no Google/GitHub credentials, so nothing external is ever touched.
@@ -182,6 +183,49 @@ test("two matches run at once, stay separate, and every player's email is saved"
 
   const saved = await adminGet("/results");
   assert.deepEqual(saved.map((r) => r.email).sort(), players.map((p) => p.email).sort());
+
+  // ENG-576: the players log (players.xlsx) says how each match ended and who played whom.
+  const xlsxPath = path.join(tmpDir, "players.xlsx");
+  // The log is written in the background after each submit, so poll until all four rows landed.
+  const readLog = async () => {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(xlsxPath);
+    const sheet = workbook.getWorksheet("Players");
+    return {
+      header: sheet.getRow(1).values.slice(1),
+      rows: sheet.rowCount > 1 ? sheet.getRows(2, sheet.rowCount - 1).map((row) => row.values.slice(1)) : [],
+    };
+  };
+  let log = { header: [], rows: [] };
+  for (let i = 0; i < 100 && log.rows.length < 4; i++) {
+    log = await readLog().catch(() => log);
+    if (log.rows.length < 4) await new Promise((r) => setTimeout(r, 50));
+  }
+  const { header, rows } = log;
+  assert.equal(rows.length, 4, "all four emails reached the players log");
+  assert.deepEqual(header.slice(5), ["Result", "Opponent", "Opponent Score", "Match ID"]);
+
+  const byName = Object.fromEntries(rows.map((r) => [r[0], { score: r[2], result: r[5], opponent: r[6], opponentScore: r[7], matchId: r[8] }]));
+  for (const [screen, [first, second]] of [[screen1, ["Alice", "Bob"]], [screen2, ["Carol", "Dave"]]]) {
+    const a = byName[first];
+    const b = byName[second];
+    assert.equal(a.opponent, second, `${first} played ${second}`);
+    assert.equal(b.opponent, first, `${second} played ${first}`);
+    assert.equal(a.opponentScore, b.score);
+    assert.equal(b.opponentScore, a.score);
+    assert.equal(a.matchId, b.matchId, "both players of a match share one match id");
+    assert.equal(a.matchId, screen.state.matchCode);
+
+    // The log agrees with what the TV showed as the winner.
+    const winner = screen.state.players.find((p) => p.id === screen.state.winnerId);
+    if (winner) {
+      assert.equal(byName[winner.name].result, "Winner");
+      assert.equal(byName[winner.name === first ? second : first].result, "Runner-up");
+    } else {
+      assert.deepEqual([a.result, b.result], ["Tie", "Tie"]);
+    }
+  }
+  assert.notEqual(byName.Alice.matchId, byName.Carol.matchId, "the two matches have different match ids");
 });
 
 test("a phone reconnecting onto its results screen does not save the match a second time", async () => {

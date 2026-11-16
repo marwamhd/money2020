@@ -1,4 +1,5 @@
 import { JWT } from "google-auth-library";
+import { matchCells } from "./playerLogColumns.js";
 
 // The "quickly get the data" copy — every player who submits an email gets a row
 // appended directly to a real Google Sheet Marwa owns, reachable from any browser or
@@ -46,7 +47,7 @@ function formatDuration(ms) {
   return t >= 60 ? `${Math.floor(t / 60)}m ${t % 60}s` : `${t}s`;
 }
 
-export async function appendPlayerRowToSheet({ name, email, score, timeSpentMs }) {
+export async function appendPlayerRowToSheet({ name, email, score, timeSpentMs, ...match }) {
   if (!isGoogleSheetsConfigured()) {
     if (!warnedNotConfigured) {
       console.warn("[googleSheets] GOOGLE_SERVICE_ACCOUNT_EMAIL/PRIVATE_KEY/GOOGLE_SHEET_ID not set — skipping the live Google Sheet log.");
@@ -56,8 +57,8 @@ export async function appendPlayerRowToSheet({ name, email, score, timeSpentMs }
   }
 
   try {
-    const row = [name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString()];
-    const range = `${SHEET_TAB_NAME}!A:E`;
+    const row = [name || "", email, score, formatDuration(timeSpentMs), new Date().toISOString(), ...matchCells(match)];
+    const range = `${SHEET_TAB_NAME}!A:I`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED`;
     const { token } = await getClient().getAccessToken();
     const res = await fetch(url, {

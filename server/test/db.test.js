@@ -10,7 +10,7 @@ import os from "node:os";
 const tmpDir = mkdtempSync(path.join(os.tmpdir(), "m2020-db-test-"));
 process.env.M2020_DB_PATH = path.join(tmpDir, "test.db");
 
-const { getTopLeaderboard, getTopLeaderboardForDate, recordLeaderboardEntryIfFirst, resetLeaderboard, persistMatchResults, listMatchResults, getMatchResultById, db } = await import("../src/db.js");
+const { getOpponentResult, getTopLeaderboard, getTopLeaderboardForDate, recordLeaderboardEntryIfFirst, resetLeaderboard, persistMatchResults, listMatchResults, getMatchResultById, db } = await import("../src/db.js");
 
 test.after(() => {
   rmSync(tmpDir, { recursive: true, force: true });
@@ -87,4 +87,35 @@ test("persisting a match result with a null player name does not throw, and fall
   const row = rows.find((r) => r.matchCode === "TESTCODE");
   assert.equal(row.playerName, "Player 2");
   assert.equal(row.score, 120);
+});
+
+// ENG-576: the players log needs each player's outcome and who they played.
+test("a saved result remembers Winner / Runner-up / Tie, and the opponent is the other player in the same match", () => {
+  const ids = persistMatchResults([
+    { id: "w", name: "Winnie", score: 900, slot: 1, result: "Winner" },
+    { id: "r", name: "Runner", score: 400, slot: 2, result: "Runner-up" },
+  ], "PAIRCODE");
+  assert.equal(getMatchResultById(ids.w).result, "Winner");
+  assert.equal(getMatchResultById(ids.r).result, "Runner-up");
+  assert.deepEqual(getOpponentResult("PAIRCODE", "w"), { name: "Runner", score: 400 });
+  assert.deepEqual(getOpponentResult("PAIRCODE", "r"), { name: "Winnie", score: 900 });
+});
+
+test("two different matches never get mixed up as each other's opponent", () => {
+  persistMatchResults([
+    { id: "a1", name: "A1", score: 100, slot: 1, result: "Tie" },
+    { id: "a2", name: "A2", score: 100, slot: 2, result: "Tie" },
+  ], "MATCH-A");
+  persistMatchResults([
+    { id: "b1", name: "B1", score: 700, slot: 1, result: "Winner" },
+    { id: "b2", name: "B2", score: 300, slot: 2, result: "Runner-up" },
+  ], "MATCH-B");
+  assert.equal(getOpponentResult("MATCH-A", "a1").name, "A2");
+  assert.equal(getOpponentResult("MATCH-B", "b1").name, "B2");
+});
+
+test("no opponent is found for a result without a match code, or a match with only one saved player", () => {
+  assert.equal(getOpponentResult(null, "x"), null);
+  persistMatchResults([{ id: "solo", name: "Solo", score: 50, slot: 1, result: "Tie" }], "SOLOCODE");
+  assert.equal(getOpponentResult("SOLOCODE", "solo"), null);
 });

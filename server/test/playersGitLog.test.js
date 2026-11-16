@@ -36,10 +36,41 @@ test("appendPlayerRowToGit creates the file with header+row when it doesn't exis
   assert.equal(calls[0].opts.method, undefined, "GET is a plain fetch(url, {headers}) with no method override");
   const putBody = JSON.parse(calls[1].opts.body);
   const content = Buffer.from(putBody.content, "base64").toString("utf8");
-  assert.match(content, /^Name,Email,Score,Time Played,Submitted At\n/);
+  assert.match(content, /^Name,Email,Score,Time Played,Submitted At,Result,Opponent,Opponent Score,Match ID\n/);
   assert.match(content, /Alice,alice@example\.com,500,1m 5s,\d{4}-\d{2}-\d{2}T/);
   assert.match(putBody.message, /Alice/);
   assert.equal(putBody.sha, undefined, "no sha on a brand-new file");
+});
+
+test("appendPlayerRowToGit writes the result, opponent, opponent score and match id", async () => {
+  const calls = mockFetchSequence([
+    { ok: false, status: 404, text: async () => "Not Found" }, // GET
+    { ok: true, status: 200, text: async () => "" }, // PUT
+  ]);
+
+  await appendPlayerRowToGit({
+    name: "Alice", email: "alice@example.com", score: 500, timeSpentMs: 65000,
+    result: "Winner", opponentName: "Bob, Jr.", opponentScore: 350, matchId: "a1b2c3d4",
+  });
+
+  const content = Buffer.from(JSON.parse(calls[1].opts.body).content, "base64").toString("utf8");
+  assert.match(content, /Alice,alice@example\.com,500,1m 5s,\d{4}-\d{2}-\d{2}T[^,]*,Winner,"Bob, Jr\.",350,a1b2c3d4\n$/);
+});
+
+test("appendPlayerRowToGit upgrades an old 5-column header, keeping the old rows untouched", async () => {
+  const legacy = Buffer.from("Name,Email,Score,Time Played,Submitted At\nBob,bob@example.com,200,45s,2026-10-01T00:00:00.000Z\n", "utf8").toString("base64");
+  const calls = mockFetchSequence([
+    { ok: true, status: 200, json: async () => ({ content: legacy, sha: "abc123" }) }, // GET
+    { ok: true, status: 200, text: async () => "" }, // PUT
+  ]);
+
+  await appendPlayerRowToGit({ name: "Dee", email: "dee@example.com", score: 100, result: "Runner-up", opponentName: "Eve", opponentScore: 400, matchId: "ffff0000" });
+
+  const content = Buffer.from(JSON.parse(calls[1].opts.body).content, "base64").toString("utf8");
+  const lines = content.trimEnd().split("\n");
+  assert.equal(lines[0], "Name,Email,Score,Time Played,Submitted At,Result,Opponent,Opponent Score,Match ID");
+  assert.equal(lines[1], "Bob,bob@example.com,200,45s,2026-10-01T00:00:00.000Z");
+  assert.match(lines[2], /^Dee,dee@example\.com,100,,.*,Runner-up,Eve,400,ffff0000$/);
 });
 
 test("appendPlayerRowToGit appends to existing content and passes the sha back", async () => {

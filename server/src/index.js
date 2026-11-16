@@ -12,6 +12,7 @@ import {
   getConfigOverrides,
   setMatchResultEmail,
   getMatchResultById,
+  getOpponentResult,
   recordLeaderboardEntryIfFirst,
   getTopLeaderboard,
   listFullLeaderboard,
@@ -80,6 +81,13 @@ function broadcastStation(stationId, snapshot) {
   io.to(stationRoom(stationId)).emit(STATE_EVENT, withLeaderboard({ ...snapshot, stationId }));
 }
 
+// How a player's match is recorded in the players log. The engine's winnerId is null only for a
+// genuine tie (equal score AND equal time), so that is the only "Tie".
+function resultLabel(playerId, winnerId) {
+  if (winnerId == null) return "Tie";
+  return winnerId === playerId ? "Winner" : "Runner-up";
+}
+
 function handleStationChange(stationId, snapshot) {
   if (snapshot.state !== "finished") {
     broadcastStation(stationId, snapshot);
@@ -92,7 +100,10 @@ function handleStationChange(stationId, snapshot) {
     saved = {
       matchCode: snapshot.matchCode,
       idsByPlayerId: persistMatchResults(
-        snapshot.players.map(({ id, name, score, slot, answeredCount, timeSpentMs }) => ({ id, name, score, slot, answeredCount, timeSpentMs })),
+        snapshot.players.map(({ id, name, score, slot, answeredCount, timeSpentMs }) => ({
+          id, name, score, slot, answeredCount, timeSpentMs,
+          result: resultLabel(id, snapshot.winnerId),
+        })),
         snapshot.matchCode
       ),
     };
@@ -289,7 +300,13 @@ io.on("connection", (socket) => {
     // repo's git history (independent of Render AND of any Google account — survives
     // even if the Render service is deleted outright). None of these can throw and
     // break the actual email submission — each is isolated and logs its own failures.
-    const rowData = { name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs };
+    // Who they played and how it ended, from the match's two saved results (same match code).
+    // Blank for an older result with no match code, or if the opponent was never recorded.
+    const opponent = getOpponentResult(result.matchCode, playerId);
+    const rowData = {
+      name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs,
+      result: result.result, opponentName: opponent?.name, opponentScore: opponent?.score, matchId: result.matchCode,
+    };
     appendPlayerRow(rowData);
     appendPlayerRowToSheet(rowData);
     appendPlayerRowToGit(rowData);

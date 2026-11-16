@@ -132,6 +132,13 @@ if (!matchResultColumns.includes("player_token")) {
   db.exec("ALTER TABLE match_results ADD COLUMN player_token TEXT");
 }
 
+// Migration for DBs created before a player's match outcome was recorded (ENG-576): "Winner",
+// "Runner-up" or "Tie". Together with match_code (shared by the two players of one match),
+// this is what lets the players log say who won and who played whom.
+if (!matchResultColumns.includes("result")) {
+  db.exec("ALTER TABLE match_results ADD COLUMN result TEXT");
+}
+
 // Migration for DBs created before leaderboard entries were keyed by email.
 const leaderboardColumns = db.prepare("PRAGMA table_info(leaderboard)").all().map((c) => c.name);
 if (!leaderboardColumns.includes("email")) {
@@ -253,8 +260,8 @@ export function setConfigValue(key, value) {
 }
 
 const insertMatchResult = db.prepare(`
-  INSERT INTO match_results (match_code, player_name, score, email, created_at, answered_count, time_spent_ms, player_token)
-  VALUES (@matchCode, @playerName, @score, @email, @createdAt, @answeredCount, @timeSpentMs, @playerToken)
+  INSERT INTO match_results (match_code, player_name, score, email, created_at, answered_count, time_spent_ms, player_token, result)
+  VALUES (@matchCode, @playerName, @score, @email, @createdAt, @answeredCount, @timeSpentMs, @playerToken, @result)
 `);
 
 // Only inserted once a player submits an email (see recordLeaderboardEntryIfFirst below) —
@@ -270,7 +277,7 @@ const insertLeaderboardEntry = db.prepare(`
 export const persistMatchResults = db.transaction((players, matchCode = null) => {
   const now = new Date().toISOString();
   const resultIdsByPlayerId = {};
-  players.forEach(({ id, name, score, slot, answeredCount, timeSpentMs }) => {
+  players.forEach(({ id, name, score, slot, answeredCount, timeSpentMs, result }) => {
     // player.name can legitimately be null in-engine (a client bypassing the real UI's
     // "ready requires a name" rule, e.g. a raw socket connection) — match_results.player_name
     // is NOT NULL for readable admin exports, so this is the one place that must never let
@@ -279,6 +286,7 @@ export const persistMatchResults = db.transaction((players, matchCode = null) =>
     const { lastInsertRowid } = insertMatchResult.run({
       matchCode, playerName, score, email: null, createdAt: now,
       answeredCount: answeredCount ?? null, timeSpentMs: timeSpentMs ?? null, playerToken: id,
+      result: result ?? null,
     });
     resultIdsByPlayerId[id] = lastInsertRowid;
   });
@@ -293,10 +301,25 @@ export function getMatchResultById(id) {
   return db
     .prepare(
       `SELECT id, match_code AS matchCode, player_name AS playerName, score, email, created_at AS createdAt,
-              answered_count AS answeredCount, time_spent_ms AS timeSpentMs, player_token AS playerToken
+              answered_count AS answeredCount, time_spent_ms AS timeSpentMs, player_token AS playerToken,
+              result
        FROM match_results WHERE id = ?`
     )
     .get(id);
+}
+
+// The other player in the same match (same match_code), or null when there isn't one —
+// e.g. a row saved before match codes were recorded, which can't be paired up reliably.
+export function getOpponentResult(matchCode, playerToken) {
+  if (!matchCode) return null;
+  return (
+    db
+      .prepare(
+        `SELECT player_name AS name, score FROM match_results
+         WHERE match_code = ? AND player_token IS NOT ? ORDER BY id LIMIT 1`
+      )
+      .get(matchCode, playerToken) ?? null
+  );
 }
 
 // Submitting an email is what enters a player into the persistent leaderboard. If this
