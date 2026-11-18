@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
+import Confetti from "../Confetti.jsx";
 import { useLanguage, formatDuration, translateDifficulty, translateJoinError, logoSrc } from "../i18n.js";
 
 // Dark theme (redesign 2026-09) — page background is near-black navy, cards sit one
@@ -302,6 +303,7 @@ function PlayPageBody({ code }) {
 
     return (
       <div dir={dir} style={{ height: "100vh", background: BG, padding: "44px 26px 36px", display: "flex", flexDirection: "column", gap: 22, fontFamily: fonts.body }}>
+        {win && <Confetti fixed />}
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           <span style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 700, fontFamily: fonts.sansBold, color: BLUE }}>{t("finalThreeRounds")}</span>
           <h3 style={{ margin: 0, fontFamily: fonts.serif, fontSize: 40, lineHeight: 1.05, fontWeight: 400, color: WHITE }}>

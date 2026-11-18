@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useGameSocket, useCountdown, ReconnectingBanner } from "../useGameSocket.jsx";
 import { useLanguage, formatDuration, translateDifficulty, logoSrc } from "../i18n.js";
+import Confetti from "../Confetti.jsx";
 
 // Dark theme (redesign 2026-09) — page background is near-black navy, cards sit one
 // step lighter, text runs light-on-dark. BLUE/SKY are unchanged: they already matched
@@ -41,42 +42,6 @@ function extractR1Subject(prompt) {
 function CompanyLogo({ name, imageUrl, size = "2.6cqw" }) {
   if (!imageUrl) return null;
   return <img src={imageUrl} alt={name} style={{ width: size, height: size, borderRadius: 10, objectFit: "contain", background: "#fff" }} />;
-}
-
-const CONFETTI_PIECES = Array.from({ length: 70 }, (_, i) => {
-  const white = i % 2 === 0;
-  return {
-    left: Math.random() * 100,
-    delay: -Math.random() * 6,
-    dur: 4.5 + Math.random() * 3.5,
-    w: 5 + Math.random() * 5,
-    h: 9 + Math.random() * 9,
-    rot: Math.random() * 360,
-    bg: white ? "#fff" : i % 3 === 0 ? BLUE : SKY,
-  };
-});
-
-function Confetti() {
-  return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-      {CONFETTI_PIECES.map((c, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            top: "-8%",
-            left: `${c.left}%`,
-            width: c.w,
-            height: c.h,
-            background: c.bg,
-            borderRadius: 2,
-            transform: `rotate(${c.rot}deg)`,
-            animation: `confettiFall ${c.dur}s linear ${c.delay}s infinite`,
-          }}
-        />
-      ))}
-    </div>
-  );
 }
 
 function IdleScreen({ state, t, fonts, lang }) {
