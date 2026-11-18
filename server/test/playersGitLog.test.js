@@ -57,7 +57,7 @@ test("appendPlayerRowToGit writes the result, opponent, opponent score and match
   assert.match(content, /Alice,alice@example\.com,500,1m 5s,\d{4}-\d{2}-\d{2}T[^,]*,Winner,"Bob, Jr\.",350,a1b2c3d4\n$/);
 });
 
-test("appendPlayerRowToGit upgrades an old 5-column header, keeping the old rows untouched", async () => {
+test("appendPlayerRowToGit upgrades an old 5-column header, padding the old rows to 9 columns", async () => {
   const legacy = Buffer.from("Name,Email,Score,Time Played,Submitted At\nBob,bob@example.com,200,45s,2026-10-01T00:00:00.000Z\n", "utf8").toString("base64");
   const calls = mockFetchSequence([
     { ok: true, status: 200, json: async () => ({ content: legacy, sha: "abc123" }) }, // GET
@@ -69,7 +69,7 @@ test("appendPlayerRowToGit upgrades an old 5-column header, keeping the old rows
   const content = Buffer.from(JSON.parse(calls[1].opts.body).content, "base64").toString("utf8");
   const lines = content.trimEnd().split("\n");
   assert.equal(lines[0], "Name,Email,Score,Time Played,Submitted At,Result,Opponent,Opponent Score,Match ID");
-  assert.equal(lines[1], "Bob,bob@example.com,200,45s,2026-10-01T00:00:00.000Z");
+  assert.equal(lines[1], "Bob,bob@example.com,200,45s,2026-10-01T00:00:00.000Z,,,,");
   assert.match(lines[2], /^Dee,dee@example\.com,100,,.*,Runner-up,Eve,400,ffff0000$/);
 });
 
@@ -85,7 +85,7 @@ test("appendPlayerRowToGit appends to existing content and passes the sha back",
   const putBody = JSON.parse(calls[1].opts.body);
   assert.equal(putBody.sha, "abc123");
   const content = Buffer.from(putBody.content, "base64").toString("utf8");
-  assert.match(content, /Bob,bob@example\.com,200,45s,2026-10-01T00:00:00\.000Z\n/);
+  assert.match(content, /Bob,bob@example\.com,200,45s,2026-10-01T00:00:00\.000Z,,,,\n/);
   assert.match(content, /Carol,carol@example\.com,300,,\d{4}-\d{2}-\d{2}T/, "missing timeSpentMs formats as an empty cell, not 'undefined'");
 });
 

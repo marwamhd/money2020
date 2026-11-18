@@ -23,7 +23,8 @@ const GITHUB_PLAYERS_LOG_PATH = process.env.GITHUB_PLAYERS_LOG_PATH || "server/d
 
 const CSV_HEADER = PLAYER_LOG_HEADERS.join(",");
 // The header the file had before the match columns (ENG-576) were added. An existing file with
-// exactly this first line gets it upgraded on the next append; old rows keep their five cells.
+// exactly this first line gets it upgraded on the next append, and its old rows are padded with
+// empty cells (see padShortRows) so every row has the same width.
 const LEGACY_CSV_HEADER = "Name,Email,Score,Time Played,Submitted At";
 
 let warnedNotConfigured = false;
@@ -109,9 +110,36 @@ function upgradeLegacyHeader(content) {
   return CSV_HEADER + (newlineAt === -1 ? "\n" : content.slice(newlineAt));
 }
 
+// GitHub only renders a .csv as a table when every row has the same number of columns, and
+// otherwise falls back to raw text. Pads each record shorter than the header with empty cells.
+// Walks the content respecting quoted cells, so commas/newlines inside quotes aren't miscounted.
+function padShortRows(content) {
+  const width = PLAYER_LOG_HEADERS.length;
+  let out = "";
+  let fields = 1;
+  let inQuotes = false;
+  let recordHasContent = false;
+  for (const ch of content) {
+    if (ch === '"') inQuotes = !inQuotes;
+    if (ch === "\n" && !inQuotes) {
+      if (recordHasContent && fields < width) out += ",".repeat(width - fields);
+      fields = 1;
+      recordHasContent = false;
+      out += ch;
+      continue;
+    }
+    if (ch === "," && !inQuotes) fields++;
+    if (ch !== "\r") recordHasContent = true;
+    out += ch;
+  }
+  // A final record with no trailing newline is left as-is; the append below adds the newline.
+  if (recordHasContent && fields < width) out += ",".repeat(width - fields);
+  return out;
+}
+
 async function appendWithRetry(row, attempt = 0) {
   const { content: rawContent, sha } = await getCurrentFile();
-  const content = upgradeLegacyHeader(rawContent);
+  const content = padShortRows(upgradeLegacyHeader(rawContent));
   const newContent = content.endsWith("\n") ? content + row + "\n" : content + "\n" + row + "\n";
   try {
     await putFile(newContent, sha, `Add player submission (${row.split(",")[0]})`);
