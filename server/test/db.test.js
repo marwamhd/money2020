@@ -97,8 +97,8 @@ test("a saved result remembers Winner / Runner-up / Tie, and the opponent is the
   ], "PAIRCODE");
   assert.equal(getMatchResultById(ids.w).result, "Winner");
   assert.equal(getMatchResultById(ids.r).result, "Runner-up");
-  assert.deepEqual(getOpponentResult("PAIRCODE", "w"), { name: "Runner", score: 400 });
-  assert.deepEqual(getOpponentResult("PAIRCODE", "r"), { name: "Winnie", score: 900 });
+  assert.deepEqual(getOpponentResult("PAIRCODE", "w"), { name: "Runner", email: null, score: 400 });
+  assert.deepEqual(getOpponentResult("PAIRCODE", "r"), { name: "Winnie", email: null, score: 900 });
 });
 
 test("two different matches never get mixed up as each other's opponent", () => {

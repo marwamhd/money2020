@@ -305,7 +305,9 @@ io.on("connection", (socket) => {
     const opponent = getOpponentResult(result.matchCode, playerId);
     const rowData = {
       name: result.playerName, email: trimmedEmail, score: result.score, timeSpentMs: result.timeSpentMs,
-      result: result.result, opponentName: opponent?.name, opponentScore: opponent?.score, matchId: result.matchCode,
+      result: result.result, // The log's Opponent column shows the opponent's email (what the organisers contact them by).
+      // Falls back to their name if they haven't submitted an email yet, so the cell isn't blank.
+      opponentName: opponent?.email || opponent?.name, opponentScore: opponent?.score, matchId: result.matchCode,
     };
     appendPlayerRow(rowData);
     appendPlayerRowToSheet(rowData);

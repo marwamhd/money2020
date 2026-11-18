@@ -315,7 +315,7 @@ export function getOpponentResult(matchCode, playerToken) {
   return (
     db
       .prepare(
-        `SELECT player_name AS name, score FROM match_results
+        `SELECT player_name AS name, email, score FROM match_results
          WHERE match_code = ? AND player_token IS NOT ? ORDER BY id LIMIT 1`
       )
       .get(matchCode, playerToken) ?? null

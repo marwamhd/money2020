@@ -209,8 +209,12 @@ test("two matches run at once, stay separate, and every player's email is saved"
   for (const [screen, [first, second]] of [[screen1, ["Alice", "Bob"]], [screen2, ["Carol", "Dave"]]]) {
     const a = byName[first];
     const b = byName[second];
-    assert.equal(a.opponent, second, `${first} played ${second}`);
-    assert.equal(b.opponent, first, `${second} played ${first}`);
+    // The Opponent column holds the opponent's email, or their name if they hadn't submitted one
+    // yet. All four submit at once here, so either is right for a given row.
+    const email = (name) => `${name.toLowerCase()}@example.com`;
+    assert.ok([email(second), second].includes(a.opponent), `${first} played ${second}`);
+    assert.ok([email(first), first].includes(b.opponent), `${second} played ${first}`);
+    assert.ok(a.opponent === email(second) || b.opponent === email(first), "whoever submitted second sees the other's email");
     assert.equal(a.opponentScore, b.score);
     assert.equal(b.opponentScore, a.score);
     assert.equal(a.matchId, b.matchId, "both players of a match share one match id");
