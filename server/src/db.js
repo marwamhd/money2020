@@ -367,3 +367,44 @@ function seedQuestionsIfEmpty() {
 }
 
 seedQuestionsIfEmpty();
+
+// seedQuestionsIfEmpty only runs on a brand-new DB, so a database that already holds questions
+// (e.g. the persisted one on Render) would keep stale valuation answers forever. This applies the
+// 23 Nov 2026 valuation refresh (ENG-596) to those rows once, copying the fixed values out of
+// questions.json. The applied_data_refreshes row makes it one-shot, so later admin edits are never overwritten and
+// nothing is recalculated on the day of the event. For the next refresh, bump the key's date suffix
+// and the ID list.
+const VALUATION_REFRESH_KEY = "valuation_refresh_2026-11-23";
+db.exec("CREATE TABLE IF NOT EXISTS applied_data_refreshes (key TEXT PRIMARY KEY, applied_at TEXT NOT NULL)");
+const VALUATION_REFRESH_IDS = ["R2-3", "R2-4", "R2-5", "R2-6", "R2-7", "R2-23", "R2-24", "R2-25", "R2-27", "R2-28"];
+
+function applyValuationRefreshOnce() {
+  if (db.prepare("SELECT 1 FROM applied_data_refreshes WHERE key = ?").get(VALUATION_REFRESH_KEY)) return;
+
+  const bySeedId = new Map(JSON.parse(readFileSync(QUESTIONS_SEED_PATH, "utf-8")).map((q) => [q.id, q]));
+  const update = db.prepare(`
+    UPDATE questions SET prompt = @prompt, option_a = @optionA, option_b = @optionB, correct_option = @correctOption,
+      host_note = @hostNote, option_a_image = @optionAImage, option_b_image = @optionBImage,
+      prompt_ar = @promptAr, option_a_ar = @optionAAr, option_b_ar = @optionBAr, host_note_ar = @hostNoteAr
+    WHERE id = @id
+  `);
+
+  db.transaction(() => {
+    for (const id of VALUATION_REFRESH_IDS) {
+      const q = bySeedId.get(id);
+      if (!q) continue;
+      update.run({
+        ...q,
+        optionAImage: q.optionAImage ?? null,
+        optionBImage: q.optionBImage ?? null,
+        promptAr: q.promptAr ?? null,
+        optionAAr: q.optionAAr ?? null,
+        optionBAr: q.optionBAr ?? null,
+        hostNoteAr: q.hostNoteAr ?? null,
+      });
+    }
+    db.prepare("INSERT INTO applied_data_refreshes (key, applied_at) VALUES (?, ?)").run(VALUATION_REFRESH_KEY, new Date().toISOString());
+  })();
+}
+
+applyValuationRefreshOnce();

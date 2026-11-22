@@ -1434,13 +1434,13 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "SpaceX listed in June 2026 at a valuation in the trillions; Stripe remains private at roughly $150-160bn. (as of Mid-2026)",
+    "hostNote": "SpaceX has traded at roughly $1.7-1.9tn since its June 2026 listing; Stripe remains private at about $159bn. (as of 23 Nov 2026)",
     "optionAImage": "/logos/spacex.svg",
     "optionBImage": "/logos/stripe.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: SpaceX أم Stripe؟",
     "optionAAr": "SpaceX",
     "optionBAr": "Stripe",
-    "hostNoteAr": "طرحت SpaceX للاكتتاب العام في يونيو 2026 بتقييم بلغ تريليونات الدولارات. بينما لا تزال Stripe خاصة بتقييم يقارب 150-160 مليار دولار. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تتداول SpaceX بقيمة تقارب 1.7-1.9 تريليون دولار منذ إدراجها في يونيو 2026، بينما لا تزال Stripe خاصة بتقييم يقارب 159 مليار دولار. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-4",
@@ -1448,16 +1448,16 @@
     "prompt": "Which has the higher valuation: Stripe or Databricks?",
     "optionA": "Stripe",
     "optionB": "Databricks",
-    "correctOption": "A",
+    "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Stripe ~$150-160bn vs Databricks ~$130-170bn; close, but Stripe has generally led. (as of Mid-2026)",
+    "hostNote": "Databricks closed a round at $190bn in August 2026 (talks reported near $225bn), now ahead of Stripe's ~$159bn. (as of 23 Nov 2026)",
     "optionAImage": "/logos/stripe.svg",
     "optionBImage": "/logos/databricks.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: Stripe أم Databricks؟",
     "optionAAr": "Stripe",
     "optionBAr": "Databricks",
-    "hostNoteAr": "تقييم Stripe نحو 150-160 مليار دولار مقابل Databricks بنحو 130-170 مليار دولار. الفارق ضئيل، لكن Stripe كانت متقدمة غالبًا. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "أغلقت Databricks جولة تمويل بتقييم 190 مليار دولار في أغسطس 2026 (وتشير التقارير إلى محادثات بنحو 225 مليار دولار)، لتتقدم على Stripe بنحو 159 مليار دولار. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-5",
@@ -1468,30 +1468,30 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "OpenAI's private valuation (~$850bn) has pulled well ahead of ByteDance's (~$480bn). (as of Mid-2026)",
+    "hostNote": "OpenAI's last closed valuation ($852bn, March 2026) is well ahead of ByteDance's (~$480bn). (as of 23 Nov 2026)",
     "optionAImage": "/logos/openai.svg",
     "optionBImage": "/logos/bytedance.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: OpenAI أم ByteDance؟",
     "optionAAr": "OpenAI",
     "optionBAr": "ByteDance",
-    "hostNoteAr": "تجاوز تقييم OpenAI الخاص (نحو 850 مليار دولار) تقييم ByteDance (نحو 480 مليار دولار) بفارق كبير. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تقييم OpenAI الأخير المُعلن (852 مليار دولار في مارس 2026) يتقدم كثيرًا على تقييم ByteDance (نحو 480 مليار دولار). (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-6",
     "round": "R2",
-    "prompt": "Which has the higher valuation: xAI or Databricks?",
-    "optionA": "xAI",
+    "prompt": "Which has the higher valuation: OpenAI or Databricks?",
+    "optionA": "OpenAI",
     "optionB": "Databricks",
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "xAI's valuation (~$230bn) has run ahead of Databricks' (~$130-170bn). (as of Mid-2026)",
+    "hostNote": "OpenAI's last closed valuation ($852bn) is more than four times Databricks' ($190bn). (as of 23 Nov 2026)",
     "optionBImage": "/logos/databricks.svg",
-    "optionAImage": "/logos/xai.jpg",
-    "promptAr": "أيهما يملك تقييمًا أعلى: xAI أم Databricks؟",
-    "optionAAr": "xAI",
+    "optionAImage": "/logos/openai.svg",
+    "promptAr": "أيهما يملك تقييمًا أعلى: OpenAI أم Databricks؟",
+    "optionAAr": "OpenAI",
     "optionBAr": "Databricks",
-    "hostNoteAr": "تقدّم تقييم xAI (نحو 230 مليار دولار) على تقييم Databricks (نحو 130-170 مليار دولار). (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تقييم OpenAI الأخير المُعلن (852 مليار دولار) يزيد على أربعة أضعاف تقييم Databricks (190 مليار دولار). (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-7",
@@ -1502,13 +1502,13 @@
     "correctOption": "A",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Talabat's 2024 IPO valued it near $10bn, well above Jahez's market cap on Tadawul. (as of Mid-2026)",
+    "hostNote": "Talabat is valued at roughly $5-7bn on the DFM, about ten times Jahez's ~$0.5bn on Tadawul. (as of 23 Nov 2026)",
     "optionAImage": "/logos/talabat.svg",
     "optionBImage": "/logos/jahez.png",
     "promptAr": "أيهما يملك تقييمًا أعلى: طلبات أم جاهز؟",
     "optionAAr": "طلبات",
     "optionBAr": "جاهز",
-    "hostNoteAr": "قيّم الاكتتاب العام لطلبات في 2024 الشركة بنحو 10 مليارات دولار، وهو أعلى بكثير من القيمة السوقية لجاهز في تداول. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تبلغ قيمة طلبات نحو 5-7 مليارات دولار في سوق دبي المالي، أي نحو عشرة أضعاف قيمة جاهز البالغة نحو 0.5 مليار دولار في تداول. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-8",
@@ -1774,13 +1774,13 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Chime's ~$18bn IPO valuation in June 2025 outsized Talabat's roughly $10bn debut. (as of Mid-2026)",
+    "hostNote": "Chime is at about $12.7bn, ahead of Talabat's roughly $5-7bn. (as of 23 Nov 2026)",
     "optionBImage": "/logos/talabat.svg",
     "optionAImage": "/logos/chime.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: Chime أم طلبات؟",
     "optionAAr": "Chime",
     "optionBAr": "طلبات",
-    "hostNoteAr": "فاق تقييم اكتتاب Chime البالغ نحو 18 مليار دولار في يونيو 2025 حجم طرح طلبات البالغ نحو 10 مليارات دولار. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تبلغ قيمة Chime نحو 12.7 مليار دولار، متقدمة على طلبات التي تبلغ نحو 5-7 مليارات دولار. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-24",
@@ -1791,13 +1791,13 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Chime's IPO valued it near $18bn, ahead of Klarna's roughly $15bn listing a few months later. (as of Mid-2026)",
+    "hostNote": "Chime at about $12.7bn is well ahead of Klarna's ~$4.8bn. (as of 23 Nov 2026)",
     "optionBImage": "/logos/klarna.svg",
     "optionAImage": "/logos/chime.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: Chime أم Klarna؟",
     "optionAAr": "Chime",
     "optionBAr": "Klarna",
-    "hostNoteAr": "قيّم اكتتاب Chime الشركة بنحو 18 مليار دولار، متقدمة على إدراج Klarna بنحو 15 مليار دولار بعد أشهر قليلة. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تبلغ قيمة Chime نحو 12.7 مليار دولار، متقدمة بوضوح على Klarna التي تبلغ نحو 4.8 مليار دولار. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-25",
@@ -1808,13 +1808,13 @@
     "correctOption": "A",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Tether (~$500bn) and ByteDance (~$480bn) are close, but Tether has generally edged ahead. (as of Mid-2026)",
+    "hostNote": "Tether (~$500bn) edges ByteDance (~$480bn); it's close, and both are private-market figures. (as of 23 Nov 2026)",
     "optionAImage": "/logos/tether.svg",
     "optionBImage": "/logos/bytedance.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: Tether أم ByteDance؟",
     "optionAAr": "Tether",
     "optionBAr": "ByteDance",
-    "hostNoteAr": "تقييما Tether (نحو 500 مليار دولار) و ByteDance (نحو 480 مليار دولار) متقاربان، لكن Tether كانت متقدمة عمومًا بفارق طفيف. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تتفوق Tether (نحو 500 مليار دولار) بفارق ضئيل على ByteDance (نحو 480 مليار دولار)، وكلا الرقمين تقديرات للسوق الخاصة. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-26",
@@ -1842,13 +1842,13 @@
     "correctOption": "B",
     "difficulty": "Medium",
     "points": 150,
-    "hostNote": "Even after a strong 2026 debut, Cerebras still trails Databricks' much larger valuation. (as of Mid-2026)",
+    "hostNote": "Cerebras is worth roughly $17-25bn after its 2026 listing, far below Databricks' ~$190bn. (as of 23 Nov 2026)",
     "optionAImage": "/logos/cerebras.svg",
     "optionBImage": "/logos/databricks.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: Cerebras Systems أم Databricks؟",
     "optionAAr": "Cerebras Systems",
     "optionBAr": "Databricks",
-    "hostNoteAr": "حتى بعد طرح قوي في 2026، ما زالت Cerebras متأخرة عن تقييم Databricks الأكبر بكثير. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "تبلغ قيمة Cerebras نحو 17-25 مليار دولار بعد إدراجها في 2026، وهي أقل بكثير من Databricks التي تبلغ نحو 190 مليار دولار. (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R2-28",
@@ -1859,13 +1859,13 @@
     "correctOption": "B",
     "difficulty": "Hard",
     "points": 200,
-    "hostNote": "Even after SpaceX's record-breaking 2026 listing, Apple's market cap has stayed larger. (as of Mid-2026)",
+    "hostNote": "Apple (~$5tn) is still roughly 2.5-3x SpaceX (~$1.7-1.9tn). (as of 23 Nov 2026)",
     "optionAImage": "/logos/spacex.svg",
     "optionBImage": "/logos/apple.svg",
     "promptAr": "أيهما يملك تقييمًا أعلى: SpaceX أم Apple؟",
     "optionAAr": "SpaceX",
     "optionBAr": "Apple",
-    "hostNoteAr": "حتى بعد إدراج SpaceX القياسي في 2026، ظلت القيمة السوقية لـ Apple أكبر. (اعتبارًا من منتصف 2026)"
+    "hostNoteAr": "لا تزال Apple (نحو 5 تريليونات دولار) أكبر بنحو 2.5-3 أضعاف من SpaceX (نحو 1.7-1.9 تريليون دولار). (اعتبارًا من 23 نوفمبر 2026)"
   },
   {
     "id": "R3-1",
